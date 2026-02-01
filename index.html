@@ -357,7 +357,7 @@
             session_id: "web-1"
           })
         });
-
+        console.log("Response " + res)
         // Sometimes n8n may return text/html on error
         const contentType = res.headers.get("content-type") || "";
         let data;
