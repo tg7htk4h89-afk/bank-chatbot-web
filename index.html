@@ -315,7 +315,7 @@
       bubble.className = "bubble";
       
       // Use textContent to safely display text with preserved line breaks
-      bubble.textContent = text;
+      bubble.innerHTML = text;
 
       // Auto RTL/LTR per message
       bubble.dir = isArabic(text) ? "rtl" : "ltr";
