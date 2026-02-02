@@ -147,11 +147,12 @@
     .bubble{
       padding: 12px 14px;
       border-radius: 16px;
-      line-height: 1.5;
+      line-height: 1.6;
       word-break: break-word;
       box-shadow: 0 10px 26px rgba(2,6,23,.06);
       border: 1px solid rgba(226,232,240,.8);
       font-size: 14px;
+      white-space: pre-wrap; /* Preserve line breaks and spaces */
     }
 
     .msg.bot .bubble{
@@ -312,6 +313,8 @@
 
       const bubble = document.createElement("div");
       bubble.className = "bubble";
+      
+      // Use textContent to safely display text with preserved line breaks
       bubble.textContent = text;
 
       // Auto RTL/LTR per message
@@ -348,7 +351,6 @@
       setStatus("Sending...", true);
 
       try{
-        // ✅ Send as form-urlencoded (avoids CORS preflight issues)
         const res = await fetch(WEBHOOK_URL, {
           method: "POST",
           headers: { 
@@ -359,8 +361,8 @@
             session_id: "web-1"
           })
         });
-        console.log("Response " + res)
-        // Sometimes n8n may return text/html on error
+
+        // Check response content type
         const contentType = res.headers.get("content-type") || "";
         let data;
 
@@ -371,10 +373,42 @@
           throw new Error("Non-JSON response: " + t.slice(0,120));
         }
 
-        const answer = (data && (data.answer || data.output || data.text)) ? (data.answer || data.output || data.text) : JSON.stringify(data);
-        add("bot", answer);
+        // ✅ Extract text from response - handles multiple response formats
+        let answer = "";
 
+        // Format 1: OpenAI nested structure from your n8n workflow
+        if (data && Array.isArray(data.output) && data.output.length > 0) {
+          const firstOutput = data.output[0];
+          if (firstOutput.content && Array.isArray(firstOutput.content) && firstOutput.content[0]) {
+            answer = firstOutput.content[0].text || "";
+          }
+        } 
+        // Format 2: Direct output array
+        else if (data && Array.isArray(data) && data[0] && data[0].output) {
+          const firstItem = data[0];
+          if (Array.isArray(firstItem.output) && firstItem.output[0]) {
+            const firstOutput = firstItem.output[0];
+            if (firstOutput.content && Array.isArray(firstOutput.content) && firstOutput.content[0]) {
+              answer = firstOutput.content[0].text || "";
+            }
+          }
+        }
+        // Format 3: Simple structure with answer/output/text fields
+        else if (data && (data.answer || data.output || data.text)) {
+          answer = data.answer || data.output || data.text;
+        } 
+        // Format 4: Fallback - stringify the data
+        else {
+          answer = JSON.stringify(data, null, 2);
+        }
+
+        // Clean up the answer if needed
+        answer = answer.trim();
+
+        // Display the formatted answer
+        add("bot", answer);
         setStatus("Ready", true);
+
       } catch(e){
         add("bot", "Connection error: " + (e?.message || e));
         setStatus("Disconnected", false);
@@ -385,8 +419,9 @@
     }
 
     // Welcome message
-    add("bot", "Hi — I’m Chat3P. Ask me about KIB products, policies, or procedures.");
+    add("bot", "Hi — I'm Chat3P. Ask me about KIB products, policies, or procedures.");
 
+    // Event listeners
     btn.addEventListener("click", send);
     inp.addEventListener("keydown", (e) => {
       if (e.key === "Enter") send();
