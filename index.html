@@ -430,13 +430,9 @@
       try{
         const payload = {
           message: msg,
-          session_id: "web-1"
+          session_id: "web-1",
+          category: category
         };
-
-        // Add category to payload if selected
-        if (category) {
-          payload.category = category;
-        }
 
         const res = await fetch(WEBHOOK_URL, {
           method: "POST",
