@@ -185,11 +185,35 @@
 
     .composer{
       display:flex;
+      flex-direction: column;
       gap:10px;
       padding: 14px;
       background: rgba(255,255,255,.92);
+    }
+
+    .composer-row{
+      display:flex;
+      gap:10px;
       align-items:center;
     }
+
+    .select{
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 12px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      min-width: 140px;
+    }
+
+    .select:focus{
+      border-color: rgba(14,165,233,.55);
+      box-shadow: 0 0 0 4px rgba(14,165,233,.12);
+    }
+
     .input{
       flex:1;
       border: 1px solid var(--border);
@@ -233,10 +257,36 @@
     }
     .foot .small{ opacity:.9; }
 
+    .category-badge{
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .category-policy{
+      background: rgba(59, 130, 246, 0.15);
+      color: #2563eb;
+    }
+
+    .category-procedure{
+      background: rgba(16, 185, 129, 0.15);
+      color: #059669;
+    }
+
+    .category-product{
+      background: rgba(245, 158, 11, 0.15);
+      color: #d97706;
+    }
+
     @media (max-width: 720px){
       .chat{ height: 68vh; }
       .brand p{ max-width: 240px; }
       .bubbleWrap{ max-width: 86%; }
+      .composer-row{ flex-direction: column; }
+      .select{ width: 100%; min-width: auto; }
     }
   </style>
 </head>
@@ -265,12 +315,20 @@
       <div class="divider"></div>
 
       <div class="composer">
-        <input id="inp" class="input" placeholder="Type your question..." autocomplete="off" />
-        <button id="sendBtn" class="btn">Send</button>
+        <div class="composer-row">
+          <select id="categorySelect" class="select">
+            <option value="">Auto-detect</option>
+            <option value="policy">Policy</option>
+            <option value="procedure">Procedure</option>
+            <option value="product">Product</option>
+          </select>
+          <input id="inp" class="input" placeholder="Type your question..." autocomplete="off" />
+          <button id="sendBtn" class="btn">Send</button>
+        </div>
       </div>
 
       <div class="foot">
-        <div class="small">Tip: Ask in Arabic or English.</div>
+        <div class="small">Tip: Ask in Arabic or English. Select category or use auto-detect.</div>
         <div class="small">Chat3P • Web UI</div>
       </div>
     </div>
@@ -283,6 +341,7 @@
     const chat = document.getElementById("chat");
     const inp  = document.getElementById("inp");
     const btn  = document.getElementById("sendBtn");
+    const categorySelect = document.getElementById("categorySelect");
     const statusText = document.getElementById("statusText");
     const statusDot  = document.getElementById("statusDot");
 
@@ -300,7 +359,17 @@
       return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(text);
     }
 
-    function add(role, text){
+    function getCategoryBadge(category){
+      if (!category) return '';
+      const badges = {
+        'policy': '<span class="category-badge category-policy">Policy</span>',
+        'procedure': '<span class="category-badge category-procedure">Procedure</span>',
+        'product': '<span class="category-badge category-product">Product</span>'
+      };
+      return badges[category] || '';
+    }
+
+    function add(role, text, category = null){
       const row = document.createElement("div");
       row.className = "msg " + (role === "me" ? "me" : "bot");
 
@@ -314,7 +383,7 @@
       const bubble = document.createElement("div");
       bubble.className = "bubble";
       
-      // Use textContent to safely display text with preserved line breaks
+      // Use innerHTML to render HTML formatting
       bubble.innerHTML = text;
 
       // Auto RTL/LTR per message
@@ -323,7 +392,13 @@
 
       const meta = document.createElement("div");
       meta.className = "meta";
-      meta.textContent = timeNow();
+      
+      // Add category badge if present
+      if (category && role === "me") {
+        meta.innerHTML = getCategoryBadge(category) + '<span style="margin-left:6px">' + timeNow() + '</span>';
+      } else {
+        meta.textContent = timeNow();
+      }
 
       wrap.appendChild(bubble);
       wrap.appendChild(meta);
@@ -345,21 +420,30 @@
       const msg = (inp.value || "").trim();
       if (!msg) return;
 
-      add("me", msg);
+      const category = categorySelect.value; // Get selected category
+
+      add("me", msg, category);
       inp.value = "";
       btn.disabled = true;
       setStatus("Sending...", true);
 
       try{
+        const payload = {
+          message: msg,
+          session_id: "web-1"
+        };
+
+        // Add category to payload if selected
+        if (category) {
+          payload.category = category;
+        }
+
         const res = await fetch(WEBHOOK_URL, {
           method: "POST",
           headers: { 
             "Content-Type": "application/json" 
           },
-          body: JSON.stringify({
-            message: msg,
-            session_id: "web-1"
-          })
+          body: JSON.stringify(payload)
         });
 
         // Check response content type
