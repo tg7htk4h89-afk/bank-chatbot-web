@@ -1,20 +1,21 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KIB Chat3P | Select Role</title>
+    <title>KIB Chat3PT | Select Role</title>
     <style>
         :root {
+            --bg1: #e8f1f6;
+            --bg2: #eef2ff;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 14px 40px rgba(2, 6, 23, .10);
             --brand: #1f7a6b;
             --brand-light: rgba(31, 122, 107, 0.1);
             --brand2: #0ea5e9;
-            --text: #0f172a;
-            --muted: #64748b;
-            --bg-gradient: radial-gradient(900px 500px at 20% 10%, rgba(14,165,233,.15), transparent 60%),
-                           radial-gradient(900px 500px at 80% 85%, rgba(31,122,107,.18), transparent 55%),
-                           linear-gradient(180deg, #e8f1f6, #eef2ff);
         }
 
         * {
@@ -25,13 +26,45 @@
 
         body {
             font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-            background: var(--bg-gradient);
+            background: radial-gradient(900px 500px at 20% 10%, rgba(14,165,233,.12), transparent 60%),
+                        radial-gradient(900px 500px at 80% 15%, rgba(31,122,107,.14), transparent 55%),
+                        linear-gradient(180deg, var(--bg1), var(--bg2));
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             color: var(--text);
+            padding: 20px;
+            position: relative;
             overflow: hidden;
+        }
+
+        /* Animated particles background */
+        body::before,
+        body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            animation: float-particles 20s infinite ease-in-out;
+            opacity: 0.1;
+        }
+
+        body::before {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(31,122,107,0.3), transparent 70%);
+            top: -100px;
+            left: -100px;
+            animation-delay: -5s;
+        }
+
+        body::after {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(14,165,233,0.3), transparent 70%);
+            bottom: -50px;
+            right: -50px;
+            animation-delay: -10s;
         }
 
         .container {
@@ -46,38 +79,85 @@
 
         /* --- Logo Styling --- */
         .logo-wrapper {
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 28px;
-            margin: 0 auto 25px;
+            width: 180px;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 26px;
+            margin: 0 auto 30px;
             display: grid;
             place-items: center;
-            box-shadow: 0 20px 40px rgba(31, 122, 107, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(226, 232, 240, 0.95);
             backdrop-filter: blur(10px);
-            animation: float 6s ease-in-out infinite;
+            animation: float 6s ease-in-out infinite, pulseGlow 3s ease-in-out infinite;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .logo-wrapper:hover {
+            transform: translateY(-15px) rotate(5deg) scale(1.05);
+            box-shadow: 0 30px 60px rgba(31, 122, 107, 0.25), 
+                        0 0 40px rgba(14, 165, 233, 0.2);
+            border-color: rgba(31, 122, 107, 0.5);
+        }
+
+        .logo-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, #0ea5e9, #1f7a6b, #0ea5e9);
+            border-radius: 26px;
+            opacity: 0;
+            z-index: -1;
+            animation: rotate 3s linear infinite;
+            transition: opacity 0.3s;
+        }
+
+        .logo-wrapper:hover::before {
+            opacity: 0.7;
         }
 
         .logo-wrapper img {
-            width: 70%;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .logo-wrapper:hover img {
+            transform: scale(1.1) rotate(-5deg);
         }
 
         .title {
             font-size: 2.5rem;
             font-weight: 800;
             margin-bottom: 8px;
-            background: linear-gradient(135deg, var(--brand), #0f5c4e);
+            background: linear-gradient(135deg, var(--brand), #0f5c4e, var(--brand2), var(--brand));
+            background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: -0.5px;
+            animation: shimmer 4s ease-in-out infinite;
+            position: relative;
+        }
+
+        .title::after {
+            content: 'Chat3PT';
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.8), transparent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s ease-in-out infinite;
         }
 
         .subtitle {
             color: var(--muted);
             font-size: 1.1rem;
             margin-bottom: 50px;
+            animation: fadeIn 1s ease-out 0.5s backwards;
         }
 
         /* --- Selection Cards --- */
@@ -90,21 +170,49 @@
         }
 
         .role-card {
-            background: rgba(255, 255, 255, 0.65);
-            border: 1px solid rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(226, 232, 240, 0.95);
             padding: 30px 20px;
-            border-radius: 24px;
+            border-radius: 22px;
             text-decoration: none;
             color: var(--text);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px;
+            animation: slideInCard 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        .role-card:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .role-card:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        /* Ripple effect on cards */
+        .role-card::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(31,122,107,0.1) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+            transition: transform 0.6s ease-out;
+        }
+
+        .role-card:hover::before {
+            transform: translate(-50%, -50%) scale(2);
         }
 
         /* Hover Effects */
@@ -123,24 +231,29 @@
             display: grid;
             place-items: center;
             font-size: 24px;
-            transition: background 0.3s;
+            transition: all 0.3s;
             color: var(--brand);
+            animation: iconBounce 2s ease-in-out infinite;
         }
 
         .role-card:hover .icon-box {
             background: var(--brand);
             color: white;
+            box-shadow: 0 10px 18px rgba(31, 122, 107, 0.18);
+            animation: iconSpin 0.6s ease-in-out;
+            transform: scale(1.1);
         }
 
         .card-title {
             font-size: 1.25rem;
             font-weight: 700;
+            color: var(--text);
         }
 
         .card-desc {
             font-size: 0.9rem;
             color: var(--muted);
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         /* --- Animations --- */
@@ -156,12 +269,77 @@
             50% { transform: translateY(-10px); }
         }
 
+        @keyframes pulseGlow {
+            0%, 100% { 
+                box-shadow: var(--shadow);
+            }
+            50% { 
+                box-shadow: 0 20px 50px rgba(31, 122, 107, 0.2),
+                            0 0 30px rgba(14, 165, 233, 0.15);
+            }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes shine {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes float-particles {
+            0%, 100% { 
+                transform: translate(0, 0) scale(1);
+            }
+            33% { 
+                transform: translate(30px, -30px) scale(1.1);
+            }
+            66% { 
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+        }
+
+        @keyframes slideInCard {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes iconSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1.1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         /* Mobile Responsiveness */
         @media (max-width: 640px) {
             .card-grid {
                 grid-template-columns: 1fr;
             }
             .title { font-size: 2rem; }
+            body { padding: 14px; }
         }
     </style>
 </head>
@@ -169,28 +347,28 @@
 
     <div class="container">
         <div class="logo-wrapper">
-            <img src="kib-logo.png" alt="KIB" onerror="this.parentElement.innerHTML='<span style=\'font-weight:800; color:#1f7a6b; font-size:24px;\'>KIB</span>'">
+            <img src="https://raw.githubusercontent.com/tg7htk4h89-afk/bank-chatbot-web/refs/heads/main/372d69b7-d1da-4872-b619-bcc28b94f3c7.JPG" alt="KIB" onerror="this.parentElement.innerHTML='<span style=\'font-weight:800; color:#1f7a6b; font-size:24px;\'>KIB</span>'">
         </div>
 
-        <h1 class="title">Chat3P</h1>
+        <h1 class="title">Chat3PT</h1>
         <p class="subtitle">KIB Knowledge Assistant</p>
 
         <div class="card-grid">
             
-            <a href="chat_standard.html" class="role-card">
+            <a href="https://tg7htk4h89-afk.github.io/bank-chatbot-web/chat.html" class="role-card">
                 <div class="icon-box">
                     👤
                 </div>
-                <div class="card-title">User</div>
-                <div class="card-desc">Standard access to Chat3PT for queries on products, policies, and procedures.</div>
+                <div class="card-title">Standard User</div>
+                <div class="card-desc">Access Chat3PT to query products, policies, and procedures.</div>
             </a>
 
-            <a href="chat_editor.html" class="role-card">
+            <a href="https://tg7htk4h89-afk.github.io/bank-chatbot-web/index.html" class="role-card">
                 <div class="icon-box">
                     ⚙️
                 </div>
-                <div class="card-title">Admin</div>
-                <div class="card-desc">Edit knowledge base, manage flows, and review logs.</div>
+                <div class="card-title">Editor Admin</div>
+                <div class="card-desc">Manage knowledge base, edit flows, and review logs.</div>
             </a>
 
         </div>
