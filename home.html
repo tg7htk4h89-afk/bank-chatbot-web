@@ -36,7 +36,6 @@
             color: var(--text);
             padding: 20px;
             position: relative;
-            overflow: hidden;
         }
 
         /* Animated particles background */
@@ -340,6 +339,13 @@
             }
             .title { font-size: 2rem; }
             body { padding: 14px; }
+        }
+
+        /* Desktop only - hide overflow for particle animation */
+        @media (min-width: 641px) {
+            body {
+                overflow: hidden;
+            }
         }
     </style>
 </head>
