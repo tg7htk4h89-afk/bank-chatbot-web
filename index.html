@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Chat3P</title>
+  <title>Chat3PT</title>
 
   <style>
     :root{
@@ -97,6 +97,35 @@
       width:10px; height:10px; border-radius:50%;
       background: #22c55e;
       box-shadow: 0 0 0 4px rgba(34,197,94,.14);
+    }
+
+    /* Edit Button */
+    .edit-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.8);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--brand);
+      transition: all 0.3s;
+      flex: 0 0 auto;
+    }
+
+    .edit-btn:hover {
+      background: var(--brand);
+      color: #fff;
+      border-color: var(--brand);
+      box-shadow: 0 4px 12px rgba(31,122,107,.2);
+      transform: translateY(-1px);
+    }
+
+    .edit-icon {
+      font-size: 16px;
     }
 
     .card{
@@ -281,12 +310,249 @@
       color: #d97706;
     }
 
+    /* ===== TYPING INDICATOR STYLES ===== */
+    .typing-indicator {
+      display: none;
+      align-items: flex-end;
+      gap: 10px;
+      padding: 12px 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.78));
+    }
+
+    .typing-indicator.show {
+      display: flex;
+    }
+
+    .typing-indicator .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 12px;
+      flex: 0 0 auto;
+    }
+
+    .typing-bubble {
+      background: var(--bot);
+      border: 1px solid rgba(226,232,240,.8);
+      border-radius: 16px;
+      border-bottom-left-radius: 8px;
+      padding: 12px 14px;
+      box-shadow: 0 10px 26px rgba(2,6,23,.06);
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      animation: typingBounce 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typingBounce {
+      0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.7;
+      }
+      30% {
+        transform: translateY(-10px);
+        opacity: 1;
+      }
+    }
+
+    /* ===== SUGGESTION SECTION STYLES ===== */
+    .suggestion-section {
+      margin-top: 20px;
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(226,232,240,.95);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .suggestion-header {
+      background: linear-gradient(135deg, rgba(31,122,107,0.05), rgba(14,165,233,0.05));
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .suggestion-header:hover {
+      background: linear-gradient(135deg, rgba(31,122,107,0.08), rgba(14,165,233,0.08));
+    }
+
+    .suggestion-header h3 {
+      margin: 0;
+      font-size: 16px;
+      color: var(--brand);
+      flex: 1;
+    }
+
+    .suggestion-form {
+      padding: 20px;
+      display: none;
+    }
+
+    .suggestion-form.active {
+      display: block;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(31,122,107,0.1);
+    }
+
+    .form-select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+      line-height: 1.5;
+    }
+
+    .submit-btn {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--brand2), #0284c7);
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(14,165,233,.2);
+      transition: all 0.3s;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px rgba(14,165,233,.3);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .success-message {
+      display: none;
+      padding: 20px;
+      text-align: center;
+      color: var(--brand);
+      font-size: 16px;
+      font-weight: 600;
+      animation: fadeIn 0.5s;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
     @media (max-width: 720px){
       .chat{ height: 68vh; }
       .brand p{ max-width: 240px; }
       .bubbleWrap{ max-width: 86%; }
       .composer-row{ flex-direction: column; }
       .select{ width: 100%; min-width: auto; }
+      .form-row { grid-template-columns: 1fr; }
+      
+      .topbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+      
+      .topbar > div:last-child {
+        justify-content: center;
+      }
+      
+      .edit-btn {
+        font-size: 12px;
+        padding: 6px 12px;
+      }
     }
   </style>
 </head>
@@ -299,19 +565,37 @@
           <img src="kib-logo.png" alt="KIB logo" onerror="this.style.display='none'; this.parentElement.textContent='KIB'; this.parentElement.style.fontWeight='700';" />
         </div>
         <div style="min-width:0">
-          <h1>Chat3P</h1>
+          <h1>Chat3PT</h1>
           <p>KIB Knowledge Assistant (Products • Policies • Procedures)</p>
         </div>
       </div>
 
-      <div class="status">
-        <span class="dot" id="statusDot"></span>
-        <span id="statusText">Ready</span>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <a href="https://tg7htk4h89-afk.github.io/bank-chatbot-web/edit.html" class="edit-btn" title="Edit Knowledge Base">
+          <span class="edit-icon">✏️</span>
+          <span>Edit</span>
+        </a>
+        
+        <div class="status">
+          <span class="dot" id="statusDot"></span>
+          <span id="statusText">Ready</span>
+        </div>
       </div>
     </div>
 
     <div class="card">
       <div class="chat" id="chat"></div>
+      
+      <!-- Typing Indicator (below chat area) -->
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="avatar">3PT</div>
+        <div class="typing-bubble">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+        </div>
+      </div>
+      
       <div class="divider"></div>
 
       <div class="composer">
@@ -329,9 +613,54 @@
 
       <div class="foot">
         <div class="small">Tip: Ask in Arabic or English. Select category or use auto-detect.</div>
-        <div class="small">Chat3P • Web UI</div>
+        <div class="small">Chat3PT • Web UI</div>
       </div>
     </div>
+
+    <!-- ===== SUGGESTION SECTION ===== -->
+    <div class="suggestion-section">
+      <div class="suggestion-header" onclick="toggleSuggestionForm()">
+        <span style="font-size: 20px;">💡</span>
+        <h3>Submit a Suggestion</h3>
+        <span id="suggestionToggle" style="font-size: 14px; color: var(--muted);">▼</span>
+      </div>
+      
+      <div class="suggestion-form" id="suggestionForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input" id="suggestionName" placeholder="Your Name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Department</label>
+            <input type="text" class="form-input" id="suggestionDept" placeholder="Department" />
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Select Suggestion Category</label>
+          <select class="form-select" id="suggestionCategory">
+            <option value="">Select Suggestion Category</option>
+            <option value="policy">Policy</option>
+            <option value="procedure">Procedure</option>
+            <option value="product">Product</option>
+            <option value="general">General Improvement</option>
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Describe your suggestion</label>
+          <textarea class="form-textarea" id="suggestionText" placeholder="Describe your suggestion..."></textarea>
+        </div>
+
+        <button class="submit-btn" onclick="submitSuggestion()">Submit Feedback</button>
+      </div>
+
+      <div class="success-message" id="successMessage">
+        Thank you! Your suggestion has been sent.
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -344,11 +673,21 @@
     const categorySelect = document.getElementById("categorySelect");
     const statusText = document.getElementById("statusText");
     const statusDot  = document.getElementById("statusDot");
+    const typingIndicator = document.getElementById("typingIndicator");
 
     function setStatus(text, ok=true){
       statusText.textContent = text;
       statusDot.style.background = ok ? "#22c55e" : "#ef4444";
       statusDot.style.boxShadow = ok ? "0 0 0 4px rgba(34,197,94,.14)" : "0 0 0 4px rgba(239,68,68,.14)";
+    }
+
+    function showTyping() {
+      typingIndicator.classList.add('show');
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function hideTyping() {
+      typingIndicator.classList.remove('show');
     }
 
     function timeNow(){
@@ -375,7 +714,7 @@
 
       const avatar = document.createElement("div");
       avatar.className = "avatar";
-      avatar.textContent = (role === "me") ? "Me" : "3P";
+      avatar.textContent = (role === "me") ? "Me" : "3PT";
 
       const wrap = document.createElement("div");
       wrap.className = "bubbleWrap";
@@ -426,6 +765,9 @@
       inp.value = "";
       btn.disabled = true;
       setStatus("Sending...", true);
+      
+      // Show typing indicator
+      showTyping();
 
       try{
         const payload = {
@@ -485,11 +827,16 @@
         // Clean up the answer if needed
         answer = answer.trim();
 
+        // Hide typing indicator before showing response
+        hideTyping();
+
         // Display the formatted answer
         add("bot", answer);
         setStatus("Ready", true);
 
       } catch(e){
+        // Hide typing indicator on error
+        hideTyping();
         add("bot", "Connection error: " + (e?.message || e));
         setStatus("Disconnected", false);
       } finally {
@@ -499,13 +846,84 @@
     }
 
     // Welcome message
-    add("bot", "Hi — I'm Chat3P. Ask me about KIB products, policies, or procedures.");
+    add("bot", "Hi — I'm Chat3PT. Ask me about KIB products, policies, or procedures.");
 
     // Event listeners
     btn.addEventListener("click", send);
     inp.addEventListener("keydown", (e) => {
       if (e.key === "Enter") send();
     });
+
+    // ===== SUGGESTION FORM FUNCTIONS =====
+    function toggleSuggestionForm() {
+      const form = document.getElementById('suggestionForm');
+      const toggle = document.getElementById('suggestionToggle');
+      const success = document.getElementById('successMessage');
+      
+      if (form.classList.contains('active')) {
+        form.classList.remove('active');
+        toggle.textContent = '▼';
+        success.classList.remove('show');
+      } else {
+        form.classList.add('active');
+        toggle.textContent = '▲';
+        success.classList.remove('show');
+      }
+    }
+
+    async function submitSuggestion() {
+      const name = document.getElementById('suggestionName').value.trim();
+      const dept = document.getElementById('suggestionDept').value.trim();
+      const category = document.getElementById('suggestionCategory').value;
+      const text = document.getElementById('suggestionText').value.trim();
+
+      if (!name || !dept || !category || !text) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      const submitBtn = event.target;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      try {
+        // You can send this to your webhook or a different endpoint
+        const response = await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'suggestion',
+            name: name,
+            department: dept,
+            category: category,
+            suggestion: text,
+            timestamp: new Date().toISOString()
+          })
+        });
+
+        // Show success message
+        document.getElementById('suggestionForm').classList.remove('active');
+        document.getElementById('successMessage').classList.add('show');
+        document.getElementById('suggestionToggle').textContent = '▼';
+
+        // Clear form
+        document.getElementById('suggestionName').value = '';
+        document.getElementById('suggestionDept').value = '';
+        document.getElementById('suggestionCategory').value = '';
+        document.getElementById('suggestionText').value = '';
+
+        // Hide success message after 5 seconds
+        setTimeout(() => {
+          document.getElementById('successMessage').classList.remove('show');
+        }, 5000);
+
+      } catch (error) {
+        alert('Error submitting suggestion. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Feedback';
+      }
+    }
   </script>
 </body>
 </html>
