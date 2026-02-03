@@ -286,7 +286,8 @@
       display: none;
       align-items: flex-end;
       gap: 10px;
-      margin: 12px 0;
+      padding: 12px 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.78));
     }
 
     .typing-indicator.show {
@@ -532,17 +533,18 @@
     </div>
 
     <div class="card">
-      <div class="chat" id="chat">
-        <!-- Typing Indicator -->
-        <div class="typing-indicator" id="typingIndicator">
-          <div class="avatar">3P</div>
-          <div class="typing-bubble">
-            <span class="typing-dot"></span>
-            <span class="typing-dot"></span>
-            <span class="typing-dot"></span>
-          </div>
+      <div class="chat" id="chat"></div>
+      
+      <!-- Typing Indicator (below chat area) -->
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="avatar">3P</div>
+        <div class="typing-bubble">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
         </div>
       </div>
+      
       <div class="divider"></div>
 
       <div class="composer">
