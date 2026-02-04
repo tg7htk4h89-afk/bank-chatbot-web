@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,11 +20,7 @@
             --success: #22c55e;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
@@ -37,10 +32,7 @@
             color: var(--text);
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1000px; margin: 0 auto; }
 
         .header {
             background: rgba(255,255,255,.85);
@@ -54,17 +46,8 @@
             align-items: center;
         }
 
-        .header h1 {
-            font-size: 24px;
-            color: var(--brand);
-            margin: 0;
-        }
-
-        .header p {
-            color: var(--muted);
-            font-size: 14px;
-            margin: 4px 0 0;
-        }
+        .header h1 { font-size: 24px; color: var(--brand); margin: 0; }
+        .header p { color: var(--muted); font-size: 14px; margin: 4px 0 0; }
 
         .back-btn {
             padding: 10px 20px;
@@ -76,10 +59,7 @@
             transition: all 0.3s;
         }
 
-        .back-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(31,122,107,.3);
-        }
+        .back-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(31,122,107,.3); }
 
         .card {
             background: rgba(255,255,255,.85);
@@ -91,7 +71,6 @@
             position: relative;
         }
 
-        /* Draft Banner */
         .draft-banner {
             position: fixed;
             top: 20px;
@@ -108,11 +87,7 @@
             animation: slideIn 0.3s;
         }
 
-        .draft-banner.show {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .draft-banner.show { display: flex; align-items: center; gap: 12px; }
 
         .draft-banner button {
             background: white;
@@ -130,7 +105,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        /* Toast Notifications */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -151,67 +125,25 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        .toast.show {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .toast.show { display: flex; align-items: center; gap: 12px; }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.warning { border-left: 4px solid var(--warning); }
 
-        .toast.success {
-            border-left: 4px solid var(--success);
-        }
+        .toast-icon { font-size: 24px; }
+        .toast-content { flex: 1; }
+        .toast-title { font-weight: 600; margin-bottom: 4px; }
+        .toast-message { font-size: 13px; color: var(--muted); }
 
-        .toast.error {
-            border-left: 4px solid var(--danger);
-        }
-
-        .toast.warning {
-            border-left: 4px solid var(--warning);
-        }
-
-        .toast-icon {
-            font-size: 24px;
-        }
-
-        .toast-content {
-            flex: 1;
-        }
-
-        .toast-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .toast-message {
-            font-size: 13px;
-            color: var(--muted);
-        }
-
-        /* Field Error Messages */
-        .field-error {
-            color: var(--danger);
-            font-size: 12px;
-            margin-top: 4px;
-            display: none;
-        }
-
-        .field-error.show {
-            display: block;
-            animation: fadeIn 0.2s;
-        }
+        .field-error { color: var(--danger); font-size: 12px; margin-top: 4px; display: none; }
+        .field-error.show { display: block; animation: fadeIn 0.2s; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Mode Selection */
-        .mode-selector {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 30px;
-        }
+        .mode-selector { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 30px; }
 
         .mode-card {
             padding: 24px;
@@ -223,48 +155,16 @@
             background: white;
         }
 
-        .mode-card:hover {
-            border-color: var(--brand);
-            transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(31,122,107,.15);
-        }
+        .mode-card:hover { border-color: var(--brand); transform: translateY(-4px); box-shadow: 0 4px 12px rgba(31,122,107,.15); }
+        .mode-card.selected { border-color: var(--brand); background: var(--brand-light); }
+        .mode-card:focus { outline: 3px solid var(--brand); outline-offset: 2px; }
 
-        .mode-card.selected {
-            border-color: var(--brand);
-            background: var(--brand-light);
-        }
+        .mode-icon { font-size: 48px; margin-bottom: 12px; }
+        .mode-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+        .mode-desc { font-size: 13px; color: var(--muted); }
 
-        .mode-card:focus {
-            outline: 3px solid var(--brand);
-            outline-offset: 2px;
-        }
-
-        .mode-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .mode-name {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .mode-desc {
-            font-size: 13px;
-            color: var(--muted);
-        }
-
-        /* Search Section */
-        .search-section {
-            margin-bottom: 24px;
-        }
-
-        .search-box {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
+        .search-section { margin-bottom: 24px; }
+        .search-box { display: flex; gap: 12px; margin-bottom: 16px; }
 
         .search-input {
             flex: 1;
@@ -276,179 +176,51 @@
             transition: all 0.2s;
         }
 
-        .search-input:focus {
-            border-color: var(--brand);
-            box-shadow: 0 0 0 3px rgba(31,122,107,0.1);
-        }
+        .search-input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(31,122,107,0.1); }
 
-        .search-results {
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            background: white;
-        }
+        .search-results { max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; background: white; }
 
-        .result-item {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+        .result-item { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: all 0.2s; }
+        .result-item:last-child { border-bottom: none; }
+        .result-item:hover, .result-item:focus { background: var(--brand-light); outline: none; }
 
-        .result-item:last-child {
-            border-bottom: none;
-        }
+        .result-name { font-weight: 600; color: var(--text); margin-bottom: 4px; }
+        .result-meta { font-size: 12px; color: var(--muted); }
 
-        .result-item:hover,
-        .result-item:focus {
-            background: var(--brand-light);
-            outline: none;
-        }
+        .no-results { padding: 40px; text-align: center; color: var(--muted); }
+        .loading { padding: 20px; text-align: center; color: var(--muted); }
 
-        .result-name {
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 4px;
-        }
+        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 30px; position: relative; }
+        .step-indicator::before { content: ''; position: absolute; top: 20px; left: 0; right: 0; height: 2px; background: var(--border); z-index: 0; }
 
-        .result-meta {
-            font-size: 12px;
-            color: var(--muted);
-        }
+        .step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; position: relative; z-index: 1; cursor: pointer; }
+        .step:focus { outline: 3px solid var(--brand); outline-offset: 4px; border-radius: 8px; }
 
-        .no-results {
-            padding: 40px;
-            text-align: center;
-            color: var(--muted);
-        }
+        .step-circle { width: 40px; height: 40px; border-radius: 50%; background: var(--border); color: var(--muted); display: grid; place-items: center; font-weight: 700; transition: all 0.3s; }
+        .step.active .step-circle { background: var(--brand); color: white; box-shadow: 0 0 0 4px rgba(31,122,107,.15); }
+        .step.completed .step-circle { background: var(--success); color: white; }
 
-        .loading {
-            padding: 20px;
-            text-align: center;
-            color: var(--muted);
-        }
+        .step-label { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; }
+        .step.active .step-label { color: var(--brand); }
 
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .step-indicator::before {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--border);
-            z-index: 0;
-        }
-
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-            position: relative;
-            z-index: 1;
-            cursor: pointer;
-        }
-
-        .step:focus {
-            outline: 3px solid var(--brand);
-            outline-offset: 4px;
-            border-radius: 8px;
-        }
-
-        .step-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--border);
-            color: var(--muted);
-            display: grid;
-            place-items: center;
-            font-weight: 700;
-            transition: all 0.3s;
-        }
-
-        .step.active .step-circle {
-            background: var(--brand);
-            color: white;
-            box-shadow: 0 0 0 4px rgba(31,122,107,.15);
-        }
-
-        .step.completed .step-circle {
-            background: var(--success);
-            color: white;
-        }
-
-        .step-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--muted);
-            text-align: center;
-        }
-
-        .step.active .step-label {
-            color: var(--brand);
-        }
-
-        .form-section {
-            display: none;
-        }
-
-        .form-section.active {
-            display: block;
-            animation: fadeInSection 0.3s;
-        }
+        .form-section { display: none; }
+        .form-section.active { display: block; animation: fadeInSection 0.3s; }
 
         @keyframes fadeInSection {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .section-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--text);
-        }
+        .section-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--text); }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 20px;
-        }
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group.full { grid-column: 1 / -1; }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+        .form-label { font-size: 14px; font-weight: 600; color: var(--text); }
+        .form-label .required { color: var(--danger); }
 
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        .form-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .form-label .required {
-            color: var(--danger);
-        }
-
-        .form-input,
-        .form-select,
-        .form-textarea {
+        .form-input, .form-select, .form-textarea {
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 12px;
@@ -459,51 +231,17 @@
             transition: all 0.2s;
         }
 
-        .form-input:focus,
-        .form-select:focus,
-        .form-textarea:focus {
-            border-color: var(--brand);
-            box-shadow: 0 0 0 3px rgba(31,122,107,0.1);
-        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(31,122,107,0.1); }
+        .form-input.error, .form-select.error, .form-textarea.error { border-color: var(--danger); }
 
-        .form-input.error,
-        .form-select.error,
-        .form-textarea.error {
-            border-color: var(--danger);
-        }
+        .form-textarea { resize: vertical; min-height: 100px; }
+        .form-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-        .form-textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
+        .char-counter { font-size: 12px; color: var(--muted); text-align: right; margin-top: 4px; }
+        .char-counter.warning { color: var(--warning); }
+        .char-counter.danger { color: var(--danger); }
 
-        .form-hint {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 4px;
-        }
-
-        .char-counter {
-            font-size: 12px;
-            color: var(--muted);
-            text-align: right;
-            margin-top: 4px;
-        }
-
-        .char-counter.warning {
-            color: var(--warning);
-        }
-
-        .char-counter.danger {
-            color: var(--danger);
-        }
-
-        .button-group {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 24px;
-        }
+        .button-group { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
 
         .btn {
             padding: 12px 24px;
@@ -516,60 +254,21 @@
             position: relative;
         }
 
-        .btn-primary {
-            background: var(--brand);
-            color: white;
-        }
+        .btn-primary { background: var(--brand); color: white; }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(31,122,107,.3); }
+        .btn-primary:focus { outline: 3px solid var(--brand); outline-offset: 2px; }
 
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(31,122,107,.3);
-        }
+        .btn-secondary { background: var(--border); color: var(--text); }
+        .btn-secondary:hover:not(:disabled) { background: var(--muted); color: white; }
+        .btn-secondary:focus { outline: 3px solid var(--muted); outline-offset: 2px; }
 
-        .btn-primary:focus {
-            outline: 3px solid var(--brand);
-            outline-offset: 2px;
-        }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-warning:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(245,158,11,.3); }
 
-        .btn-secondary {
-            background: var(--border);
-            color: var(--text);
-        }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(239,68,68,.3); }
 
-        .btn-secondary:hover:not(:disabled) {
-            background: var(--muted);
-            color: white;
-        }
-
-        .btn-secondary:focus {
-            outline: 3px solid var(--muted);
-            outline-offset: 2px;
-        }
-
-        .btn-warning {
-            background: var(--warning);
-            color: white;
-        }
-
-        .btn-warning:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(245,158,11,.3);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-danger:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(239,68,68,.3);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .btn.loading::after {
             content: '';
@@ -585,16 +284,9 @@
             animation: spin 0.6s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: translateY(-50%) rotate(360deg); }
-        }
+        @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
 
-        .type-selector {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 30px;
-        }
+        .type-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 30px; }
 
         .type-card {
             padding: 24px;
@@ -606,95 +298,26 @@
             background: white;
         }
 
-        .type-card:hover {
-            border-color: var(--brand);
-            transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(31,122,107,.15);
-        }
+        .type-card:hover { border-color: var(--brand); transform: translateY(-4px); box-shadow: 0 4px 12px rgba(31,122,107,.15); }
+        .type-card.selected { border-color: var(--brand); background: var(--brand-light); }
+        .type-card:focus { outline: 3px solid var(--brand); outline-offset: 2px; }
 
-        .type-card.selected {
-            border-color: var(--brand);
-            background: var(--brand-light);
-        }
+        .type-icon { font-size: 40px; margin-bottom: 12px; }
+        .type-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .type-desc { font-size: 12px; color: var(--muted); }
 
-        .type-card:focus {
-            outline: 3px solid var(--brand);
-            outline-offset: 2px;
-        }
+        .success-message { display: none; text-align: center; padding: 40px; }
+        .success-message.show { display: block; }
 
-        .type-icon {
-            font-size: 40px;
-            margin-bottom: 12px;
-        }
+        .success-icon { font-size: 60px; margin-bottom: 20px; }
+        .success-title { font-size: 24px; font-weight: 700; color: var(--brand); margin-bottom: 12px; }
+        .success-text { color: var(--muted); margin-bottom: 24px; }
 
-        .type-name {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
+        .edit-badge { display: inline-block; background: var(--warning); color: white; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-left: 12px; }
 
-        .type-desc {
-            font-size: 12px;
-            color: var(--muted);
-        }
+        .progress-bar { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 9999; }
+        .progress-fill { height: 100%; background: var(--brand); width: 0%; transition: width 0.3s; }
 
-        .success-message {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .success-message.show {
-            display: block;
-        }
-
-        .success-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-        }
-
-        .success-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--brand);
-            margin-bottom: 12px;
-        }
-
-        .success-text {
-            color: var(--muted);
-            margin-bottom: 24px;
-        }
-
-        .edit-badge {
-            display: inline-block;
-            background: var(--warning);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: 12px;
-        }
-
-        /* Progress Bar */
-        .progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--border);
-            z-index: 9999;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--brand);
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        /* Skip Link for Accessibility */
         .skip-link {
             position: absolute;
             top: -40px;
@@ -706,33 +329,16 @@
             border-radius: 0 0 8px 0;
             z-index: 10000;
         }
-
-        .skip-link:focus {
-            top: 0;
-        }
+        .skip-link:focus { top: 0; }
 
         @media (max-width: 768px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            .type-selector {
-                grid-template-columns: 1fr;
-            }
-            .mode-selector {
-                grid-template-columns: 1fr;
-            }
-            .step-label {
-                font-size: 10px;
-            }
-            .draft-banner {
-                top: 10px;
-                right: 10px;
-                left: 10px;
-                font-size: 12px;
-            }
+            .form-grid { grid-template-columns: 1fr; }
+            .type-selector { grid-template-columns: 1fr; }
+            .mode-selector { grid-template-columns: 1fr; }
+            .step-label { font-size: 10px; }
+            .draft-banner { top: 10px; right: 10px; left: 10px; font-size: 12px; }
         }
 
-        /* Screen reader only */
         .sr-only {
             position: absolute;
             width: 1px;
@@ -747,22 +353,18 @@
     </style>
 </head>
 <body>
-    <!-- Skip Link for Accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <!-- Progress Bar -->
     <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
         <div class="progress-fill" id="progressFill"></div>
     </div>
 
-    <!-- Draft Banner -->
     <div class="draft-banner" id="draftBanner" role="alert">
         <span>💾 Draft saved</span>
         <button onclick="loadDraft()" aria-label="Continue from saved draft">Continue</button>
         <button onclick="clearDraft()" aria-label="Discard saved draft">Discard</button>
     </div>
 
-    <!-- Toast Notification -->
     <div class="toast" id="toast" role="alert" aria-live="polite" aria-atomic="true">
         <div class="toast-icon" id="toastIcon"></div>
         <div class="toast-content">
@@ -781,13 +383,12 @@
         </div>
 
         <div class="card" id="main-content">
-            <!-- Mode Selection (Step 0) -->
             <div class="form-section active" data-section="0">
                 <h2 class="section-title">Choose Action</h2>
                 <div class="mode-selector" role="group" aria-label="Action selection">
-                    <div class="mode-card" 
-                         onclick="selectMode('add')" 
-                         tabindex="0" 
+                    <div class="mode-card"
+                         onclick="selectMode('add')"
+                         tabindex="0"
                          role="button"
                          aria-pressed="false"
                          onkeypress="handleKeyPress(event, () => selectMode('add'))">
@@ -795,9 +396,9 @@
                         <div class="mode-name">Add New Item</div>
                         <div class="mode-desc">Create a new product, procedure, or policy</div>
                     </div>
-                    <div class="mode-card" 
-                         onclick="selectMode('edit')" 
-                         tabindex="0" 
+                    <div class="mode-card"
+                         onclick="selectMode('edit')"
+                         tabindex="0"
                          role="button"
                          aria-pressed="false"
                          onkeypress="handleKeyPress(event, () => selectMode('edit'))">
@@ -811,14 +412,13 @@
                 </div>
             </div>
 
-            <!-- Search Section -->
             <div class="form-section" data-section="search">
                 <h2 class="section-title">Search Knowledge Base</h2>
                 <div class="search-section">
                     <div class="search-box">
-                        <input type="text" 
-                               class="search-input" 
-                               id="searchInput" 
+                        <input type="text"
+                               class="search-input"
+                               id="searchInput"
                                placeholder="Search by name, keywords, or description..."
                                onkeyup="handleSearch(event)"
                                aria-label="Search knowledge base">
@@ -831,7 +431,6 @@
                 </div>
             </div>
 
-            <!-- Step Indicator -->
             <div class="step-indicator" id="stepIndicator" style="display: none;" role="navigation" aria-label="Form progress">
                 <div class="step active" data-step="1" tabindex="0" role="button" aria-label="Step 1: Select Type">
                     <div class="step-circle" aria-hidden="true">1</div>
@@ -851,12 +450,11 @@
                 </div>
             </div>
 
-            <!-- Step 1: Type Selection -->
             <div class="form-section" data-section="1">
                 <h2 class="section-title">What would you like to add?</h2>
                 <div class="type-selector" role="group" aria-label="Content type selection">
-                    <div class="type-card" 
-                         onclick="selectType('product')" 
+                    <div class="type-card"
+                         onclick="selectType('product')"
                          tabindex="0"
                          role="button"
                          aria-pressed="false"
@@ -865,8 +463,8 @@
                         <div class="type-name">Product</div>
                         <div class="type-desc">Banking products, cards, accounts</div>
                     </div>
-                    <div class="type-card" 
-                         onclick="selectType('procedure')" 
+                    <div class="type-card"
+                         onclick="selectType('procedure')"
                          tabindex="0"
                          role="button"
                          aria-pressed="false"
@@ -875,8 +473,8 @@
                         <div class="type-name">Procedure</div>
                         <div class="type-desc">Step-by-step processes</div>
                     </div>
-                    <div class="type-card" 
-                         onclick="selectType('policy')" 
+                    <div class="type-card"
+                         onclick="selectType('policy')"
                          tabindex="0"
                          role="button"
                          aria-pressed="false"
@@ -892,7 +490,6 @@
                 </div>
             </div>
 
-            <!-- Step 2: Basic Info -->
             <div class="form-section" data-section="2">
                 <h2 class="section-title">Basic Information<span id="editModeBadge"></span></h2>
                 <div id="basicInfoForm"></div>
@@ -902,7 +499,6 @@
                 </div>
             </div>
 
-            <!-- Step 3: Detailed Info -->
             <div class="form-section" data-section="3">
                 <h2 class="section-title">Detailed Information<span id="editModeBadge2"></span></h2>
                 <div id="detailsForm"></div>
@@ -912,7 +508,6 @@
                 </div>
             </div>
 
-            <!-- Step 4: Review -->
             <div class="form-section" data-section="4">
                 <h2 class="section-title">Review & Submit</h2>
                 <div id="reviewContent"></div>
@@ -922,7 +517,6 @@
                 </div>
             </div>
 
-            <!-- Success Message -->
             <div class="success-message" id="successMessage" role="alert">
                 <div class="success-icon" aria-hidden="true">✅</div>
                 <div class="success-title" id="successTitle">Successfully Added!</div>
@@ -948,6 +542,27 @@
         const DRAFT_KEY = 'chat3pt_kb_draft';
         const AUTOSAVE_INTERVAL = 5000; // 5 seconds
         let autosaveTimer = null;
+
+        // ---- Added: Safe webhook caller (Safari/CORS friendly)
+        const WEBHOOK_URL_CLEAN = (WEBHOOK_URL || '').trim();
+
+        async function callN8N(payload) {
+            const res = await fetch(WEBHOOK_URL_CLEAN, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            const raw = await res.text();
+            let data;
+            try { data = JSON.parse(raw); } catch { data = { raw }; }
+
+            if (!res.ok) {
+                throw new Error(data?.message || `Request failed (${res.status})`);
+            }
+            return data;
+        }
 
         // Form templates
         const formTemplates = {
@@ -1003,10 +618,6 @@
             }
         };
 
-        // ============================================
-        // INITIALIZATION & DRAFT MANAGEMENT
-        // ============================================
-
         window.addEventListener('load', () => {
             checkForDraft();
             setupKeyboardNavigation();
@@ -1018,8 +629,6 @@
                 try {
                     const parsed = JSON.parse(draft);
                     const age = Date.now() - parsed.timestamp;
-                    
-                    // Show draft banner if less than 24 hours old
                     if (age < 24 * 60 * 60 * 1000) {
                         document.getElementById('draftBanner').classList.add('show');
                     } else {
@@ -1051,7 +660,7 @@
 
             try {
                 const parsed = JSON.parse(draft);
-                
+
                 selectedMode = parsed.mode;
                 selectedType = parsed.type;
                 formData = parsed.data;
@@ -1067,9 +676,7 @@
                 generateBasicForm();
                 generateDetailsForm();
 
-                setTimeout(() => {
-                    populateFormsWithData();
-                }, 100);
+                setTimeout(() => { populateFormsWithData(); }, 100);
 
                 currentStep = parsed.step;
                 document.getElementById('stepIndicator').style.display = 'flex';
@@ -1100,15 +707,8 @@
         }
 
         function stopAutosave() {
-            if (autosaveTimer) {
-                clearInterval(autosaveTimer);
-                autosaveTimer = null;
-            }
+            if (autosaveTimer) { clearInterval(autosaveTimer); autosaveTimer = null; }
         }
-
-        // ============================================
-        // TOAST NOTIFICATIONS
-        // ============================================
 
         function showToast(type, title, message) {
             const toast = document.getElementById('toast');
@@ -1117,25 +717,14 @@
             const toastMessage = document.getElementById('toastMessage');
 
             toast.className = 'toast show ' + type;
-            
-            const icons = {
-                success: '✅',
-                error: '❌',
-                warning: '⚠️'
-            };
-            
+
+            const icons = { success: '✅', error: '❌', warning: '⚠️' };
             toastIcon.textContent = icons[type] || '📢';
             toastTitle.textContent = title;
             toastMessage.textContent = message;
 
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 4000);
+            setTimeout(() => { toast.classList.remove('show'); }, 4000);
         }
-
-        // ============================================
-        // PROGRESS BAR
-        // ============================================
 
         function updateProgress() {
             const totalSteps = 4;
@@ -1143,10 +732,6 @@
             document.getElementById('progressFill').style.width = progress + '%';
             document.querySelector('.progress-bar').setAttribute('aria-valuenow', progress);
         }
-
-        // ============================================
-        // KEYBOARD NAVIGATION & ACCESSIBILITY
-        // ============================================
 
         function handleKeyPress(event, callback) {
             if (event.key === 'Enter' || event.key === ' ') {
@@ -1156,14 +741,11 @@
         }
 
         function setupKeyboardNavigation() {
-            // Allow keyboard navigation in step indicator
             document.addEventListener('keydown', (e) => {
                 if (e.target.classList.contains('step') && (e.key === 'Enter' || e.key === ' ')) {
                     e.preventDefault();
                     const stepNum = parseInt(e.target.getAttribute('data-step'));
-                    if (stepNum < currentStep) {
-                        jumpToStep(stepNum);
-                    }
+                    if (stepNum < currentStep) { jumpToStep(stepNum); }
                 }
             });
         }
@@ -1175,39 +757,29 @@
                 updateStepIndicator();
                 showSection(currentStep);
                 updateProgress();
-                
-                // Repopulate form
                 setTimeout(() => populateFormsWithData(), 50);
             }
         }
-
-        // ============================================
-        // FORM VALIDATION
-        // ============================================
 
         function validateField(input, field) {
             let isValid = true;
             let errorMessage = '';
 
-            // Required validation
             if (field.required && !input.value.trim()) {
                 isValid = false;
                 errorMessage = `${field.label} is required`;
             }
 
-            // Max length validation
             if (field.maxLength && input.value.length > field.maxLength) {
                 isValid = false;
                 errorMessage = `${field.label} must be less than ${field.maxLength} characters`;
             }
 
-            // Email validation (if needed)
             if (field.type === 'email' && input.value && !isValidEmail(input.value)) {
                 isValid = false;
                 errorMessage = 'Please enter a valid email address';
             }
 
-            // Update UI
             const errorDiv = input.parentElement.querySelector('.field-error');
             if (errorDiv) {
                 if (!isValid) {
@@ -1227,11 +799,8 @@
             return isValid;
         }
 
-        function isValidEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        }
+        function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
 
-        // Auto-clear validation errors
         document.addEventListener('input', (e) => {
             if (e.target.matches('.form-input, .form-select, .form-textarea')) {
                 const errorDiv = e.target.parentElement.querySelector('.field-error');
@@ -1240,11 +809,7 @@
                     e.target.classList.remove('error');
                     e.target.removeAttribute('aria-invalid');
                 }
-
-                // Update character counter
                 updateCharCounter(e.target);
-                
-                // Autosave
                 collectCurrentFormData();
                 saveDraft();
             }
@@ -1256,24 +821,14 @@
                 const maxLength = parseInt(input.getAttribute('maxlength')) || 0;
                 const currentLength = input.value.length;
                 counter.textContent = `${currentLength} / ${maxLength}`;
-                
-                if (currentLength > maxLength * 0.9) {
-                    counter.classList.add('warning');
-                } else {
-                    counter.classList.remove('warning');
-                }
-                
-                if (currentLength >= maxLength) {
-                    counter.classList.add('danger');
-                } else {
-                    counter.classList.remove('danger');
-                }
+
+                if (currentLength > maxLength * 0.9) counter.classList.add('warning');
+                else counter.classList.remove('warning');
+
+                if (currentLength >= maxLength) counter.classList.add('danger');
+                else counter.classList.remove('danger');
             }
         }
-
-        // ============================================
-        // MODE SELECTION
-        // ============================================
 
         function selectMode(mode) {
             selectedMode = mode;
@@ -1284,12 +839,9 @@
             event.target.closest('.mode-card').classList.add('selected');
             event.target.closest('.mode-card').setAttribute('aria-pressed', 'true');
             document.getElementById('modeNext').disabled = false;
-            
-            if (mode === 'add') {
-                document.getElementById('headerSubtitle').textContent = 'Add new items to Chat3PT database';
-            } else {
-                document.getElementById('headerSubtitle').textContent = 'Edit existing items in Chat3PT database';
-            }
+
+            if (mode === 'add') document.getElementById('headerSubtitle').textContent = 'Add new items to Chat3PT database';
+            else document.getElementById('headerSubtitle').textContent = 'Edit existing items in Chat3PT database';
 
             startAutosave();
         }
@@ -1310,7 +862,7 @@
         function backToMode() {
             collectCurrentFormData();
             saveDraft();
-            
+
             currentStep = 0;
             selectedMode = null;
             document.getElementById('modeNext').disabled = true;
@@ -1323,9 +875,9 @@
             updateProgress();
         }
 
-        // ============================================
+        // =========================
         // SEARCH FUNCTIONALITY
-        // ============================================
+        // =========================
 
         async function loadAllItems() {
             const resultsDiv = document.getElementById('searchResults');
@@ -1333,55 +885,30 @@
             resultsDiv.style.display = 'block';
 
             try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'get_all' })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    allKBItems = data.items || [];
-                    displaySearchResults(allKBItems);
-                } else {
-                    resultsDiv.innerHTML = '<div class="no-results">Error loading items. Please try again.</div>';
-                    showToast('error', 'Load Failed', 'Could not load knowledge base items');
-                }
+                const data = await callN8N({ action: 'get_all' });
+                allKBItems = data.items || [];
+                displaySearchResults(allKBItems);
             } catch (error) {
                 resultsDiv.innerHTML = '<div class="no-results">Error: ' + error.message + '</div>';
                 showToast('error', 'Network Error', error.message);
             }
         }
 
-        function handleSearch(event) {
-            if (event.key === 'Enter') {
-                performSearch();
-            }
-        }
+        function handleSearch(event) { if (event.key === 'Enter') performSearch(); }
 
         function performSearch() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            
-            if (!query) {
-                displaySearchResults(allKBItems);
-                return;
-            }
+            if (!query) { displaySearchResults(allKBItems); return; }
 
-            const filtered = allKBItems.filter(item => {
-                const searchText = JSON.stringify(item).toLowerCase();
-                return searchText.includes(query);
-            });
-
+            const filtered = allKBItems.filter(item => JSON.stringify(item).toLowerCase().includes(query));
             displaySearchResults(filtered);
-            
-            if (filtered.length === 0) {
-                showToast('warning', 'No Results', 'No items match your search');
-            }
+
+            if (filtered.length === 0) showToast('warning', 'No Results', 'No items match your search');
         }
 
         function displaySearchResults(items) {
             const resultsDiv = document.getElementById('searchResults');
-            
+
             if (items.length === 0) {
                 resultsDiv.innerHTML = '<div class="no-results">No items found. Try a different search term.</div>';
                 return;
@@ -1392,9 +919,9 @@
                 const name = item.product_name || item.procedure_name || item.policy_name || 'Unknown Item';
                 const type = item.type || (item.product_name ? 'product' : item.procedure_name ? 'procedure' : 'policy');
                 const status = item.status || 'N/A';
-                
+
                 html += `
-                    <div class="result-item" 
+                    <div class="result-item"
                          onclick="selectItemForEdit(${index})"
                          tabindex="0"
                          role="option"
@@ -1406,7 +933,7 @@
                 `;
             });
             html += '</div>';
-            
+
             resultsDiv.innerHTML = html;
             resultsDiv.style.display = 'block';
         }
@@ -1414,26 +941,24 @@
         function selectItemForEdit(index) {
             const item = allKBItems[index];
             editingItemId = item.id || item.row_number;
-            
+
             if (item.product_name) selectedType = 'product';
             else if (item.procedure_name) selectedType = 'procedure';
             else if (item.policy_name) selectedType = 'policy';
-            
+
             formData = { ...item };
-            
+
             generateBasicForm();
             generateDetailsForm();
-            
-            setTimeout(() => {
-                populateFormsWithData();
-            }, 100);
-            
+
+            setTimeout(() => { populateFormsWithData(); }, 100);
+
             document.getElementById('editModeBadge').innerHTML = '<span class="edit-badge">EDITING</span>';
             document.getElementById('editModeBadge2').innerHTML = '<span class="edit-badge">EDITING</span>';
-            
+
             document.getElementById('submitBtn').textContent = 'Update ✓';
             document.getElementById('submitBtn').className = 'btn btn-warning';
-            
+
             document.getElementById('stepIndicator').style.display = 'flex';
             currentStep = 2;
             updateStepIndicator();
@@ -1444,10 +969,6 @@
             startAutosave();
         }
 
-        // ============================================
-        // TYPE SELECTION
-        // ============================================
-
         function selectType(type) {
             selectedType = type;
             document.querySelectorAll('.type-card').forEach(card => {
@@ -1457,50 +978,46 @@
             event.target.closest('.type-card').classList.add('selected');
             event.target.closest('.type-card').setAttribute('aria-pressed', 'true');
             document.getElementById('step1Next').disabled = false;
-            
+
             generateBasicForm();
             generateDetailsForm();
         }
 
-        // ============================================
-        // FORM GENERATION
-        // ============================================
-
         function generateForm(fields, containerId) {
             const container = document.getElementById(containerId);
-            container.innerHTML = '<div class="form-grid">' + fields.map((field, idx) => {
+            container.innerHTML = '<div class="form-grid">' + fields.map((field) => {
                 const errorId = `error-${field.name}`;
                 const counterId = `counter-${field.name}`;
-                
+
                 return `
                 <div class="form-group ${field.full ? 'full' : ''}">
                     <label class="form-label" for="${field.name}">
                         ${field.label}
                         ${field.required ? '<span class="required" aria-label="required">*</span>' : ''}
                     </label>
-                    ${field.type === 'textarea' ? 
-                        `<textarea 
-                            class="form-textarea" 
-                            name="${field.name}" 
+                    ${field.type === 'textarea' ?
+                        `<textarea
+                            class="form-textarea"
+                            name="${field.name}"
                             id="${field.name}"
                             ${field.required ? 'required aria-required="true"' : ''}
                             ${field.maxLength ? 'maxlength="' + field.maxLength + '"' : ''}
                             aria-label="${field.label}"
                             ></textarea>` :
                     field.type === 'select' ?
-                        `<select 
-                            class="form-select" 
-                            name="${field.name}" 
+                        `<select
+                            class="form-select"
+                            name="${field.name}"
                             id="${field.name}"
                             ${field.required ? 'required aria-required="true"' : ''}
                             aria-label="${field.label}">
                             <option value="">Select ${field.label}</option>
                             ${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
                         </select>` :
-                        `<input 
-                            type="${field.type}" 
-                            class="form-input" 
-                            name="${field.name}" 
+                        `<input
+                            type="${field.type}"
+                            class="form-input"
+                            name="${field.name}"
                             id="${field.name}"
                             ${field.required ? 'required aria-required="true"' : ''}
                             ${field.maxLength ? 'maxlength="' + field.maxLength + '"' : ''}
@@ -1508,24 +1025,15 @@
                             >`
                     }
                     ${field.hint ? `<div class="form-hint">${field.hint}</div>` : ''}
-                    ${field.maxLength && (field.type === 'textarea' || field.type === 'text') ? 
+                    ${field.maxLength && (field.type === 'textarea' || field.type === 'text') ?
                         `<div class="char-counter" id="${counterId}" aria-live="polite">0 / ${field.maxLength}</div>` : ''}
                     <div class="field-error" id="${errorId}" role="alert"></div>
                 </div>
             `}).join('') + '</div>';
         }
 
-        function generateBasicForm() {
-            if (selectedType && formTemplates[selectedType]) {
-                generateForm(formTemplates[selectedType].basic, 'basicInfoForm');
-            }
-        }
-
-        function generateDetailsForm() {
-            if (selectedType && formTemplates[selectedType]) {
-                generateForm(formTemplates[selectedType].details, 'detailsForm');
-            }
-        }
+        function generateBasicForm() { if (selectedType && formTemplates[selectedType]) generateForm(formTemplates[selectedType].basic, 'basicInfoForm'); }
+        function generateDetailsForm() { if (selectedType && formTemplates[selectedType]) generateForm(formTemplates[selectedType].details, 'detailsForm'); }
 
         function populateFormsWithData() {
             for (const [key, value] of Object.entries(formData)) {
@@ -1537,85 +1045,55 @@
             }
         }
 
-        // ============================================
-        // FORM DATA COLLECTION (CRITICAL FIX)
-        // ============================================
-
         function collectCurrentFormData() {
             const currentSection = document.querySelector(`.form-section[data-section="${currentStep}"]`);
             if (!currentSection) return;
 
             const allInputs = currentSection.querySelectorAll('input, select, textarea');
-            
             allInputs.forEach(input => {
-                if (input.value.trim()) {
-                    formData[input.name] = input.value.trim();
-                }
+                if (input.value.trim()) formData[input.name] = input.value.trim();
             });
         }
 
-        // ============================================
-        // STEP NAVIGATION
-        // ============================================
-
         function nextStep() {
-            // CRITICAL: Collect data FIRST before validation
             collectCurrentFormData();
 
-            // Get current template to validate against
             const currentSection = document.querySelector(`.form-section[data-section="${currentStep}"]`);
             let templateFields = [];
-            
-            if (currentStep === 2 && selectedType && formTemplates[selectedType]) {
-                templateFields = formTemplates[selectedType].basic;
-            } else if (currentStep === 3 && selectedType && formTemplates[selectedType]) {
-                templateFields = formTemplates[selectedType].details;
-            }
 
-            // Validate required fields
+            if (currentStep === 2 && selectedType && formTemplates[selectedType]) templateFields = formTemplates[selectedType].basic;
+            else if (currentStep === 3 && selectedType && formTemplates[selectedType]) templateFields = formTemplates[selectedType].details;
+
             let isValid = true;
             const requiredInputs = currentSection.querySelectorAll('input[required], select[required], textarea[required]');
-
             requiredInputs.forEach(input => {
                 const field = templateFields.find(f => f.name === input.name);
-                if (field && !validateField(input, field)) {
-                    isValid = false;
-                }
+                if (field && !validateField(input, field)) isValid = false;
             });
 
             if (!isValid) {
                 showToast('error', 'Validation Error', 'Please fill in all required fields correctly');
-                // Focus first error
                 const firstError = currentSection.querySelector('.form-input.error, .form-select.error, .form-textarea.error');
                 if (firstError) firstError.focus();
                 return;
             }
 
-            // Save to localStorage
             saveDraft();
 
-            // Show review on last step
-            if (currentStep === 3) {
-                generateReview();
-            }
+            if (currentStep === 3) generateReview();
 
-            // Move to next step
             currentStep++;
             updateStepIndicator();
             showSection(currentStep);
             updateProgress();
 
-            // Announce to screen readers
-            const stepName = currentStep === 2 ? 'Basic Information' : 
-                           currentStep === 3 ? 'Details' : 
+            const stepName = currentStep === 2 ? 'Basic Information' :
+                           currentStep === 3 ? 'Details' :
                            currentStep === 4 ? 'Review' : '';
-            if (stepName) {
-                announceToScreenReader(`Now on ${stepName} step`);
-            }
+            if (stepName) announceToScreenReader(`Now on ${stepName} step`);
         }
 
         function prevStep() {
-            // Save current data before going back
             collectCurrentFormData();
             saveDraft();
 
@@ -1623,11 +1101,8 @@
             updateStepIndicator();
             showSection(currentStep);
             updateProgress();
-            
-            // Repopulate the previous step's form
-            setTimeout(() => {
-                populateFormsWithData();
-            }, 50);
+
+            setTimeout(() => { populateFormsWithData(); }, 50);
         }
 
         function updateStepIndicator() {
@@ -1649,14 +1124,10 @@
         }
 
         function showSection(step) {
-            document.querySelectorAll('.form-section').forEach(section => {
-                section.classList.remove('active');
-            });
+            document.querySelectorAll('.form-section').forEach(section => section.classList.remove('active'));
             const targetSection = document.querySelector(`.form-section[data-section="${step}"]`);
             if (targetSection) {
                 targetSection.classList.add('active');
-                
-                // Focus first input in section
                 setTimeout(() => {
                     const firstInput = targetSection.querySelector('input, select, textarea, button');
                     if (firstInput) firstInput.focus();
@@ -1668,13 +1139,13 @@
             const reviewContent = document.getElementById('reviewContent');
             let html = '<div style="background: var(--brand-light); padding: 20px; border-radius: 12px;">';
             html += `<div style="margin-bottom: 20px;"><strong>Type:</strong> ${selectedType.toUpperCase()}</div>`;
-            
+
             if (selectedMode === 'edit') {
                 html += `<div style="margin-bottom: 20px; padding: 12px; background: var(--warning); color: white; border-radius: 8px; font-weight: 600;">
                     ⚠️ EDITING MODE - This will update the existing item
                 </div>`;
             }
-            
+
             for (const [key, value] of Object.entries(formData)) {
                 if (value && !['id', 'row_number', 'type', 'owner', 'last_updated'].includes(key)) {
                     html += `<div style="margin-bottom: 12px;">
@@ -1687,14 +1158,10 @@
             reviewContent.innerHTML = html;
         }
 
-        // ============================================
-        // FORM SUBMISSION
-        // ============================================
-
         async function submitForm() {
             const submitBtn = document.getElementById('submitBtn');
             const originalText = submitBtn.textContent;
-            
+
             submitBtn.disabled = true;
             submitBtn.classList.add('loading');
             submitBtn.textContent = selectedMode === 'edit' ? 'Updating...' : 'Submitting...';
@@ -1714,38 +1181,25 @@
                     submitData.id = editingItemId;
                 }
 
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(submitData)
-                });
+                await callN8N(submitData);
 
-                if (response.ok) {
-                    // Clear draft
-                    localStorage.removeItem(DRAFT_KEY);
-                    stopAutosave();
+                localStorage.removeItem(DRAFT_KEY);
+                stopAutosave();
 
-                    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-                    document.getElementById('stepIndicator').style.display = 'none';
-                    
-                    if (selectedMode === 'edit') {
-                        document.getElementById('successTitle').textContent = 'Successfully Updated!';
-                        document.getElementById('successText').textContent = 'Your item has been updated in the knowledge base';
-                    } else {
-                        document.getElementById('successTitle').textContent = 'Successfully Added!';
-                        document.getElementById('successText').textContent = 'Your item has been added to the knowledge base';
-                    }
-                    
-                    document.getElementById('successMessage').classList.add('show');
-                    announceToScreenReader('Form submitted successfully');
-                    
+                document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('stepIndicator').style.display = 'none';
+
+                if (selectedMode === 'edit') {
+                    document.getElementById('successTitle').textContent = 'Successfully Updated!';
+                    document.getElementById('successText').textContent = 'Your item has been updated in the knowledge base';
                 } else {
-                    const errorData = await response.json().catch(() => ({}));
-                    showToast('error', 'Submission Failed', errorData.message || 'Please try again');
-                    submitBtn.disabled = false;
-                    submitBtn.classList.remove('loading');
-                    submitBtn.textContent = originalText;
+                    document.getElementById('successTitle').textContent = 'Successfully Added!';
+                    document.getElementById('successText').textContent = 'Your item has been added to the knowledge base';
                 }
+
+                document.getElementById('successMessage').classList.add('show');
+                announceToScreenReader('Form submitted successfully');
+
             } catch (error) {
                 showToast('error', 'Network Error', error.message);
                 submitBtn.disabled = false;
@@ -1754,10 +1208,6 @@
             }
         }
 
-        // ============================================
-        // RESET FORM
-        // ============================================
-
         function resetForm() {
             currentStep = 0;
             selectedMode = null;
@@ -1765,10 +1215,10 @@
             formData = {};
             editingItemId = null;
             validationErrors = {};
-            
+
             stopAutosave();
             localStorage.removeItem(DRAFT_KEY);
-            
+
             document.getElementById('successMessage').classList.remove('show');
             document.querySelectorAll('.type-card').forEach(card => {
                 card.classList.remove('selected');
@@ -1787,15 +1237,11 @@
             document.getElementById('submitBtn').textContent = 'Submit ✓';
             document.getElementById('submitBtn').className = 'btn btn-primary';
             document.getElementById('headerSubtitle').textContent = 'Manage Chat3PT database';
-            
+
             updateStepIndicator();
             showSection(0);
             updateProgress();
         }
-
-        // ============================================
-        // ACCESSIBILITY HELPERS
-        // ============================================
 
         function announceToScreenReader(message) {
             const announcement = document.createElement('div');
@@ -1804,10 +1250,8 @@
             announcement.className = 'sr-only';
             announcement.textContent = message;
             document.body.appendChild(announcement);
-            
-            setTimeout(() => {
-                document.body.removeChild(announcement);
-            }, 1000);
+
+            setTimeout(() => { document.body.removeChild(announcement); }, 1000);
         }
     </script>
 </body>
