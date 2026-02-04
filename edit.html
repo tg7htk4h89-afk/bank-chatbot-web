@@ -1124,16 +1124,21 @@ html lang="en">
         }
 
         function showSection(step) {
-            document.querySelectorAll('.form-section').forEach(section => section.classList.remove('active'));
-            const targetSection = document.querySelector(`.form-section[data-section="${step}"]`);
-            if (targetSection) {
-                targetSection.classList.add('active');
-                setTimeout(() => {
-                    const firstInput = targetSection.querySelector('input, select, textarea, button');
-                    if (firstInput) firstInput.focus();
-                }, 100);
-            }
-        }
+  document.querySelectorAll('.form-section').forEach(section => {
+    section.classList.remove('active');
+  });
+
+  const targetSection = document.querySelector(`.form-section[data-section="${step}"]`);
+  if (targetSection) {
+    targetSection.classList.add('active');
+  }
+
+  // ✅ FIX: auto-load KB for search
+  if (step === 'search' && allKBItems.length === 0) {
+    loadAllItems();
+  }
+}
+
 
         function generateReview() {
             const reviewContent = document.getElementById('reviewContent');
