@@ -35,7 +35,6 @@
             color: var(--text-primary);
             padding: 20px;
             position: relative;
-            overflow: hidden;
         }
 
         /* Subtle background decoration */
@@ -63,9 +62,16 @@
             animation: float 20s ease-in-out infinite reverse;
         }
 
+        @media (max-width: 768px) {
+            body::before,
+            body::after {
+                display: none;
+            }
+        }
+
         .container {
             text-align: center;
-            padding: 40px 20px;
+            padding: 20px 10px;
             width: 100%;
             max-width: 900px;
             animation: fadeInUp 0.8s ease-out forwards;
@@ -75,7 +81,7 @@
 
         /* Logo Section - No frame, centered */
         .logo-section {
-            margin-bottom: 50px;
+            margin-bottom: 40px;
             animation: fadeIn 1s ease-out;
         }
 
@@ -244,31 +250,42 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            body {
+                padding: 15px;
+                align-items: flex-start;
+                padding-top: 30px;
+            }
+
             .container {
-                padding: 30px 15px;
+                padding: 20px 10px;
             }
 
             .logo-image {
-                max-width: 350px;
+                max-width: 320px;
+            }
+
+            .logo-section {
+                margin-bottom: 30px;
             }
 
             .card-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
+                padding: 10px 0;
             }
 
             .role-card {
-                padding: 35px 25px;
+                padding: 30px 20px;
             }
 
             .icon-circle {
-                width: 80px;
-                height: 80px;
-                font-size: 36px;
+                width: 75px;
+                height: 75px;
+                font-size: 34px;
             }
 
             .card-title {
-                font-size: 1.35rem;
+                font-size: 1.3rem;
             }
 
             .card-description {
@@ -277,16 +294,64 @@
         }
 
         @media (max-width: 480px) {
+            body {
+                padding: 10px;
+                padding-top: 20px;
+            }
+
+            .container {
+                padding: 15px 5px;
+            }
+
             .logo-image {
-                max-width: 280px;
+                max-width: 260px;
             }
 
             .logo-section {
-                margin-bottom: 35px;
+                margin-bottom: 25px;
             }
 
             .card-grid {
-                padding: 10px 0;
+                gap: 15px;
+                padding: 5px 0;
+            }
+
+            .role-card {
+                padding: 25px 20px;
+            }
+
+            .icon-circle {
+                width: 70px;
+                height: 70px;
+                font-size: 32px;
+            }
+
+            .card-title {
+                font-size: 1.2rem;
+            }
+
+            .card-description {
+                font-size: 0.9rem;
+                max-width: 240px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            body {
+                padding: 8px;
+            }
+
+            .logo-image {
+                max-width: 220px;
+            }
+
+            .role-card {
+                padding: 20px 15px;
+            }
+
+            .card-description {
+                font-size: 0.85rem;
+                max-width: 200px;
             }
         }
     </style>
