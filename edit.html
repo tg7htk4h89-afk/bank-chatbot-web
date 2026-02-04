@@ -1,1262 +1,940 @@
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat3PT - Knowledge Base Editor</title>
-    <style>
-        :root {
-            --bg1: #e8f1f6;
-            --bg2: #eef2ff;
-            --card: #ffffff;
-            --text: #0f172a;
-            --muted: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 14px 40px rgba(2, 6, 23, .10);
-            --brand: #1f7a6b;
-            --brand-light: rgba(31, 122, 107, 0.1);
-            --brand2: #0ea5e9;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --success: #22c55e;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chat3PT</title>
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+  <style>
+    :root{
+      --bg1:#e8f1f6;
+      --bg2:#eef2ff;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#e2e8f0;
+      --shadow: 0 14px 40px rgba(2, 6, 23, .10);
+      --brand:#1f7a6b; /* Chat3P green */
+      --brand2:#0ea5e9;
+      --bot:#f1f5f9;
+    }
 
-        body {
-            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-            background: radial-gradient(900px 500px at 20% 10%, rgba(14,165,233,.12), transparent 60%),
-                        radial-gradient(900px 500px at 80% 15%, rgba(31,122,107,.14), transparent 55%),
-                        linear-gradient(180deg, var(--bg1), var(--bg2));
-            min-height: 100vh;
-            padding: 20px;
-            color: var(--text);
-        }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      min-height:100vh;
+      background: radial-gradient(900px 500px at 20% 10%, rgba(14,165,233,.12), transparent 60%),
+                  radial-gradient(900px 500px at 80% 15%, rgba(31,122,107,.14), transparent 55%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      padding: 22px 14px 40px;
+    }
 
-        .container { max-width: 1000px; margin: 0 auto; }
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+    }
 
-        .header {
-            background: rgba(255,255,255,.85);
-            border: 1px solid rgba(226,232,240,.95);
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding: 14px 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.65);
+      border: 1px solid rgba(226,232,240,.9);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 26px rgba(2,6,23,.06);
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      min-width: 0;
+    }
+    .logo{
+      width:42px; height:42px;
+      border-radius: 12px;
+      background:#fff;
+      border:1px solid var(--border);
+      display:grid; place-items:center;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .logo img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      padding:6px;
+    }
+    .brand h1{
+      font-size: 18px;
+      margin:0;
+      line-height:1.1;
+      letter-spacing:.2px;
+    }
+    .brand p{
+      margin:4px 0 0;
+      font-size: 12.5px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      max-width: 520px;
+    }
 
-        .header h1 { font-size: 24px; color: var(--brand); margin: 0; }
-        .header p { color: var(--muted); font-size: 14px; margin: 4px 0 0; }
+    .status{
+      display:flex; align-items:center; gap:10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.8);
+      flex:0 0 auto;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+    .dot{
+      width:10px; height:10px; border-radius:50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34,197,94,.14);
+    }
 
-        .back-btn {
-            padding: 10px 20px;
-            background: var(--brand);
-            color: white;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
+    /* Edit Button */
+    .edit-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.8);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--brand);
+      transition: all 0.3s;
+      flex: 0 0 auto;
+    }
 
-        .back-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(31,122,107,.3); }
+    .edit-btn:hover {
+      background: var(--brand);
+      color: #fff;
+      border-color: var(--brand);
+      box-shadow: 0 4px 12px rgba(31,122,107,.2);
+      transform: translateY(-1px);
+    }
 
-        .card {
-            background: rgba(255,255,255,.85);
-            border: 1px solid rgba(226,232,240,.95);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow);
-            position: relative;
-        }
+    .edit-icon {
+      font-size: 16px;
+    }
 
-        .draft-banner {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--warning);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            display: none;
-            animation: slideIn 0.3s;
-        }
+    .card{
+      margin-top: 14px;
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(226,232,240,.95);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
 
-        .draft-banner.show { display: flex; align-items: center; gap: 12px; }
+    .chat{
+      height: 540px;
+      overflow:auto;
+      padding: 18px 18px 10px;
+      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.78));
+    }
 
-        .draft-banner button {
-            background: white;
-            color: var(--warning);
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 12px;
-        }
+    /* Message rows */
+    .msg{
+      display:flex;
+      margin: 12px 0;
+      gap:10px;
+      align-items:flex-end;
+    }
+    .msg.me{ justify-content:flex-end; }
+    .msg.bot{ justify-content:flex-start; }
 
-        @keyframes slideIn {
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
+    .avatar{
+      width:34px; height:34px;
+      border-radius: 12px;
+      border:1px solid var(--border);
+      background:#fff;
+      display:grid; place-items:center;
+      color: var(--muted);
+      font-size: 12px;
+      flex:0 0 auto;
+      user-select:none;
+    }
+    .msg.me .avatar{
+      background: rgba(31,122,107,.10);
+      color: var(--brand);
+      border-color: rgba(31,122,107,.25);
+    }
 
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px 20px;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            display: none;
-            min-width: 300px;
-            animation: slideUp 0.3s;
-        }
+    .bubbleWrap{ max-width: 75%; display:flex; flex-direction:column; gap:6px; }
 
-        @keyframes slideUp {
-            from { transform: translateY(100px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
+    .bubble{
+      padding: 12px 14px;
+      border-radius: 16px;
+      line-height: 1.6;
+      word-break: break-word;
+      box-shadow: 0 10px 26px rgba(2,6,23,.06);
+      border: 1px solid rgba(226,232,240,.8);
+      font-size: 14px;
+      white-space: pre-wrap; /* Preserve line breaks and spaces */
+    }
 
-        .toast.show { display: flex; align-items: center; gap: 12px; }
-        .toast.success { border-left: 4px solid var(--success); }
-        .toast.error { border-left: 4px solid var(--danger); }
-        .toast.warning { border-left: 4px solid var(--warning); }
+    .msg.bot .bubble{
+      background: var(--bot);
+      color: var(--text);
+      border-bottom-left-radius: 8px;
+    }
+    .msg.me .bubble{
+      background: var(--brand);
+      color: #fff;
+      border-color: rgba(31,122,107,.35);
+      border-bottom-right-radius: 8px;
+    }
 
-        .toast-icon { font-size: 24px; }
-        .toast-content { flex: 1; }
-        .toast-title { font-weight: 600; margin-bottom: 4px; }
-        .toast-message { font-size: 13px; color: var(--muted); }
+    .meta{
+      font-size: 11.5px;
+      color: var(--muted);
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
 
-        .field-error { color: var(--danger); font-size: 12px; margin-top: 4px; display: none; }
-        .field-error.show { display: block; animation: fadeIn 0.2s; }
+    .msg.me .meta{ justify-content:flex-end; }
+    .msg.bot .meta{ justify-content:flex-start; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    .divider{
+      height:1px;
+      background: rgba(226,232,240,.9);
+    }
 
-        .mode-selector { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 30px; }
+    .composer{
+      display:flex;
+      flex-direction: column;
+      gap:12px;
+      padding: 14px;
+      background: rgba(255,255,255,.92);
+    }
 
-        .mode-card {
-            padding: 24px;
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: white;
-        }
+    .category-row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
 
-        .mode-card:hover { border-color: var(--brand); transform: translateY(-4px); box-shadow: 0 4px 12px rgba(31,122,107,.15); }
-        .mode-card.selected { border-color: var(--brand); background: var(--brand-light); }
-        .mode-card:focus { outline: 3px solid var(--brand); outline-offset: 2px; }
+    .category-label{
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
 
-        .mode-icon { font-size: 48px; margin-bottom: 12px; }
-        .mode-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-        .mode-desc { font-size: 13px; color: var(--muted); }
+    .composer-row{
+      display:flex;
+      gap:10px;
+      align-items:stretch;
+    }
 
-        .search-section { margin-bottom: 24px; }
-        .search-box { display: flex; gap: 12px; margin-bottom: 16px; }
+    .select{
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 12px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      flex: 1;
+    }
 
-        .search-input {
-            flex: 1;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 16px;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.2s;
-        }
+    .select:focus{
+      border-color: rgba(14,165,233,.55);
+      box-shadow: 0 0 0 4px rgba(14,165,233,.12);
+    }
 
-        .search-input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(31,122,107,0.1); }
+    .input{
+      flex:1;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 12px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+    }
+    .input:focus{
+      border-color: rgba(14,165,233,.55);
+      box-shadow: 0 0 0 4px rgba(14,165,233,.12);
+    }
 
-        .search-results { max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; background: white; }
+    .btn{
+      border:none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 600;
+      cursor:pointer;
+      background: linear-gradient(180deg, rgba(31,122,107,1), rgba(22,120,105,.95));
+      color:#fff;
+      min-width: 92px;
+      box-shadow: 0 10px 18px rgba(31,122,107,.18);
+    }
+    .btn:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
 
-        .result-item { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: all 0.2s; }
-        .result-item:last-child { border-bottom: none; }
-        .result-item:hover, .result-item:focus { background: var(--brand-light); outline: none; }
+    .foot{
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      gap:10px;
+      padding: 10px 14px 14px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,.92);
+    }
+    .foot .small{ opacity:.9; }
 
-        .result-name { font-weight: 600; color: var(--text); margin-bottom: 4px; }
-        .result-meta { font-size: 12px; color: var(--muted); }
+    .category-badge{
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
 
-        .no-results { padding: 40px; text-align: center; color: var(--muted); }
-        .loading { padding: 20px; text-align: center; color: var(--muted); }
+    .category-policy{
+      background: rgba(59, 130, 246, 0.15);
+      color: #2563eb;
+    }
 
-        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 30px; position: relative; }
-        .step-indicator::before { content: ''; position: absolute; top: 20px; left: 0; right: 0; height: 2px; background: var(--border); z-index: 0; }
+    .category-procedure{
+      background: rgba(16, 185, 129, 0.15);
+      color: #059669;
+    }
 
-        .step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; position: relative; z-index: 1; cursor: pointer; }
-        .step:focus { outline: 3px solid var(--brand); outline-offset: 4px; border-radius: 8px; }
+    .category-product{
+      background: rgba(245, 158, 11, 0.15);
+      color: #d97706;
+    }
 
-        .step-circle { width: 40px; height: 40px; border-radius: 50%; background: var(--border); color: var(--muted); display: grid; place-items: center; font-weight: 700; transition: all 0.3s; }
-        .step.active .step-circle { background: var(--brand); color: white; box-shadow: 0 0 0 4px rgba(31,122,107,.15); }
-        .step.completed .step-circle { background: var(--success); color: white; }
+    /* ===== TYPING INDICATOR STYLES ===== */
+    .typing-indicator {
+      display: none;
+      align-items: flex-end;
+      gap: 10px;
+      padding: 12px 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.78));
+    }
 
-        .step-label { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; }
-        .step.active .step-label { color: var(--brand); }
+    .typing-indicator.show {
+      display: flex;
+    }
 
-        .form-section { display: none; }
-        .form-section.active { display: block; animation: fadeInSection 0.3s; }
+    .typing-indicator .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 12px;
+      flex: 0 0 auto;
+    }
 
-        @keyframes fadeInSection {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    .typing-bubble {
+      background: var(--bot);
+      border: 1px solid rgba(226,232,240,.8);
+      border-radius: 16px;
+      border-bottom-left-radius: 8px;
+      padding: 12px 14px;
+      box-shadow: 0 10px 26px rgba(2,6,23,.06);
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
 
-        .section-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--text); }
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      animation: typingBounce 1.4s infinite;
+    }
 
-        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
-        .form-group { display: flex; flex-direction: column; gap: 8px; }
-        .form-group.full { grid-column: 1 / -1; }
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
 
-        .form-label { font-size: 14px; font-weight: 600; color: var(--text); }
-        .form-label .required { color: var(--danger); }
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
 
-        .form-input, .form-select, .form-textarea {
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px;
-            font-size: 14px;
-            font-family: inherit;
-            outline: none;
-            background: white;
-            transition: all 0.2s;
-        }
+    @keyframes typingBounce {
+      0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.7;
+      }
+      30% {
+        transform: translateY(-10px);
+        opacity: 1;
+      }
+    }
 
-        .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(31,122,107,0.1); }
-        .form-input.error, .form-select.error, .form-textarea.error { border-color: var(--danger); }
+    /* ===== SUGGESTION SECTION STYLES ===== */
+    .suggestion-section {
+      margin-top: 20px;
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(226,232,240,.95);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
 
-        .form-textarea { resize: vertical; min-height: 100px; }
-        .form-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .suggestion-header {
+      background: linear-gradient(135deg, rgba(31,122,107,0.05), rgba(14,165,233,0.05));
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
 
-        .char-counter { font-size: 12px; color: var(--muted); text-align: right; margin-top: 4px; }
-        .char-counter.warning { color: var(--warning); }
-        .char-counter.danger { color: var(--danger); }
+    .suggestion-header:hover {
+      background: linear-gradient(135deg, rgba(31,122,107,0.08), rgba(14,165,233,0.08));
+    }
 
-        .button-group { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+    .suggestion-header h3 {
+      margin: 0;
+      font-size: 16px;
+      color: var(--brand);
+      flex: 1;
+    }
 
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-        }
+    .suggestion-form {
+      padding: 20px;
+      display: none;
+    }
 
-        .btn-primary { background: var(--brand); color: white; }
-        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(31,122,107,.3); }
-        .btn-primary:focus { outline: 3px solid var(--brand); outline-offset: 2px; }
+    .suggestion-form.active {
+      display: block;
+      animation: slideDown 0.3s ease-out;
+    }
 
-        .btn-secondary { background: var(--border); color: var(--text); }
-        .btn-secondary:hover:not(:disabled) { background: var(--muted); color: white; }
-        .btn-secondary:focus { outline: 3px solid var(--muted); outline-offset: 2px; }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
 
-        .btn-warning { background: var(--warning); color: white; }
-        .btn-warning:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(245,158,11,.3); }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
 
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-danger:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(239,68,68,.3); }
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
 
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
 
-        .btn.loading::after {
-            content: '';
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
+    .form-input,
+    .form-select,
+    .form-textarea {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+      transition: all 0.2s;
+    }
 
-        @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(31,122,107,0.1);
+    }
 
-        .type-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 30px; }
+    .form-select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
 
-        .type-card {
-            padding: 24px;
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: white;
-        }
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+      line-height: 1.5;
+    }
 
-        .type-card:hover { border-color: var(--brand); transform: translateY(-4px); box-shadow: 0 4px 12px rgba(31,122,107,.15); }
-        .type-card.selected { border-color: var(--brand); background: var(--brand-light); }
-        .type-card:focus { outline: 3px solid var(--brand); outline-offset: 2px; }
+    .submit-btn {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--brand2), #0284c7);
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(14,165,233,.2);
+      transition: all 0.3s;
+    }
 
-        .type-icon { font-size: 40px; margin-bottom: 12px; }
-        .type-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-        .type-desc { font-size: 12px; color: var(--muted); }
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px rgba(14,165,233,.3);
+    }
 
-        .success-message { display: none; text-align: center; padding: 40px; }
-        .success-message.show { display: block; }
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
 
-        .success-icon { font-size: 60px; margin-bottom: 20px; }
-        .success-title { font-size: 24px; font-weight: 700; color: var(--brand); margin-bottom: 12px; }
-        .success-text { color: var(--muted); margin-bottom: 24px; }
+    .success-message {
+      display: none;
+      padding: 20px;
+      text-align: center;
+      color: var(--brand);
+      font-size: 16px;
+      font-weight: 600;
+      animation: fadeIn 0.5s;
+    }
 
-        .edit-badge { display: inline-block; background: var(--warning); color: white; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-left: 12px; }
+    .success-message.show {
+      display: block;
+    }
 
-        .progress-bar { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 9999; }
-        .progress-fill { height: 100%; background: var(--brand); width: 0%; transition: width 0.3s; }
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-        .skip-link {
-            position: absolute;
-            top: -40px;
-            left: 0;
-            background: var(--brand);
-            color: white;
-            padding: 8px 16px;
-            text-decoration: none;
-            border-radius: 0 0 8px 0;
-            z-index: 10000;
-        }
-        .skip-link:focus { top: 0; }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
 
-        @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .type-selector { grid-template-columns: 1fr; }
-            .mode-selector { grid-template-columns: 1fr; }
-            .step-label { font-size: 10px; }
-            .draft-banner { top: 10px; right: 10px; left: 10px; font-size: 12px; }
-        }
-
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border-width: 0;
-        }
-    </style>
+    @media (max-width: 720px){
+      .chat{ height: 68vh; }
+      .brand p{ max-width: 240px; }
+      .bubbleWrap{ max-width: 86%; }
+      .form-row { grid-template-columns: 1fr; }
+      
+      .topbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+      
+      .topbar > div:last-child {
+        justify-content: center;
+      }
+      
+      .edit-btn {
+        font-size: 12px;
+        padding: 6px 12px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-
-    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-        <div class="progress-fill" id="progressFill"></div>
-    </div>
-
-    <div class="draft-banner" id="draftBanner" role="alert">
-        <span>💾 Draft saved</span>
-        <button onclick="loadDraft()" aria-label="Continue from saved draft">Continue</button>
-        <button onclick="clearDraft()" aria-label="Discard saved draft">Discard</button>
-    </div>
-
-    <div class="toast" id="toast" role="alert" aria-live="polite" aria-atomic="true">
-        <div class="toast-icon" id="toastIcon"></div>
-        <div class="toast-content">
-            <div class="toast-title" id="toastTitle"></div>
-            <div class="toast-message" id="toastMessage"></div>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" title="KIB">
+          <img src="https://tg7htk4h89-afk.github.io/bank-chatbot-web/logo3gpt.jpg" alt="Chat3PT logo" onerror="this.style.display='none'; this.parentElement.textContent='KIB'; this.parentElement.style.fontWeight='700';" />
         </div>
+        <div style="min-width:0">
+          <h1>Chat3PT</h1>
+          <p>KIB Knowledge Assistant (Products • Policies • Procedures)</p>
+        </div>
+      </div>
+
+      <div class="status">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">Ready</span>
+      </div>
     </div>
 
-    <div class="container">
-        <div class="header">
-            <div>
-                <h1>📝 Knowledge Base Editor</h1>
-                <p id="headerSubtitle">Manage Chat3PT database</p>
-            </div>
-            <a href="https://tg7htk4h89-afk.github.io/bank-chatbot-web/chat.html" class="back-btn">← Back to Chat</a>
+    <div class="card">
+      <div class="chat" id="chat"></div>
+      
+      <!-- Typing Indicator (below chat area) -->
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="avatar">3PT</div>
+        <div class="typing-bubble">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
         </div>
+      </div>
+      
+      <div class="divider"></div>
 
-        <div class="card" id="main-content">
-            <div class="form-section active" data-section="0">
-                <h2 class="section-title">Choose Action</h2>
-                <div class="mode-selector" role="group" aria-label="Action selection">
-                    <div class="mode-card"
-                         onclick="selectMode('add')"
-                         tabindex="0"
-                         role="button"
-                         aria-pressed="false"
-                         onkeypress="handleKeyPress(event, () => selectMode('add'))">
-                        <div class="mode-icon" aria-hidden="true">➕</div>
-                        <div class="mode-name">Add New Item</div>
-                        <div class="mode-desc">Create a new product, procedure, or policy</div>
-                    </div>
-                    <div class="mode-card"
-                         onclick="selectMode('edit')"
-                         tabindex="0"
-                         role="button"
-                         aria-pressed="false"
-                         onkeypress="handleKeyPress(event, () => selectMode('edit'))">
-                        <div class="mode-icon" aria-hidden="true">✏️</div>
-                        <div class="mode-name">Edit Existing Item</div>
-                        <div class="mode-desc">Search and modify existing entries</div>
-                    </div>
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="proceedFromMode()" id="modeNext" disabled aria-label="Proceed to next step">Next →</button>
-                </div>
-            </div>
-
-            <div class="form-section" data-section="search">
-                <h2 class="section-title">Search Knowledge Base</h2>
-                <div class="search-section">
-                    <div class="search-box">
-                        <input type="text"
-                               class="search-input"
-                               id="searchInput"
-                               placeholder="Search by name, keywords, or description..."
-                               onkeyup="handleSearch(event)"
-                               aria-label="Search knowledge base">
-                        <button class="btn btn-primary" onclick="performSearch()" aria-label="Perform search">🔍 Search</button>
-                    </div>
-                    <div id="searchResults" style="display: none;" role="listbox" aria-label="Search results"></div>
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-secondary" onclick="backToMode()">← Back</button>
-                </div>
-            </div>
-
-            <div class="step-indicator" id="stepIndicator" style="display: none;" role="navigation" aria-label="Form progress">
-                <div class="step active" data-step="1" tabindex="0" role="button" aria-label="Step 1: Select Type">
-                    <div class="step-circle" aria-hidden="true">1</div>
-                    <div class="step-label">Select Type</div>
-                </div>
-                <div class="step" data-step="2" tabindex="0" role="button" aria-label="Step 2: Basic Info">
-                    <div class="step-circle" aria-hidden="true">2</div>
-                    <div class="step-label">Basic Info</div>
-                </div>
-                <div class="step" data-step="3" tabindex="0" role="button" aria-label="Step 3: Details">
-                    <div class="step-circle" aria-hidden="true">3</div>
-                    <div class="step-label">Details</div>
-                </div>
-                <div class="step" data-step="4" tabindex="0" role="button" aria-label="Step 4: Review">
-                    <div class="step-circle" aria-hidden="true">4</div>
-                    <div class="step-label">Review</div>
-                </div>
-            </div>
-
-            <div class="form-section" data-section="1">
-                <h2 class="section-title">What would you like to add?</h2>
-                <div class="type-selector" role="group" aria-label="Content type selection">
-                    <div class="type-card"
-                         onclick="selectType('product')"
-                         tabindex="0"
-                         role="button"
-                         aria-pressed="false"
-                         onkeypress="handleKeyPress(event, () => selectType('product'))">
-                        <div class="type-icon" aria-hidden="true">🏦</div>
-                        <div class="type-name">Product</div>
-                        <div class="type-desc">Banking products, cards, accounts</div>
-                    </div>
-                    <div class="type-card"
-                         onclick="selectType('procedure')"
-                         tabindex="0"
-                         role="button"
-                         aria-pressed="false"
-                         onkeypress="handleKeyPress(event, () => selectType('procedure'))">
-                        <div class="type-icon" aria-hidden="true">📋</div>
-                        <div class="type-name">Procedure</div>
-                        <div class="type-desc">Step-by-step processes</div>
-                    </div>
-                    <div class="type-card"
-                         onclick="selectType('policy')"
-                         tabindex="0"
-                         role="button"
-                         aria-pressed="false"
-                         onkeypress="handleKeyPress(event, () => selectType('policy'))">
-                        <div class="type-icon" aria-hidden="true">📜</div>
-                        <div class="type-name">Policy</div>
-                        <div class="type-desc">Rules and regulations</div>
-                    </div>
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-secondary" onclick="backToMode()">← Back</button>
-                    <button class="btn btn-primary" onclick="nextStep()" id="step1Next" disabled>Next →</button>
-                </div>
-            </div>
-
-            <div class="form-section" data-section="2">
-                <h2 class="section-title">Basic Information<span id="editModeBadge"></span></h2>
-                <div id="basicInfoForm"></div>
-                <div class="button-group">
-                    <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-                    <button class="btn btn-primary" onclick="nextStep()">Next →</button>
-                </div>
-            </div>
-
-            <div class="form-section" data-section="3">
-                <h2 class="section-title">Detailed Information<span id="editModeBadge2"></span></h2>
-                <div id="detailsForm"></div>
-                <div class="button-group">
-                    <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-                    <button class="btn btn-primary" onclick="nextStep()">Next →</button>
-                </div>
-            </div>
-
-            <div class="form-section" data-section="4">
-                <h2 class="section-title">Review & Submit</h2>
-                <div id="reviewContent"></div>
-                <div class="button-group">
-                    <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-                    <button class="btn btn-primary" onclick="submitForm()" id="submitBtn">Submit ✓</button>
-                </div>
-            </div>
-
-            <div class="success-message" id="successMessage" role="alert">
-                <div class="success-icon" aria-hidden="true">✅</div>
-                <div class="success-title" id="successTitle">Successfully Added!</div>
-                <div class="success-text" id="successText">Your item has been added to the knowledge base</div>
-                <div class="button-group" style="justify-content: center;">
-                    <button class="btn btn-primary" onclick="resetForm()">Add Another Item</button>
-                    <a href="https://tg7htk4h89-afk.github.io/bank-chatbot-web/chat.html" class="btn btn-secondary" style="text-decoration: none; display: inline-block;">Back to Chat</a>
-                </div>
-            </div>
+      <div class="composer">
+        <!-- Label on top -->
+        <div class="category-row">
+          <span class="category-label">Please choose category or use Auto-detect</span>
         </div>
+        
+        <!-- Text input (full width) -->
+        <input id="inp" class="input" placeholder="Type your question..." autocomplete="off" style="width: 100%;" />
+        
+        <!-- Category dropdown and send button row -->
+        <div class="composer-row">
+          <select id="categorySelect" class="select">
+            <option value="">Auto-detect</option>
+            <option value="policy">Policy</option>
+            <option value="procedure">Procedure</option>
+            <option value="product">Product</option>
+          </select>
+          <button id="sendBtn" class="btn">Send</button>
+        </div>
+      </div>
+
+      <div class="foot">
+        <div class="small">Chat3PT • Web UI</div>
+      </div>
     </div>
 
-    <script>
-        let currentStep = 0;
-        let selectedMode = null;
-        let selectedType = null;
-        let formData = {};
-        let editingItemId = null;
-        let allKBItems = [];
-        let validationErrors = {};
+    <!-- ===== SUGGESTION SECTION ===== -->
+    <div class="suggestion-section">
+      <div class="suggestion-header" onclick="toggleSuggestionForm()">
+        <span style="font-size: 20px;">💡</span>
+        <h3>Submit a Suggestion</h3>
+        <span id="suggestionToggle" style="font-size: 14px; color: var(--muted);">▼</span>
+      </div>
+      
+      <div class="suggestion-form" id="suggestionForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input" id="suggestionName" placeholder="Your Name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Department</label>
+            <input type="text" class="form-input" id="suggestionDept" placeholder="Department" />
+          </div>
+        </div>
 
-        const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/chat3pt-kb";
-        const DRAFT_KEY = 'chat3pt_kb_draft';
-        const AUTOSAVE_INTERVAL = 5000; // 5 seconds
-        let autosaveTimer = null;
+        <div class="form-group full">
+          <label class="form-label">Select Suggestion Category</label>
+          <select class="form-select" id="suggestionCategory">
+            <option value="">Select Suggestion Category</option>
+            <option value="policy">Policy</option>
+            <option value="procedure">Procedure</option>
+            <option value="product">Product</option>
+            <option value="general">General Improvement</option>
+          </select>
+        </div>
 
-        // ---- Added: Safe webhook caller (Safari/CORS friendly)
-        const WEBHOOK_URL_CLEAN = (WEBHOOK_URL || '').trim();
+        <div class="form-group full">
+          <label class="form-label">Describe your suggestion</label>
+          <textarea class="form-textarea" id="suggestionText" placeholder="Describe your suggestion..."></textarea>
+        </div>
 
-        async function callN8N(payload) {
-            const res = await fetch(WEBHOOK_URL_CLEAN, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
+        <button class="submit-btn" onclick="submitSuggestion()">Submit Feedback</button>
+      </div>
 
-            const raw = await res.text();
-            let data;
-            try { data = JSON.parse(raw); } catch { data = { raw }; }
+      <div class="success-message" id="successMessage">
+        Thank you! Your suggestion has been sent.
+      </div>
+    </div>
 
-            if (!res.ok) {
-                throw new Error(data?.message || `Request failed (${res.status})`);
-            }
-            return data;
-        }
+  </div>
 
-        // Form templates
-        const formTemplates = {
-            product: {
-                basic: [
-                    { name: 'product_name', label: 'Product Name', type: 'text', required: true, full: true, maxLength: 100 },
-                    { name: 'family', label: 'Product Family', type: 'select', required: true, options: ['Cards', 'Accounts', 'Loans', 'Services'] },
-                    { name: 'tier', label: 'Tier', type: 'select', required: true, options: ['Basic', 'Standard', 'Plus', 'Premium'] },
-                    { name: 'status', label: 'Status', type: 'select', required: true, options: ['draft', 'active', 'inactive'] },
-                ],
-                details: [
-                    { name: 'description', label: 'Description', type: 'textarea', required: true, full: true, maxLength: 500 },
-                    { name: 'features', label: 'Features', type: 'textarea', required: true, full: true, hint: 'Comma-separated list', maxLength: 1000 },
-                    { name: 'eligibility', label: 'Eligibility', type: 'textarea', required: true, full: true, maxLength: 500 },
-                    { name: 'fees', label: 'Fees', type: 'text', required: false, maxLength: 100 },
-                    { name: 'channels', label: 'Channels', type: 'text', required: false, hint: 'e.g., Branch, Mobile App, Call Center', maxLength: 200 },
-                    { name: 'keywords', label: 'Keywords', type: 'text', required: true, full: true, hint: 'Comma-separated for search', maxLength: 200 },
-                    { name: 'sample_questions', label: 'Sample Questions', type: 'textarea', required: false, full: true, maxLength: 500 },
-                ]
-            },
-            procedure: {
-                basic: [
-                    { name: 'procedure_name', label: 'Procedure Name', type: 'text', required: true, full: true, maxLength: 100 },
-                    { name: 'related_area', label: 'Related Area', type: 'text', required: true, maxLength: 100 },
-                    { name: 'risk_level', label: 'Risk Level', type: 'select', required: true, options: ['low', 'medium', 'high'] },
-                    { name: 'sla', label: 'SLA', type: 'text', required: true, hint: 'e.g., Same day, Immediate', maxLength: 50 },
-                ],
-                details: [
-                    { name: 'when_to_use', label: 'When to Use', type: 'textarea', required: true, full: true, maxLength: 500 },
-                    { name: 'step_by_step', label: 'Step by Step Instructions', type: 'textarea', required: true, full: true, hint: 'Use \\n for new lines', maxLength: 2000 },
-                    { name: 'systems_used', label: 'Systems Used', type: 'text', required: true, full: true, hint: 'Comma-separated', maxLength: 200 },
-                    { name: 'keywords', label: 'Keywords', type: 'text', required: true, full: true, hint: 'Comma-separated for search', maxLength: 200 },
-                    { name: 'sample_questions', label: 'Sample Questions', type: 'textarea', required: false, full: true, maxLength: 500 },
-                    { name: 'common_errors', label: 'Common Errors', type: 'textarea', required: false, full: true, maxLength: 500 },
-                ]
-            },
-            policy: {
-                basic: [
-                    { name: 'policy_name', label: 'Policy Name', type: 'text', required: true, full: true, maxLength: 100 },
-                    { name: 'scope', label: 'Scope', type: 'select', required: true, options: ['Retail', 'Corporate', 'All'] },
-                    { name: 'status', label: 'Status', type: 'select', required: true, options: ['draft', 'active', 'inactive'] },
-                    { name: 'review_cycle', label: 'Review Cycle', type: 'select', required: true, options: ['annual', 'semi-annual', 'quarterly'] },
-                ],
-                details: [
-                    { name: 'summary', label: 'Summary', type: 'textarea', required: true, full: true, maxLength: 500 },
-                    { name: 'do', label: 'Do (Required Actions)', type: 'textarea', required: true, full: true, hint: 'Comma-separated', maxLength: 500 },
-                    { name: 'dont', label: "Don't (Prohibited Actions)", type: 'textarea', required: true, full: true, hint: 'Comma-separated', maxLength: 500 },
-                    { name: 'applicable_to', label: 'Applicable To', type: 'text', required: true, maxLength: 100 },
-                    { name: 'escalation', label: 'Escalation', type: 'text', required: false, maxLength: 100 },
-                    { name: 'keywords', label: 'Keywords', type: 'text', required: true, full: true, hint: 'Comma-separated for search', maxLength: 200 },
-                    { name: 'sample_questions', label: 'Sample Questions', type: 'textarea', required: false, full: true, maxLength: 500 },
-                ]
-            }
+  <script>
+    // ✅ Your n8n Production Webhook
+    const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/bf161d07-e9be-48fe-bdfa-0ea9e3e1abb5";
+
+    const chat = document.getElementById("chat");
+    const inp  = document.getElementById("inp");
+    const btn  = document.getElementById("sendBtn");
+    const categorySelect = document.getElementById("categorySelect");
+    const statusText = document.getElementById("statusText");
+    const statusDot  = document.getElementById("statusDot");
+    const typingIndicator = document.getElementById("typingIndicator");
+
+    function setStatus(text, ok=true){
+      statusText.textContent = text;
+      statusDot.style.background = ok ? "#22c55e" : "#ef4444";
+      statusDot.style.boxShadow = ok ? "0 0 0 4px rgba(34,197,94,.14)" : "0 0 0 4px rgba(239,68,68,.14)";
+    }
+
+    function showTyping() {
+      typingIndicator.classList.add('show');
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function hideTyping() {
+      typingIndicator.classList.remove('show');
+    }
+
+    function timeNow(){
+      return new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+    }
+
+    function isArabic(text){
+      return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(text);
+    }
+
+    function getCategoryBadge(category){
+      if (!category) return '';
+      const badges = {
+        'policy': '<span class="category-badge category-policy">Policy</span>',
+        'procedure': '<span class="category-badge category-procedure">Procedure</span>',
+        'product': '<span class="category-badge category-product">Product</span>'
+      };
+      return badges[category] || '';
+    }
+
+    function add(role, text, category = null){
+      const row = document.createElement("div");
+      row.className = "msg " + (role === "me" ? "me" : "bot");
+
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = (role === "me") ? "Me" : "3PT";
+
+      const wrap = document.createElement("div");
+      wrap.className = "bubbleWrap";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      
+      // Use innerHTML to render HTML formatting
+      bubble.innerHTML = text;
+
+      // Auto RTL/LTR per message
+      bubble.dir = isArabic(text) ? "rtl" : "ltr";
+      bubble.style.textAlign = isArabic(text) ? "right" : "left";
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      
+      // Add category badge if present
+      if (category && role === "me") {
+        meta.innerHTML = getCategoryBadge(category) + '<span style="margin-left:6px">' + timeNow() + '</span>';
+      } else {
+        meta.textContent = timeNow();
+      }
+
+      wrap.appendChild(bubble);
+      wrap.appendChild(meta);
+
+      // For "me" put avatar after bubble (nice alignment)
+      if (role === "me"){
+        row.appendChild(wrap);
+        row.appendChild(avatar);
+      } else {
+        row.appendChild(avatar);
+        row.appendChild(wrap);
+      }
+
+      chat.appendChild(row);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    async function send(){
+      const msg = (inp.value || "").trim();
+      if (!msg) return;
+
+      const category = categorySelect.value; // Get selected category
+
+      add("me", msg, category);
+      inp.value = "";
+      btn.disabled = true;
+      setStatus("Sending...", true);
+      
+      // Show typing indicator
+      showTyping();
+
+      try{
+        const payload = {
+          message: msg,
+          session_id: "web-1",
+          category: category
         };
 
-        window.addEventListener('load', () => {
-            checkForDraft();
-            setupKeyboardNavigation();
+        const res = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json" 
+          },
+          body: JSON.stringify(payload)
         });
 
-        function checkForDraft() {
-            const draft = localStorage.getItem(DRAFT_KEY);
-            if (draft) {
-                try {
-                    const parsed = JSON.parse(draft);
-                    const age = Date.now() - parsed.timestamp;
-                    if (age < 24 * 60 * 60 * 1000) {
-                        document.getElementById('draftBanner').classList.add('show');
-                    } else {
-                        localStorage.removeItem(DRAFT_KEY);
-                    }
-                } catch (e) {
-                    localStorage.removeItem(DRAFT_KEY);
-                }
+        // Check response content type
+        const contentType = res.headers.get("content-type") || "";
+        let data;
+
+        if (contentType.includes("application/json")){
+          data = await res.json();
+        } else {
+          const t = await res.text();
+          throw new Error("Non-JSON response: " + t.slice(0,120));
+        }
+
+        // ✅ Extract text from response - handles multiple response formats
+        let answer = "";
+
+        // Format 1: OpenAI nested structure from your n8n workflow
+        if (data && Array.isArray(data.output) && data.output.length > 0) {
+          const firstOutput = data.output[0];
+          if (firstOutput.content && Array.isArray(firstOutput.content) && firstOutput.content[0]) {
+            answer = firstOutput.content[0].text || "";
+          }
+        } 
+        // Format 2: Direct output array
+        else if (data && Array.isArray(data) && data[0] && data[0].output) {
+          const firstItem = data[0];
+          if (Array.isArray(firstItem.output) && firstItem.output[0]) {
+            const firstOutput = firstItem.output[0];
+            if (firstOutput.content && Array.isArray(firstOutput.content) && firstOutput.content[0]) {
+              answer = firstOutput.content[0].text || "";
             }
+          }
+        }
+        // Format 3: Simple structure with answer/output/text fields
+        else if (data && (data.answer || data.output || data.text)) {
+          answer = data.answer || data.output || data.text;
+        } 
+        // Format 4: Fallback - stringify the data
+        else {
+          answer = JSON.stringify(data, null, 2);
         }
 
-        function saveDraft() {
-            if (currentStep > 0 && Object.keys(formData).length > 0) {
-                const draft = {
-                    timestamp: Date.now(),
-                    step: currentStep,
-                    mode: selectedMode,
-                    type: selectedType,
-                    data: formData,
-                    editingItemId: editingItemId
-                };
-                localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-            }
-        }
+        // Clean up the answer if needed
+        answer = answer.trim();
 
-        function loadDraft() {
-            const draft = localStorage.getItem(DRAFT_KEY);
-            if (!draft) return;
+        // Hide typing indicator before showing response
+        hideTyping();
 
-            try {
-                const parsed = JSON.parse(draft);
+        // Display the formatted answer
+        add("bot", answer);
+        setStatus("Ready", true);
 
-                selectedMode = parsed.mode;
-                selectedType = parsed.type;
-                formData = parsed.data;
-                editingItemId = parsed.editingItemId;
+      } catch(e){
+        // Hide typing indicator on error
+        hideTyping();
+        add("bot", "Connection error: " + (e?.message || e));
+        setStatus("Disconnected", false);
+      } finally {
+        btn.disabled = false;
+        inp.focus();
+      }
+    }
 
-                if (selectedMode === 'edit' && editingItemId) {
-                    document.getElementById('editModeBadge').innerHTML = '<span class="edit-badge">EDITING</span>';
-                    document.getElementById('editModeBadge2').innerHTML = '<span class="edit-badge">EDITING</span>';
-                    document.getElementById('submitBtn').textContent = 'Update ✓';
-                    document.getElementById('submitBtn').className = 'btn btn-warning';
-                }
+    // Welcome message
+    add("bot", "Hi — I'm Chat3PT. Ask me about KIB products, policies, or procedures.");
 
-                generateBasicForm();
-                generateDetailsForm();
+    // Event listeners
+    btn.addEventListener("click", send);
+    inp.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") send();
+    });
 
-                setTimeout(() => { populateFormsWithData(); }, 100);
+    // ===== SUGGESTION FORM FUNCTIONS =====
+    function toggleSuggestionForm() {
+      const form = document.getElementById('suggestionForm');
+      const toggle = document.getElementById('suggestionToggle');
+      const success = document.getElementById('successMessage');
+      
+      if (form.classList.contains('active')) {
+        form.classList.remove('active');
+        toggle.textContent = '▼';
+        success.classList.remove('show');
+      } else {
+        form.classList.add('active');
+        toggle.textContent = '▲';
+        success.classList.remove('show');
+      }
+    }
 
-                currentStep = parsed.step;
-                document.getElementById('stepIndicator').style.display = 'flex';
-                updateStepIndicator();
-                showSection(currentStep);
-                updateProgress();
+    async function submitSuggestion() {
+      const name = document.getElementById('suggestionName').value.trim();
+      const dept = document.getElementById('suggestionDept').value.trim();
+      const category = document.getElementById('suggestionCategory').value;
+      const text = document.getElementById('suggestionText').value.trim();
 
-                document.getElementById('draftBanner').classList.remove('show');
-                showToast('success', 'Draft Loaded', 'Your saved draft has been restored');
-            } catch (e) {
-                showToast('error', 'Error', 'Failed to load draft');
-                clearDraft();
-            }
-        }
+      if (!name || !dept || !category || !text) {
+        alert('Please fill in all fields');
+        return;
+      }
 
-        function clearDraft() {
-            localStorage.removeItem(DRAFT_KEY);
-            document.getElementById('draftBanner').classList.remove('show');
-            showToast('success', 'Draft Discarded', 'Your saved draft has been removed');
-        }
+      const submitBtn = event.target;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
 
-        function startAutosave() {
-            if (autosaveTimer) clearInterval(autosaveTimer);
-            autosaveTimer = setInterval(() => {
-                collectCurrentFormData();
-                saveDraft();
-            }, AUTOSAVE_INTERVAL);
-        }
-
-        function stopAutosave() {
-            if (autosaveTimer) { clearInterval(autosaveTimer); autosaveTimer = null; }
-        }
-
-        function showToast(type, title, message) {
-            const toast = document.getElementById('toast');
-            const toastIcon = document.getElementById('toastIcon');
-            const toastTitle = document.getElementById('toastTitle');
-            const toastMessage = document.getElementById('toastMessage');
-
-            toast.className = 'toast show ' + type;
-
-            const icons = { success: '✅', error: '❌', warning: '⚠️' };
-            toastIcon.textContent = icons[type] || '📢';
-            toastTitle.textContent = title;
-            toastMessage.textContent = message;
-
-            setTimeout(() => { toast.classList.remove('show'); }, 4000);
-        }
-
-        function updateProgress() {
-            const totalSteps = 4;
-            const progress = (currentStep / totalSteps) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
-            document.querySelector('.progress-bar').setAttribute('aria-valuenow', progress);
-        }
-
-        function handleKeyPress(event, callback) {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                callback();
-            }
-        }
-
-        function setupKeyboardNavigation() {
-            document.addEventListener('keydown', (e) => {
-                if (e.target.classList.contains('step') && (e.key === 'Enter' || e.key === ' ')) {
-                    e.preventDefault();
-                    const stepNum = parseInt(e.target.getAttribute('data-step'));
-                    if (stepNum < currentStep) { jumpToStep(stepNum); }
-                }
-            });
-        }
-
-        function jumpToStep(stepNum) {
-            if (stepNum >= 1 && stepNum < currentStep) {
-                collectCurrentFormData();
-                currentStep = stepNum;
-                updateStepIndicator();
-                showSection(currentStep);
-                updateProgress();
-                setTimeout(() => populateFormsWithData(), 50);
-            }
-        }
-
-        function validateField(input, field) {
-            let isValid = true;
-            let errorMessage = '';
-
-            if (field.required && !input.value.trim()) {
-                isValid = false;
-                errorMessage = `${field.label} is required`;
-            }
-
-            if (field.maxLength && input.value.length > field.maxLength) {
-                isValid = false;
-                errorMessage = `${field.label} must be less than ${field.maxLength} characters`;
-            }
-
-            if (field.type === 'email' && input.value && !isValidEmail(input.value)) {
-                isValid = false;
-                errorMessage = 'Please enter a valid email address';
-            }
-
-            const errorDiv = input.parentElement.querySelector('.field-error');
-            if (errorDiv) {
-                if (!isValid) {
-                    errorDiv.textContent = errorMessage;
-                    errorDiv.classList.add('show');
-                    input.classList.add('error');
-                    input.setAttribute('aria-invalid', 'true');
-                    input.setAttribute('aria-describedby', errorDiv.id);
-                } else {
-                    errorDiv.classList.remove('show');
-                    input.classList.remove('error');
-                    input.removeAttribute('aria-invalid');
-                    input.removeAttribute('aria-describedby');
-                }
-            }
-
-            return isValid;
-        }
-
-        function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
-
-        document.addEventListener('input', (e) => {
-            if (e.target.matches('.form-input, .form-select, .form-textarea')) {
-                const errorDiv = e.target.parentElement.querySelector('.field-error');
-                if (errorDiv) {
-                    errorDiv.classList.remove('show');
-                    e.target.classList.remove('error');
-                    e.target.removeAttribute('aria-invalid');
-                }
-                updateCharCounter(e.target);
-                collectCurrentFormData();
-                saveDraft();
-            }
+      try {
+        // You can send this to your webhook or a different endpoint
+        const response = await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'suggestion',
+            name: name,
+            department: dept,
+            category: category,
+            suggestion: text,
+            timestamp: new Date().toISOString()
+          })
         });
 
-        function updateCharCounter(input) {
-            const counter = input.parentElement.querySelector('.char-counter');
-            if (counter) {
-                const maxLength = parseInt(input.getAttribute('maxlength')) || 0;
-                const currentLength = input.value.length;
-                counter.textContent = `${currentLength} / ${maxLength}`;
-
-                if (currentLength > maxLength * 0.9) counter.classList.add('warning');
-                else counter.classList.remove('warning');
-
-                if (currentLength >= maxLength) counter.classList.add('danger');
-                else counter.classList.remove('danger');
-            }
-        }
-
-        function selectMode(mode) {
-            selectedMode = mode;
-            document.querySelectorAll('.mode-card').forEach(card => {
-                card.classList.remove('selected');
-                card.setAttribute('aria-pressed', 'false');
-            });
-            event.target.closest('.mode-card').classList.add('selected');
-            event.target.closest('.mode-card').setAttribute('aria-pressed', 'true');
-            document.getElementById('modeNext').disabled = false;
-
-            if (mode === 'add') document.getElementById('headerSubtitle').textContent = 'Add new items to Chat3PT database';
-            else document.getElementById('headerSubtitle').textContent = 'Edit existing items in Chat3PT database';
-
-            startAutosave();
-        }
-
-        function proceedFromMode() {
-            if (selectedMode === 'add') {
-                currentStep = 1;
-                document.getElementById('stepIndicator').style.display = 'flex';
-                showSection(1);
-                updateStepIndicator();
-                updateProgress();
-            } else if (selectedMode === 'edit') {
-                showSection('search');
-                loadAllItems();
-            }
-        }
-
-        function backToMode() {
-            collectCurrentFormData();
-            saveDraft();
-
-            currentStep = 0;
-            selectedMode = null;
-            document.getElementById('modeNext').disabled = true;
-            document.getElementById('stepIndicator').style.display = 'none';
-            document.querySelectorAll('.mode-card').forEach(card => {
-                card.classList.remove('selected');
-                card.setAttribute('aria-pressed', 'false');
-            });
-            showSection(0);
-            updateProgress();
-        }
-
-        // =========================
-        // SEARCH FUNCTIONALITY
-        // =========================
-
-        async function loadAllItems() {
-            const resultsDiv = document.getElementById('searchResults');
-            resultsDiv.innerHTML = '<div class="loading" role="status"><span class="sr-only">Loading...</span>Loading knowledge base...</div>';
-            resultsDiv.style.display = 'block';
-
-            try {
-                const data = await callN8N({ action: 'get_all' });
-                allKBItems = data.items || [];
-                displaySearchResults(allKBItems);
-            } catch (error) {
-                resultsDiv.innerHTML = '<div class="no-results">Error: ' + error.message + '</div>';
-                showToast('error', 'Network Error', error.message);
-            }
-        }
-
-        function handleSearch(event) { if (event.key === 'Enter') performSearch(); }
-
-        function performSearch() {
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            if (!query) { displaySearchResults(allKBItems); return; }
-
-            const filtered = allKBItems.filter(item => JSON.stringify(item).toLowerCase().includes(query));
-            displaySearchResults(filtered);
-
-            if (filtered.length === 0) showToast('warning', 'No Results', 'No items match your search');
-        }
-
-        function displaySearchResults(items) {
-            const resultsDiv = document.getElementById('searchResults');
-
-            if (items.length === 0) {
-                resultsDiv.innerHTML = '<div class="no-results">No items found. Try a different search term.</div>';
-                return;
-            }
-
-            let html = '<div class="search-results">';
-            items.forEach((item, index) => {
-                const name = item.product_name || item.procedure_name || item.policy_name || 'Unknown Item';
-                const type = item.type || (item.product_name ? 'product' : item.procedure_name ? 'procedure' : 'policy');
-                const status = item.status || 'N/A';
-
-                html += `
-                    <div class="result-item"
-                         onclick="selectItemForEdit(${index})"
-                         tabindex="0"
-                         role="option"
-                         onkeypress="handleKeyPress(event, () => selectItemForEdit(${index}))"
-                         aria-label="${name}, Type: ${type}, Status: ${status}">
-                        <div class="result-name">${name}</div>
-                        <div class="result-meta">Type: ${type.toUpperCase()} • Status: ${status}</div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-
-            resultsDiv.innerHTML = html;
-            resultsDiv.style.display = 'block';
-        }
-
-        function selectItemForEdit(index) {
-            const item = allKBItems[index];
-            editingItemId = item.id || item.row_number;
-
-            if (item.product_name) selectedType = 'product';
-            else if (item.procedure_name) selectedType = 'procedure';
-            else if (item.policy_name) selectedType = 'policy';
-
-            formData = { ...item };
-
-            generateBasicForm();
-            generateDetailsForm();
-
-            setTimeout(() => { populateFormsWithData(); }, 100);
-
-            document.getElementById('editModeBadge').innerHTML = '<span class="edit-badge">EDITING</span>';
-            document.getElementById('editModeBadge2').innerHTML = '<span class="edit-badge">EDITING</span>';
-
-            document.getElementById('submitBtn').textContent = 'Update ✓';
-            document.getElementById('submitBtn').className = 'btn btn-warning';
-
-            document.getElementById('stepIndicator').style.display = 'flex';
-            currentStep = 2;
-            updateStepIndicator();
-            showSection(2);
-            updateProgress();
-
-            showToast('success', 'Item Loaded', 'Ready to edit');
-            startAutosave();
-        }
-
-        function selectType(type) {
-            selectedType = type;
-            document.querySelectorAll('.type-card').forEach(card => {
-                card.classList.remove('selected');
-                card.setAttribute('aria-pressed', 'false');
-            });
-            event.target.closest('.type-card').classList.add('selected');
-            event.target.closest('.type-card').setAttribute('aria-pressed', 'true');
-            document.getElementById('step1Next').disabled = false;
-
-            generateBasicForm();
-            generateDetailsForm();
-        }
-
-        function generateForm(fields, containerId) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '<div class="form-grid">' + fields.map((field) => {
-                const errorId = `error-${field.name}`;
-                const counterId = `counter-${field.name}`;
-
-                return `
-                <div class="form-group ${field.full ? 'full' : ''}">
-                    <label class="form-label" for="${field.name}">
-                        ${field.label}
-                        ${field.required ? '<span class="required" aria-label="required">*</span>' : ''}
-                    </label>
-                    ${field.type === 'textarea' ?
-                        `<textarea
-                            class="form-textarea"
-                            name="${field.name}"
-                            id="${field.name}"
-                            ${field.required ? 'required aria-required="true"' : ''}
-                            ${field.maxLength ? 'maxlength="' + field.maxLength + '"' : ''}
-                            aria-label="${field.label}"
-                            ></textarea>` :
-                    field.type === 'select' ?
-                        `<select
-                            class="form-select"
-                            name="${field.name}"
-                            id="${field.name}"
-                            ${field.required ? 'required aria-required="true"' : ''}
-                            aria-label="${field.label}">
-                            <option value="">Select ${field.label}</option>
-                            ${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
-                        </select>` :
-                        `<input
-                            type="${field.type}"
-                            class="form-input"
-                            name="${field.name}"
-                            id="${field.name}"
-                            ${field.required ? 'required aria-required="true"' : ''}
-                            ${field.maxLength ? 'maxlength="' + field.maxLength + '"' : ''}
-                            aria-label="${field.label}"
-                            >`
-                    }
-                    ${field.hint ? `<div class="form-hint">${field.hint}</div>` : ''}
-                    ${field.maxLength && (field.type === 'textarea' || field.type === 'text') ?
-                        `<div class="char-counter" id="${counterId}" aria-live="polite">0 / ${field.maxLength}</div>` : ''}
-                    <div class="field-error" id="${errorId}" role="alert"></div>
-                </div>
-            `}).join('') + '</div>';
-        }
-
-        function generateBasicForm() { if (selectedType && formTemplates[selectedType]) generateForm(formTemplates[selectedType].basic, 'basicInfoForm'); }
-        function generateDetailsForm() { if (selectedType && formTemplates[selectedType]) generateForm(formTemplates[selectedType].details, 'detailsForm'); }
-
-        function populateFormsWithData() {
-            for (const [key, value] of Object.entries(formData)) {
-                const input = document.querySelector(`[name="${key}"]`);
-                if (input && value) {
-                    input.value = value;
-                    updateCharCounter(input);
-                }
-            }
-        }
-
-        function collectCurrentFormData() {
-            const currentSection = document.querySelector(`.form-section[data-section="${currentStep}"]`);
-            if (!currentSection) return;
-
-            const allInputs = currentSection.querySelectorAll('input, select, textarea');
-            allInputs.forEach(input => {
-                if (input.value.trim()) formData[input.name] = input.value.trim();
-            });
-        }
-
-        function nextStep() {
-            collectCurrentFormData();
-
-            const currentSection = document.querySelector(`.form-section[data-section="${currentStep}"]`);
-            let templateFields = [];
-
-            if (currentStep === 2 && selectedType && formTemplates[selectedType]) templateFields = formTemplates[selectedType].basic;
-            else if (currentStep === 3 && selectedType && formTemplates[selectedType]) templateFields = formTemplates[selectedType].details;
-
-            let isValid = true;
-            const requiredInputs = currentSection.querySelectorAll('input[required], select[required], textarea[required]');
-            requiredInputs.forEach(input => {
-                const field = templateFields.find(f => f.name === input.name);
-                if (field && !validateField(input, field)) isValid = false;
-            });
-
-            if (!isValid) {
-                showToast('error', 'Validation Error', 'Please fill in all required fields correctly');
-                const firstError = currentSection.querySelector('.form-input.error, .form-select.error, .form-textarea.error');
-                if (firstError) firstError.focus();
-                return;
-            }
-
-            saveDraft();
-
-            if (currentStep === 3) generateReview();
-
-            currentStep++;
-            updateStepIndicator();
-            showSection(currentStep);
-            updateProgress();
-
-            const stepName = currentStep === 2 ? 'Basic Information' :
-                           currentStep === 3 ? 'Details' :
-                           currentStep === 4 ? 'Review' : '';
-            if (stepName) announceToScreenReader(`Now on ${stepName} step`);
-        }
-
-        function prevStep() {
-            collectCurrentFormData();
-            saveDraft();
-
-            currentStep--;
-            updateStepIndicator();
-            showSection(currentStep);
-            updateProgress();
-
-            setTimeout(() => { populateFormsWithData(); }, 50);
-        }
-
-        function updateStepIndicator() {
-            document.querySelectorAll('.step').forEach((step, index) => {
-                const stepNum = index + 1;
-                if (stepNum < currentStep) {
-                    step.classList.add('completed');
-                    step.classList.remove('active');
-                    step.setAttribute('aria-current', 'false');
-                } else if (stepNum === currentStep) {
-                    step.classList.add('active');
-                    step.classList.remove('completed');
-                    step.setAttribute('aria-current', 'step');
-                } else {
-                    step.classList.remove('active', 'completed');
-                    step.setAttribute('aria-current', 'false');
-                }
-            });
-        }
-
-        function showSection(step) {
-  document.querySelectorAll('.form-section').forEach(section => {
-    section.classList.remove('active');
-  });
-
-  const targetSection = document.querySelector(`.form-section[data-section="${step}"]`);
-  if (targetSection) {
-    targetSection.classList.add('active');
-  }
-
-  // ✅ FIX: auto-load KB for search
-  if (step === 'search' && allKBItems.length === 0) {
-    loadAllItems();
-  }
-}
-
-
-        function generateReview() {
-            const reviewContent = document.getElementById('reviewContent');
-            let html = '<div style="background: var(--brand-light); padding: 20px; border-radius: 12px;">';
-            html += `<div style="margin-bottom: 20px;"><strong>Type:</strong> ${selectedType.toUpperCase()}</div>`;
-
-            if (selectedMode === 'edit') {
-                html += `<div style="margin-bottom: 20px; padding: 12px; background: var(--warning); color: white; border-radius: 8px; font-weight: 600;">
-                    ⚠️ EDITING MODE - This will update the existing item
-                </div>`;
-            }
-
-            for (const [key, value] of Object.entries(formData)) {
-                if (value && !['id', 'row_number', 'type', 'owner', 'last_updated'].includes(key)) {
-                    html += `<div style="margin-bottom: 12px;">
-                        <strong>${key.replace(/_/g, ' ').toUpperCase()}:</strong><br>
-                        <span style="color: var(--muted);">${value}</span>
-                    </div>`;
-                }
-            }
-            html += '</div>';
-            reviewContent.innerHTML = html;
-        }
-
-        async function submitForm() {
-            const submitBtn = document.getElementById('submitBtn');
-            const originalText = submitBtn.textContent;
-
-            submitBtn.disabled = true;
-            submitBtn.classList.add('loading');
-            submitBtn.textContent = selectedMode === 'edit' ? 'Updating...' : 'Submitting...';
-
-            try {
-                const submitData = {
-                    type: selectedType,
-                    action: selectedMode === 'edit' ? 'update_item' : 'add_item',
-                    data: {
-                        ...formData,
-                        owner: 'Web Editor',
-                        last_updated: new Date().toISOString().split('T')[0]
-                    }
-                };
-
-                if (selectedMode === 'edit' && editingItemId) {
-                    submitData.id = editingItemId;
-                }
-
-                await callN8N(submitData);
-
-                localStorage.removeItem(DRAFT_KEY);
-                stopAutosave();
-
-                document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-                document.getElementById('stepIndicator').style.display = 'none';
-
-                if (selectedMode === 'edit') {
-                    document.getElementById('successTitle').textContent = 'Successfully Updated!';
-                    document.getElementById('successText').textContent = 'Your item has been updated in the knowledge base';
-                } else {
-                    document.getElementById('successTitle').textContent = 'Successfully Added!';
-                    document.getElementById('successText').textContent = 'Your item has been added to the knowledge base';
-                }
-
-                document.getElementById('successMessage').classList.add('show');
-                announceToScreenReader('Form submitted successfully');
-
-            } catch (error) {
-                showToast('error', 'Network Error', error.message);
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('loading');
-                submitBtn.textContent = originalText;
-            }
-        }
-
-        function resetForm() {
-            currentStep = 0;
-            selectedMode = null;
-            selectedType = null;
-            formData = {};
-            editingItemId = null;
-            validationErrors = {};
-
-            stopAutosave();
-            localStorage.removeItem(DRAFT_KEY);
-
-            document.getElementById('successMessage').classList.remove('show');
-            document.querySelectorAll('.type-card').forEach(card => {
-                card.classList.remove('selected');
-                card.setAttribute('aria-pressed', 'false');
-            });
-            document.querySelectorAll('.mode-card').forEach(card => {
-                card.classList.remove('selected');
-                card.setAttribute('aria-pressed', 'false');
-            });
-            document.getElementById('step1Next').disabled = true;
-            document.getElementById('modeNext').disabled = true;
-            document.getElementById('searchInput').value = '';
-            document.getElementById('searchResults').style.display = 'none';
-            document.getElementById('editModeBadge').innerHTML = '';
-            document.getElementById('editModeBadge2').innerHTML = '';
-            document.getElementById('submitBtn').textContent = 'Submit ✓';
-            document.getElementById('submitBtn').className = 'btn btn-primary';
-            document.getElementById('headerSubtitle').textContent = 'Manage Chat3PT database';
-
-            updateStepIndicator();
-            showSection(0);
-            updateProgress();
-        }
-
-        function announceToScreenReader(message) {
-            const announcement = document.createElement('div');
-            announcement.setAttribute('role', 'status');
-            announcement.setAttribute('aria-live', 'polite');
-            announcement.className = 'sr-only';
-            announcement.textContent = message;
-            document.body.appendChild(announcement);
-
-            setTimeout(() => { document.body.removeChild(announcement); }, 1000);
-        }
-    </script>
+        // Show success message
+        document.getElementById('suggestionForm').classList.remove('active');
+        document.getElementById('successMessage').classList.add('show');
+        document.getElementById('suggestionToggle').textContent = '▼';
+
+        // Clear form
+        document.getElementById('suggestionName').value = '';
+        document.getElementById('suggestionDept').value = '';
+        document.getElementById('suggestionCategory').value = '';
+        document.getElementById('suggestionText').value = '';
+
+        // Hide success message after 5 seconds
+        setTimeout(() => {
+          document.getElementById('successMessage').classList.remove('show');
+        }, 5000);
+
+      } catch (error) {
+        alert('Error submitting suggestion. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Feedback';
+      }
+    }
+  </script>
 </body>
 </html>
