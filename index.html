@@ -215,15 +215,28 @@
     .composer{
       display:flex;
       flex-direction: column;
-      gap:10px;
+      gap:12px;
       padding: 14px;
       background: rgba(255,255,255,.92);
+    }
+
+    .category-row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .category-label{
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
     }
 
     .composer-row{
       display:flex;
       gap:10px;
-      align-items:center;
+      align-items:stretch;
     }
 
     .select{
@@ -235,7 +248,7 @@
       background: #fff;
       color: var(--text);
       cursor: pointer;
-      min-width: 140px;
+      flex: 1;
     }
 
     .select:focus{
@@ -276,7 +289,7 @@
 
     .foot{
       display:flex;
-      justify-content:space-between;
+      justify-content:flex-end;
       align-items:center;
       gap:10px;
       padding: 10px 14px 14px;
@@ -535,8 +548,6 @@
       .chat{ height: 68vh; }
       .brand p{ max-width: 240px; }
       .bubbleWrap{ max-width: 86%; }
-      .composer-row{ flex-direction: column; }
-      .select{ width: 100%; min-width: auto; }
       .form-row { grid-template-columns: 1fr; }
       
       .topbar {
@@ -570,16 +581,9 @@
         </div>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <a href="https://tg7htk4h89-afk.github.io/bank-chatbot-web/edit.html" class="edit-btn" title="Edit Knowledge Base">
-          <span class="edit-icon">✏️</span>
-          <span>Edit</span>
-        </a>
-        
-        <div class="status">
-          <span class="dot" id="statusDot"></span>
-          <span id="statusText">Ready</span>
-        </div>
+      <div class="status">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">Ready</span>
       </div>
     </div>
 
@@ -599,20 +603,27 @@
       <div class="divider"></div>
 
       <div class="composer">
+        <!-- Category selector row on top -->
+        <div class="category-row">
+          <span class="category-label">Please choose category or use Auto-detect</span>
+        </div>
+        
+        <!-- Category dropdown (full width) -->
+        <select id="categorySelect" class="select">
+          <option value="">Auto-detect</option>
+          <option value="policy">Policy</option>
+          <option value="procedure">Procedure</option>
+          <option value="product">Product</option>
+        </select>
+        
+        <!-- Input and send button row -->
         <div class="composer-row">
-          <select id="categorySelect" class="select">
-            <option value="">Auto-detect</option>
-            <option value="policy">Policy</option>
-            <option value="procedure">Procedure</option>
-            <option value="product">Product</option>
-          </select>
           <input id="inp" class="input" placeholder="Type your question..." autocomplete="off" />
           <button id="sendBtn" class="btn">Send</button>
         </div>
       </div>
 
       <div class="foot">
-        <div class="small">Tip: Ask in Arabic or English. Select category or use auto-detect.</div>
         <div class="small">Chat3PT • Web UI</div>
       </div>
     </div>
