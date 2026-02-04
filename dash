@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Knowledge Copilot – KPI Dashboard</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 0; background:#0b1020; color:#e9eefc; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    .top { display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+    .title { font-size: 18px; font-weight: 700; letter-spacing:.2px; }
+    .sub { opacity:.75; font-size: 13px; }
+    .controls { display:flex; gap:10px; align-items:center; }
+    select, button { background:#121a33; color:#e9eefc; border:1px solid #273258; padding:10px 12px; border-radius:10px; }
+    button { cursor:pointer; }
+    .grid { display:grid; grid-template-columns: repeat(12, 1fr); gap: 12px; margin-top: 16px; }
+    .card { background:#101831; border:1px solid #253056; border-radius:16px; padding:14px; }
+    .kpi { grid-column: span 3; }
+    .kpi .label { font-size: 12px; opacity:.75; }
+    .kpi .val { font-size: 26px; font-weight: 800; margin-top: 6px; }
+    .kpi .hint { font-size: 12px; opacity:.7; margin-top: 6px; }
+    .wide { grid-column: span 12; }
+    .half { grid-column: span 6; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { text-align:left; padding:10px 8px; border-bottom:1px solid #223055; font-size: 13px; }
+    .muted { opacity:.7; }
+    .pill { display:inline-block; padding:6px 10px; border-radius:999px; background:#121a33; border:1px solid #273258; font-size:12px; }
+    .ok { border-color:#2d8a5a; }
+    .warn { border-color:#b98b2f; }
+    .bad { border-color:#b24a4a; }
+    @media (max-width: 900px) {
+      .kpi { grid-column: span 6; }
+      .half { grid-column: span 12; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <div class="title">Knowledge Copilot – KPI Dashboard</div>
+        <div class="sub" id="subtitle">Loading…</div>
+      </div>
+      <div class="controls">
+        <select id="days">
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 90 days</option>
+        </select>
+        <button id="refresh">Refresh</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card kpi">
+        <div class="label">Employee adoption</div>
+        <div class="val" id="requests">—</div>
+        <div class="hint muted"># requests</div>
+      </div>
+
+      <div class="card kpi">
+        <div class="label">Active users</div>
+        <div class="val" id="activeUsers">—</div>
+        <div class="hint muted" id="activeUsersHint">unique sessions/users</div>
+      </div>
+
+      <div class="card kpi">
+        <div class="label">Correct answer rate (proxy)</div>
+        <div class="val" id="correctProxy">—</div>
+        <div class="hint muted">% high-confidence answers</div>
+      </div>
+
+      <div class="card kpi">
+        <div class="label">Hallucination rate (proxy)</div>
+        <div class="val" id="hallProxy">—</div>
+        <div class="hint muted">% low-confidence answers</div>
+      </div>
+
+      <div class="card kpi">
+        <div class="label">Escalation rate</div>
+        <div class="val" id="escalRate">—</div>
+        <div class="hint muted">% needs escalation</div>
+      </div>
+
+      <div class="card kpi">
+        <div class="label">Avg confidence</div>
+        <div class="val" id="avgConf">—</div>
+        <div class="hint muted">0.0 – 1.0</div>
+      </div>
+
+      <div class="card half">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-weight:700;">Status</div>
+          <span class="pill" id="statusPill">—</span>
+        </div>
+        <div class="muted" style="margin-top:10px; font-size:13px;" id="notes">—</div>
+      </div>
+
+      <div class="card half">
+        <div style="font-weight:700;">Daily requests</div>
+        <div class="muted" style="margin-top:6px; font-size:12px;">(from log timestamps)</div>
+        <div style="margin-top:10px;">
+          <table>
+            <thead>
+              <tr><th>Date</th><th>Requests</th></tr>
+            </thead>
+            <tbody id="trendBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ✅ CHANGE THIS to your NEW KPI webhook URL (production)
+    // Example:
+    // const KPI_API_URL = "https://taherkib.app.n8n.cloud/webhook/kpi-dashboard";
+    const KPI_API_URL = "REPLACE_WITH_YOUR_KPI_WEBHOOK_URL";
+
+    const els = {
+      subtitle: document.getElementById("subtitle"),
+      requests: document.getElementById("requests"),
+      activeUsers: document.getElementById("activeUsers"),
+      activeUsersHint: document.getElementById("activeUsersHint"),
+      correctProxy: document.getElementById("correctProxy"),
+      hallProxy: document.getElementById("hallProxy"),
+      escalRate: document.getElementById("escalRate"),
+      avgConf: document.getElementById("
