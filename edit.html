@@ -16,6 +16,9 @@
             --brand: #1f7a6b;
             --brand-light: rgba(31, 122, 107, 0.1);
             --brand2: #0ea5e9;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --success: #22c55e;
         }
 
         * {
@@ -85,6 +88,245 @@
             padding: 30px;
             margin-bottom: 24px;
             box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        /* Draft Banner */
+        .draft-banner {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--warning);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.3s;
+        }
+
+        .draft-banner.show {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .draft-banner button {
+            background: white;
+            color: var(--warning);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            display: none;
+            min-width: 300px;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .toast.show {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .toast-icon {
+            font-size: 24px;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .toast-message {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        /* Field Error Messages */
+        .field-error {
+            color: var(--danger);
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .field-error.show {
+            display: block;
+            animation: fadeIn 0.2s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mode Selection */
+        .mode-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .mode-card {
+            padding: 24px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .mode-card:hover {
+            border-color: var(--brand);
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(31,122,107,.15);
+        }
+
+        .mode-card.selected {
+            border-color: var(--brand);
+            background: var(--brand-light);
+        }
+
+        .mode-card:focus {
+            outline: 3px solid var(--brand);
+            outline-offset: 2px;
+        }
+
+        .mode-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .mode-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .mode-desc {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        /* Search Section */
+        .search-section {
+            margin-bottom: 24px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .search-input {
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(31,122,107,0.1);
+        }
+
+        .search-results {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: white;
+        }
+
+        .result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-item:hover,
+        .result-item:focus {
+            background: var(--brand-light);
+            outline: none;
+        }
+
+        .result-name {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .result-meta {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .no-results {
+            padding: 40px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .loading {
+            padding: 20px;
+            text-align: center;
+            color: var(--muted);
         }
 
         .step-indicator {
@@ -113,6 +355,13 @@
             flex: 1;
             position: relative;
             z-index: 1;
+            cursor: pointer;
+        }
+
+        .step:focus {
+            outline: 3px solid var(--brand);
+            outline-offset: 4px;
+            border-radius: 8px;
         }
 
         .step-circle {
@@ -134,7 +383,7 @@
         }
 
         .step.completed .step-circle {
-            background: #22c55e;
+            background: var(--success);
             color: white;
         }
 
@@ -155,10 +404,10 @@
 
         .form-section.active {
             display: block;
-            animation: fadeIn 0.3s;
+            animation: fadeInSection 0.3s;
         }
 
-        @keyframes fadeIn {
+        @keyframes fadeInSection {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
@@ -194,7 +443,7 @@
         }
 
         .form-label .required {
-            color: #ef4444;
+            color: var(--danger);
         }
 
         .form-input,
@@ -217,6 +466,12 @@
             box-shadow: 0 0 0 3px rgba(31,122,107,0.1);
         }
 
+        .form-input.error,
+        .form-select.error,
+        .form-textarea.error {
+            border-color: var(--danger);
+        }
+
         .form-textarea {
             resize: vertical;
             min-height: 100px;
@@ -226,6 +481,21 @@
             font-size: 12px;
             color: var(--muted);
             margin-top: 4px;
+        }
+
+        .char-counter {
+            font-size: 12px;
+            color: var(--muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .char-counter.warning {
+            color: var(--warning);
+        }
+
+        .char-counter.danger {
+            color: var(--danger);
         }
 
         .button-group {
@@ -243,6 +513,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            position: relative;
         }
 
         .btn-primary {
@@ -250,9 +521,14 @@
             color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(31,122,107,.3);
+        }
+
+        .btn-primary:focus {
+            outline: 3px solid var(--brand);
+            outline-offset: 2px;
         }
 
         .btn-secondary {
@@ -260,14 +536,57 @@
             color: var(--text);
         }
 
-        .btn-secondary:hover {
+        .btn-secondary:hover:not(:disabled) {
             background: var(--muted);
             color: white;
+        }
+
+        .btn-secondary:focus {
+            outline: 3px solid var(--muted);
+            outline-offset: 2px;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245,158,11,.3);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239,68,68,.3);
         }
 
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translateY(-50%) rotate(360deg); }
         }
 
         .type-selector {
@@ -296,6 +615,11 @@
         .type-card.selected {
             border-color: var(--brand);
             background: var(--brand-light);
+        }
+
+        .type-card:focus {
+            outline: 3px solid var(--brand);
+            outline-offset: 2px;
         }
 
         .type-icon {
@@ -341,6 +665,52 @@
             margin-bottom: 24px;
         }
 
+        .edit-badge {
+            display: inline-block;
+            background: var(--warning);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 12px;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--border);
+            z-index: 9999;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--brand);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Skip Link for Accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--brand);
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 0 0 8px 0;
+            z-index: 10000;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -348,71 +718,183 @@
             .type-selector {
                 grid-template-columns: 1fr;
             }
+            .mode-selector {
+                grid-template-columns: 1fr;
+            }
             .step-label {
                 font-size: 10px;
             }
+            .draft-banner {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                font-size: 12px;
+            }
+        }
+
+        /* Screen reader only */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
         }
     </style>
 </head>
 <body>
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- Draft Banner -->
+    <div class="draft-banner" id="draftBanner" role="alert">
+        <span>💾 Draft saved</span>
+        <button onclick="loadDraft()" aria-label="Continue from saved draft">Continue</button>
+        <button onclick="clearDraft()" aria-label="Discard saved draft">Discard</button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast" role="alert" aria-live="polite" aria-atomic="true">
+        <div class="toast-icon" id="toastIcon"></div>
+        <div class="toast-content">
+            <div class="toast-title" id="toastTitle"></div>
+            <div class="toast-message" id="toastMessage"></div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
             <div>
                 <h1>📝 Knowledge Base Editor</h1>
-                <p>Add new items to Chat3PT database</p>
+                <p id="headerSubtitle">Manage Chat3PT database</p>
             </div>
             <a href="https://tg7htk4h89-afk.github.io/bank-chatbot-web/chat.html" class="back-btn">← Back to Chat</a>
         </div>
 
-        <div class="card">
+        <div class="card" id="main-content">
+            <!-- Mode Selection (Step 0) -->
+            <div class="form-section active" data-section="0">
+                <h2 class="section-title">Choose Action</h2>
+                <div class="mode-selector" role="group" aria-label="Action selection">
+                    <div class="mode-card" 
+                         onclick="selectMode('add')" 
+                         tabindex="0" 
+                         role="button"
+                         aria-pressed="false"
+                         onkeypress="handleKeyPress(event, () => selectMode('add'))">
+                        <div class="mode-icon" aria-hidden="true">➕</div>
+                        <div class="mode-name">Add New Item</div>
+                        <div class="mode-desc">Create a new product, procedure, or policy</div>
+                    </div>
+                    <div class="mode-card" 
+                         onclick="selectMode('edit')" 
+                         tabindex="0" 
+                         role="button"
+                         aria-pressed="false"
+                         onkeypress="handleKeyPress(event, () => selectMode('edit'))">
+                        <div class="mode-icon" aria-hidden="true">✏️</div>
+                        <div class="mode-name">Edit Existing Item</div>
+                        <div class="mode-desc">Search and modify existing entries</div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="proceedFromMode()" id="modeNext" disabled aria-label="Proceed to next step">Next →</button>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <div class="form-section" data-section="search">
+                <h2 class="section-title">Search Knowledge Base</h2>
+                <div class="search-section">
+                    <div class="search-box">
+                        <input type="text" 
+                               class="search-input" 
+                               id="searchInput" 
+                               placeholder="Search by name, keywords, or description..."
+                               onkeyup="handleSearch(event)"
+                               aria-label="Search knowledge base">
+                        <button class="btn btn-primary" onclick="performSearch()" aria-label="Perform search">🔍 Search</button>
+                    </div>
+                    <div id="searchResults" style="display: none;" role="listbox" aria-label="Search results"></div>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="backToMode()">← Back</button>
+                </div>
+            </div>
+
             <!-- Step Indicator -->
-            <div class="step-indicator">
-                <div class="step active" data-step="1">
-                    <div class="step-circle">1</div>
+            <div class="step-indicator" id="stepIndicator" style="display: none;" role="navigation" aria-label="Form progress">
+                <div class="step active" data-step="1" tabindex="0" role="button" aria-label="Step 1: Select Type">
+                    <div class="step-circle" aria-hidden="true">1</div>
                     <div class="step-label">Select Type</div>
                 </div>
-                <div class="step" data-step="2">
-                    <div class="step-circle">2</div>
+                <div class="step" data-step="2" tabindex="0" role="button" aria-label="Step 2: Basic Info">
+                    <div class="step-circle" aria-hidden="true">2</div>
                     <div class="step-label">Basic Info</div>
                 </div>
-                <div class="step" data-step="3">
-                    <div class="step-circle">3</div>
+                <div class="step" data-step="3" tabindex="0" role="button" aria-label="Step 3: Details">
+                    <div class="step-circle" aria-hidden="true">3</div>
                     <div class="step-label">Details</div>
                 </div>
-                <div class="step" data-step="4">
-                    <div class="step-circle">4</div>
+                <div class="step" data-step="4" tabindex="0" role="button" aria-label="Step 4: Review">
+                    <div class="step-circle" aria-hidden="true">4</div>
                     <div class="step-label">Review</div>
                 </div>
             </div>
 
             <!-- Step 1: Type Selection -->
-            <div class="form-section active" data-section="1">
+            <div class="form-section" data-section="1">
                 <h2 class="section-title">What would you like to add?</h2>
-                <div class="type-selector">
-                    <div class="type-card" onclick="selectType('product')">
-                        <div class="type-icon">🏦</div>
+                <div class="type-selector" role="group" aria-label="Content type selection">
+                    <div class="type-card" 
+                         onclick="selectType('product')" 
+                         tabindex="0"
+                         role="button"
+                         aria-pressed="false"
+                         onkeypress="handleKeyPress(event, () => selectType('product'))">
+                        <div class="type-icon" aria-hidden="true">🏦</div>
                         <div class="type-name">Product</div>
                         <div class="type-desc">Banking products, cards, accounts</div>
                     </div>
-                    <div class="type-card" onclick="selectType('procedure')">
-                        <div class="type-icon">📋</div>
+                    <div class="type-card" 
+                         onclick="selectType('procedure')" 
+                         tabindex="0"
+                         role="button"
+                         aria-pressed="false"
+                         onkeypress="handleKeyPress(event, () => selectType('procedure'))">
+                        <div class="type-icon" aria-hidden="true">📋</div>
                         <div class="type-name">Procedure</div>
                         <div class="type-desc">Step-by-step processes</div>
                     </div>
-                    <div class="type-card" onclick="selectType('policy')">
-                        <div class="type-icon">📜</div>
+                    <div class="type-card" 
+                         onclick="selectType('policy')" 
+                         tabindex="0"
+                         role="button"
+                         aria-pressed="false"
+                         onkeypress="handleKeyPress(event, () => selectType('policy'))">
+                        <div class="type-icon" aria-hidden="true">📜</div>
                         <div class="type-name">Policy</div>
                         <div class="type-desc">Rules and regulations</div>
                     </div>
                 </div>
                 <div class="button-group">
+                    <button class="btn btn-secondary" onclick="backToMode()">← Back</button>
                     <button class="btn btn-primary" onclick="nextStep()" id="step1Next" disabled>Next →</button>
                 </div>
             </div>
 
-            <!-- Step 2: Basic Info (Dynamic based on type) -->
+            <!-- Step 2: Basic Info -->
             <div class="form-section" data-section="2">
-                <h2 class="section-title">Basic Information</h2>
+                <h2 class="section-title">Basic Information<span id="editModeBadge"></span></h2>
                 <div id="basicInfoForm"></div>
                 <div class="button-group">
                     <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
@@ -422,7 +904,7 @@
 
             <!-- Step 3: Detailed Info -->
             <div class="form-section" data-section="3">
-                <h2 class="section-title">Detailed Information</h2>
+                <h2 class="section-title">Detailed Information<span id="editModeBadge2"></span></h2>
                 <div id="detailsForm"></div>
                 <div class="button-group">
                     <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
@@ -436,114 +918,601 @@
                 <div id="reviewContent"></div>
                 <div class="button-group">
                     <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-                    <button class="btn btn-primary" onclick="submitForm()">Submit ✓</button>
+                    <button class="btn btn-primary" onclick="submitForm()" id="submitBtn">Submit ✓</button>
                 </div>
             </div>
 
             <!-- Success Message -->
-            <div class="success-message" id="successMessage">
-                <div class="success-icon">✅</div>
-                <div class="success-title">Successfully Added!</div>
-                <div class="success-text">Your item has been added to the knowledge base</div>
-                <button class="btn btn-primary" onclick="resetForm()">Add Another Item</button>
+            <div class="success-message" id="successMessage" role="alert">
+                <div class="success-icon" aria-hidden="true">✅</div>
+                <div class="success-title" id="successTitle">Successfully Added!</div>
+                <div class="success-text" id="successText">Your item has been added to the knowledge base</div>
+                <div class="button-group" style="justify-content: center;">
+                    <button class="btn btn-primary" onclick="resetForm()">Add Another Item</button>
+                    <a href="https://tg7htk4h89-afk.github.io/bank-chatbot-web/chat.html" class="btn btn-secondary" style="text-decoration: none; display: inline-block;">Back to Chat</a>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        let currentStep = 1;
+        let currentStep = 0;
+        let selectedMode = null;
         let selectedType = null;
         let formData = {};
+        let editingItemId = null;
+        let allKBItems = [];
+        let validationErrors = {};
 
-        const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/bf161d07-e9be-48fe-bdfa-0ea9e3e1abb5";
+        const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/d23c232b-3df1-441a-8e46-8dacf4514a99";
+        const DRAFT_KEY = 'chat3pt_kb_draft';
+        const AUTOSAVE_INTERVAL = 5000; // 5 seconds
+        let autosaveTimer = null;
 
-        // Form templates for each type
+        // Form templates
         const formTemplates = {
             product: {
                 basic: [
-                    { name: 'product_name', label: 'Product Name', type: 'text', required: true, full: true },
+                    { name: 'product_name', label: 'Product Name', type: 'text', required: true, full: true, maxLength: 100 },
                     { name: 'family', label: 'Product Family', type: 'select', required: true, options: ['Cards', 'Accounts', 'Loans', 'Services'] },
                     { name: 'tier', label: 'Tier', type: 'select', required: true, options: ['Basic', 'Standard', 'Plus', 'Premium'] },
                     { name: 'status', label: 'Status', type: 'select', required: true, options: ['draft', 'active', 'inactive'] },
                 ],
                 details: [
-                    { name: 'description', label: 'Description', type: 'textarea', required: true, full: true },
-                    { name: 'features', label: 'Features', type: 'textarea', required: true, full: true, hint: 'Comma-separated list' },
-                    { name: 'eligibility', label: 'Eligibility', type: 'textarea', required: true, full: true },
-                    { name: 'fees', label: 'Fees', type: 'text', required: false },
-                    { name: 'channels', label: 'Channels', type: 'text', required: false, hint: 'e.g., Branch, Mobile App, Call Center' },
-                    { name: 'keywords', label: 'Keywords', type: 'text', required: true, full: true, hint: 'Comma-separated for search' },
-                    { name: 'sample_questions', label: 'Sample Questions', type: 'textarea', required: false, full: true },
+                    { name: 'description', label: 'Description', type: 'textarea', required: true, full: true, maxLength: 500 },
+                    { name: 'features', label: 'Features', type: 'textarea', required: true, full: true, hint: 'Comma-separated list', maxLength: 1000 },
+                    { name: 'eligibility', label: 'Eligibility', type: 'textarea', required: true, full: true, maxLength: 500 },
+                    { name: 'fees', label: 'Fees', type: 'text', required: false, maxLength: 100 },
+                    { name: 'channels', label: 'Channels', type: 'text', required: false, hint: 'e.g., Branch, Mobile App, Call Center', maxLength: 200 },
+                    { name: 'keywords', label: 'Keywords', type: 'text', required: true, full: true, hint: 'Comma-separated for search', maxLength: 200 },
+                    { name: 'sample_questions', label: 'Sample Questions', type: 'textarea', required: false, full: true, maxLength: 500 },
                 ]
             },
             procedure: {
                 basic: [
-                    { name: 'procedure_name', label: 'Procedure Name', type: 'text', required: true, full: true },
-                    { name: 'related_area', label: 'Related Area', type: 'text', required: true },
+                    { name: 'procedure_name', label: 'Procedure Name', type: 'text', required: true, full: true, maxLength: 100 },
+                    { name: 'related_area', label: 'Related Area', type: 'text', required: true, maxLength: 100 },
                     { name: 'risk_level', label: 'Risk Level', type: 'select', required: true, options: ['low', 'medium', 'high'] },
-                    { name: 'sla', label: 'SLA', type: 'text', required: true, hint: 'e.g., Same day, Immediate' },
+                    { name: 'sla', label: 'SLA', type: 'text', required: true, hint: 'e.g., Same day, Immediate', maxLength: 50 },
                 ],
                 details: [
-                    { name: 'when_to_use', label: 'When to Use', type: 'textarea', required: true, full: true },
-                    { name: 'step_by_step', label: 'Step by Step Instructions', type: 'textarea', required: true, full: true, hint: 'Use \\n for new lines' },
-                    { name: 'systems_used', label: 'Systems Used', type: 'text', required: true, full: true, hint: 'Comma-separated' },
-                    { name: 'keywords', label: 'Keywords', type: 'text', required: true, full: true, hint: 'Comma-separated for search' },
-                    { name: 'sample_questions', label: 'Sample Questions', type: 'textarea', required: false, full: true },
-                    { name: 'common_errors', label: 'Common Errors', type: 'textarea', required: false, full: true },
+                    { name: 'when_to_use', label: 'When to Use', type: 'textarea', required: true, full: true, maxLength: 500 },
+                    { name: 'step_by_step', label: 'Step by Step Instructions', type: 'textarea', required: true, full: true, hint: 'Use \\n for new lines', maxLength: 2000 },
+                    { name: 'systems_used', label: 'Systems Used', type: 'text', required: true, full: true, hint: 'Comma-separated', maxLength: 200 },
+                    { name: 'keywords', label: 'Keywords', type: 'text', required: true, full: true, hint: 'Comma-separated for search', maxLength: 200 },
+                    { name: 'sample_questions', label: 'Sample Questions', type: 'textarea', required: false, full: true, maxLength: 500 },
+                    { name: 'common_errors', label: 'Common Errors', type: 'textarea', required: false, full: true, maxLength: 500 },
                 ]
             },
             policy: {
                 basic: [
-                    { name: 'policy_name', label: 'Policy Name', type: 'text', required: true, full: true },
+                    { name: 'policy_name', label: 'Policy Name', type: 'text', required: true, full: true, maxLength: 100 },
                     { name: 'scope', label: 'Scope', type: 'select', required: true, options: ['Retail', 'Corporate', 'All'] },
                     { name: 'status', label: 'Status', type: 'select', required: true, options: ['draft', 'active', 'inactive'] },
                     { name: 'review_cycle', label: 'Review Cycle', type: 'select', required: true, options: ['annual', 'semi-annual', 'quarterly'] },
                 ],
                 details: [
-                    { name: 'summary', label: 'Summary', type: 'textarea', required: true, full: true },
-                    { name: 'do', label: 'Do (Required Actions)', type: 'textarea', required: true, full: true, hint: 'Comma-separated' },
-                    { name: 'dont', label: "Don't (Prohibited Actions)", type: 'textarea', required: true, full: true, hint: 'Comma-separated' },
-                    { name: 'applicable_to', label: 'Applicable To', type: 'text', required: true },
-                    { name: 'escalation', label: 'Escalation', type: 'text', required: false },
-                    { name: 'keywords', label: 'Keywords', type: 'text', required: true, full: true, hint: 'Comma-separated for search' },
-                    { name: 'sample_questions', label: 'Sample Questions', type: 'textarea', required: false, full: true },
+                    { name: 'summary', label: 'Summary', type: 'textarea', required: true, full: true, maxLength: 500 },
+                    { name: 'do', label: 'Do (Required Actions)', type: 'textarea', required: true, full: true, hint: 'Comma-separated', maxLength: 500 },
+                    { name: 'dont', label: "Don't (Prohibited Actions)", type: 'textarea', required: true, full: true, hint: 'Comma-separated', maxLength: 500 },
+                    { name: 'applicable_to', label: 'Applicable To', type: 'text', required: true, maxLength: 100 },
+                    { name: 'escalation', label: 'Escalation', type: 'text', required: false, maxLength: 100 },
+                    { name: 'keywords', label: 'Keywords', type: 'text', required: true, full: true, hint: 'Comma-separated for search', maxLength: 200 },
+                    { name: 'sample_questions', label: 'Sample Questions', type: 'textarea', required: false, full: true, maxLength: 500 },
                 ]
             }
         };
+
+        // ============================================
+        // INITIALIZATION & DRAFT MANAGEMENT
+        // ============================================
+
+        window.addEventListener('load', () => {
+            checkForDraft();
+            setupKeyboardNavigation();
+        });
+
+        function checkForDraft() {
+            const draft = localStorage.getItem(DRAFT_KEY);
+            if (draft) {
+                try {
+                    const parsed = JSON.parse(draft);
+                    const age = Date.now() - parsed.timestamp;
+                    
+                    // Show draft banner if less than 24 hours old
+                    if (age < 24 * 60 * 60 * 1000) {
+                        document.getElementById('draftBanner').classList.add('show');
+                    } else {
+                        localStorage.removeItem(DRAFT_KEY);
+                    }
+                } catch (e) {
+                    localStorage.removeItem(DRAFT_KEY);
+                }
+            }
+        }
+
+        function saveDraft() {
+            if (currentStep > 0 && Object.keys(formData).length > 0) {
+                const draft = {
+                    timestamp: Date.now(),
+                    step: currentStep,
+                    mode: selectedMode,
+                    type: selectedType,
+                    data: formData,
+                    editingItemId: editingItemId
+                };
+                localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+            }
+        }
+
+        function loadDraft() {
+            const draft = localStorage.getItem(DRAFT_KEY);
+            if (!draft) return;
+
+            try {
+                const parsed = JSON.parse(draft);
+                
+                selectedMode = parsed.mode;
+                selectedType = parsed.type;
+                formData = parsed.data;
+                editingItemId = parsed.editingItemId;
+
+                if (selectedMode === 'edit' && editingItemId) {
+                    document.getElementById('editModeBadge').innerHTML = '<span class="edit-badge">EDITING</span>';
+                    document.getElementById('editModeBadge2').innerHTML = '<span class="edit-badge">EDITING</span>';
+                    document.getElementById('submitBtn').textContent = 'Update ✓';
+                    document.getElementById('submitBtn').className = 'btn btn-warning';
+                }
+
+                generateBasicForm();
+                generateDetailsForm();
+
+                setTimeout(() => {
+                    populateFormsWithData();
+                }, 100);
+
+                currentStep = parsed.step;
+                document.getElementById('stepIndicator').style.display = 'flex';
+                updateStepIndicator();
+                showSection(currentStep);
+                updateProgress();
+
+                document.getElementById('draftBanner').classList.remove('show');
+                showToast('success', 'Draft Loaded', 'Your saved draft has been restored');
+            } catch (e) {
+                showToast('error', 'Error', 'Failed to load draft');
+                clearDraft();
+            }
+        }
+
+        function clearDraft() {
+            localStorage.removeItem(DRAFT_KEY);
+            document.getElementById('draftBanner').classList.remove('show');
+            showToast('success', 'Draft Discarded', 'Your saved draft has been removed');
+        }
+
+        function startAutosave() {
+            if (autosaveTimer) clearInterval(autosaveTimer);
+            autosaveTimer = setInterval(() => {
+                collectCurrentFormData();
+                saveDraft();
+            }, AUTOSAVE_INTERVAL);
+        }
+
+        function stopAutosave() {
+            if (autosaveTimer) {
+                clearInterval(autosaveTimer);
+                autosaveTimer = null;
+            }
+        }
+
+        // ============================================
+        // TOAST NOTIFICATIONS
+        // ============================================
+
+        function showToast(type, title, message) {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toast.className = 'toast show ' + type;
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️'
+            };
+            
+            toastIcon.textContent = icons[type] || '📢';
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // ============================================
+        // PROGRESS BAR
+        // ============================================
+
+        function updateProgress() {
+            const totalSteps = 4;
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.querySelector('.progress-bar').setAttribute('aria-valuenow', progress);
+        }
+
+        // ============================================
+        // KEYBOARD NAVIGATION & ACCESSIBILITY
+        // ============================================
+
+        function handleKeyPress(event, callback) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                callback();
+            }
+        }
+
+        function setupKeyboardNavigation() {
+            // Allow keyboard navigation in step indicator
+            document.addEventListener('keydown', (e) => {
+                if (e.target.classList.contains('step') && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault();
+                    const stepNum = parseInt(e.target.getAttribute('data-step'));
+                    if (stepNum < currentStep) {
+                        jumpToStep(stepNum);
+                    }
+                }
+            });
+        }
+
+        function jumpToStep(stepNum) {
+            if (stepNum >= 1 && stepNum < currentStep) {
+                collectCurrentFormData();
+                currentStep = stepNum;
+                updateStepIndicator();
+                showSection(currentStep);
+                updateProgress();
+                
+                // Repopulate form
+                setTimeout(() => populateFormsWithData(), 50);
+            }
+        }
+
+        // ============================================
+        // FORM VALIDATION
+        // ============================================
+
+        function validateField(input, field) {
+            let isValid = true;
+            let errorMessage = '';
+
+            // Required validation
+            if (field.required && !input.value.trim()) {
+                isValid = false;
+                errorMessage = `${field.label} is required`;
+            }
+
+            // Max length validation
+            if (field.maxLength && input.value.length > field.maxLength) {
+                isValid = false;
+                errorMessage = `${field.label} must be less than ${field.maxLength} characters`;
+            }
+
+            // Email validation (if needed)
+            if (field.type === 'email' && input.value && !isValidEmail(input.value)) {
+                isValid = false;
+                errorMessage = 'Please enter a valid email address';
+            }
+
+            // Update UI
+            const errorDiv = input.parentElement.querySelector('.field-error');
+            if (errorDiv) {
+                if (!isValid) {
+                    errorDiv.textContent = errorMessage;
+                    errorDiv.classList.add('show');
+                    input.classList.add('error');
+                    input.setAttribute('aria-invalid', 'true');
+                    input.setAttribute('aria-describedby', errorDiv.id);
+                } else {
+                    errorDiv.classList.remove('show');
+                    input.classList.remove('error');
+                    input.removeAttribute('aria-invalid');
+                    input.removeAttribute('aria-describedby');
+                }
+            }
+
+            return isValid;
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Auto-clear validation errors
+        document.addEventListener('input', (e) => {
+            if (e.target.matches('.form-input, .form-select, .form-textarea')) {
+                const errorDiv = e.target.parentElement.querySelector('.field-error');
+                if (errorDiv) {
+                    errorDiv.classList.remove('show');
+                    e.target.classList.remove('error');
+                    e.target.removeAttribute('aria-invalid');
+                }
+
+                // Update character counter
+                updateCharCounter(e.target);
+                
+                // Autosave
+                collectCurrentFormData();
+                saveDraft();
+            }
+        });
+
+        function updateCharCounter(input) {
+            const counter = input.parentElement.querySelector('.char-counter');
+            if (counter) {
+                const maxLength = parseInt(input.getAttribute('maxlength')) || 0;
+                const currentLength = input.value.length;
+                counter.textContent = `${currentLength} / ${maxLength}`;
+                
+                if (currentLength > maxLength * 0.9) {
+                    counter.classList.add('warning');
+                } else {
+                    counter.classList.remove('warning');
+                }
+                
+                if (currentLength >= maxLength) {
+                    counter.classList.add('danger');
+                } else {
+                    counter.classList.remove('danger');
+                }
+            }
+        }
+
+        // ============================================
+        // MODE SELECTION
+        // ============================================
+
+        function selectMode(mode) {
+            selectedMode = mode;
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('selected');
+                card.setAttribute('aria-pressed', 'false');
+            });
+            event.target.closest('.mode-card').classList.add('selected');
+            event.target.closest('.mode-card').setAttribute('aria-pressed', 'true');
+            document.getElementById('modeNext').disabled = false;
+            
+            if (mode === 'add') {
+                document.getElementById('headerSubtitle').textContent = 'Add new items to Chat3PT database';
+            } else {
+                document.getElementById('headerSubtitle').textContent = 'Edit existing items in Chat3PT database';
+            }
+
+            startAutosave();
+        }
+
+        function proceedFromMode() {
+            if (selectedMode === 'add') {
+                currentStep = 1;
+                document.getElementById('stepIndicator').style.display = 'flex';
+                showSection(1);
+                updateStepIndicator();
+                updateProgress();
+            } else if (selectedMode === 'edit') {
+                showSection('search');
+                loadAllItems();
+            }
+        }
+
+        function backToMode() {
+            collectCurrentFormData();
+            saveDraft();
+            
+            currentStep = 0;
+            selectedMode = null;
+            document.getElementById('modeNext').disabled = true;
+            document.getElementById('stepIndicator').style.display = 'none';
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('selected');
+                card.setAttribute('aria-pressed', 'false');
+            });
+            showSection(0);
+            updateProgress();
+        }
+
+        // ============================================
+        // SEARCH FUNCTIONALITY
+        // ============================================
+
+        async function loadAllItems() {
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = '<div class="loading" role="status"><span class="sr-only">Loading...</span>Loading knowledge base...</div>';
+            resultsDiv.style.display = 'block';
+
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'get_all' })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    allKBItems = data.items || [];
+                    displaySearchResults(allKBItems);
+                } else {
+                    resultsDiv.innerHTML = '<div class="no-results">Error loading items. Please try again.</div>';
+                    showToast('error', 'Load Failed', 'Could not load knowledge base items');
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = '<div class="no-results">Error: ' + error.message + '</div>';
+                showToast('error', 'Network Error', error.message);
+            }
+        }
+
+        function handleSearch(event) {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
+        }
+
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            if (!query) {
+                displaySearchResults(allKBItems);
+                return;
+            }
+
+            const filtered = allKBItems.filter(item => {
+                const searchText = JSON.stringify(item).toLowerCase();
+                return searchText.includes(query);
+            });
+
+            displaySearchResults(filtered);
+            
+            if (filtered.length === 0) {
+                showToast('warning', 'No Results', 'No items match your search');
+            }
+        }
+
+        function displaySearchResults(items) {
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (items.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-results">No items found. Try a different search term.</div>';
+                return;
+            }
+
+            let html = '<div class="search-results">';
+            items.forEach((item, index) => {
+                const name = item.product_name || item.procedure_name || item.policy_name || 'Unknown Item';
+                const type = item.type || (item.product_name ? 'product' : item.procedure_name ? 'procedure' : 'policy');
+                const status = item.status || 'N/A';
+                
+                html += `
+                    <div class="result-item" 
+                         onclick="selectItemForEdit(${index})"
+                         tabindex="0"
+                         role="option"
+                         onkeypress="handleKeyPress(event, () => selectItemForEdit(${index}))"
+                         aria-label="${name}, Type: ${type}, Status: ${status}">
+                        <div class="result-name">${name}</div>
+                        <div class="result-meta">Type: ${type.toUpperCase()} • Status: ${status}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+
+        function selectItemForEdit(index) {
+            const item = allKBItems[index];
+            editingItemId = item.id || item.row_number;
+            
+            if (item.product_name) selectedType = 'product';
+            else if (item.procedure_name) selectedType = 'procedure';
+            else if (item.policy_name) selectedType = 'policy';
+            
+            formData = { ...item };
+            
+            generateBasicForm();
+            generateDetailsForm();
+            
+            setTimeout(() => {
+                populateFormsWithData();
+            }, 100);
+            
+            document.getElementById('editModeBadge').innerHTML = '<span class="edit-badge">EDITING</span>';
+            document.getElementById('editModeBadge2').innerHTML = '<span class="edit-badge">EDITING</span>';
+            
+            document.getElementById('submitBtn').textContent = 'Update ✓';
+            document.getElementById('submitBtn').className = 'btn btn-warning';
+            
+            document.getElementById('stepIndicator').style.display = 'flex';
+            currentStep = 2;
+            updateStepIndicator();
+            showSection(2);
+            updateProgress();
+
+            showToast('success', 'Item Loaded', 'Ready to edit');
+            startAutosave();
+        }
+
+        // ============================================
+        // TYPE SELECTION
+        // ============================================
 
         function selectType(type) {
             selectedType = type;
             document.querySelectorAll('.type-card').forEach(card => {
                 card.classList.remove('selected');
+                card.setAttribute('aria-pressed', 'false');
             });
             event.target.closest('.type-card').classList.add('selected');
+            event.target.closest('.type-card').setAttribute('aria-pressed', 'true');
             document.getElementById('step1Next').disabled = false;
             
-            // Generate forms for this type
             generateBasicForm();
             generateDetailsForm();
         }
 
+        // ============================================
+        // FORM GENERATION
+        // ============================================
+
         function generateForm(fields, containerId) {
             const container = document.getElementById(containerId);
-            container.innerHTML = '<div class="form-grid">' + fields.map(field => `
+            container.innerHTML = '<div class="form-grid">' + fields.map((field, idx) => {
+                const errorId = `error-${field.name}`;
+                const counterId = `counter-${field.name}`;
+                
+                return `
                 <div class="form-group ${field.full ? 'full' : ''}">
-                    <label class="form-label">
+                    <label class="form-label" for="${field.name}">
                         ${field.label}
-                        ${field.required ? '<span class="required">*</span>' : ''}
+                        ${field.required ? '<span class="required" aria-label="required">*</span>' : ''}
                     </label>
                     ${field.type === 'textarea' ? 
-                        `<textarea class="form-textarea" name="${field.name}" ${field.required ? 'required' : ''}></textarea>` :
+                        `<textarea 
+                            class="form-textarea" 
+                            name="${field.name}" 
+                            id="${field.name}"
+                            ${field.required ? 'required aria-required="true"' : ''}
+                            ${field.maxLength ? 'maxlength="' + field.maxLength + '"' : ''}
+                            aria-label="${field.label}"
+                            ></textarea>` :
                     field.type === 'select' ?
-                        `<select class="form-select" name="${field.name}" ${field.required ? 'required' : ''}>
+                        `<select 
+                            class="form-select" 
+                            name="${field.name}" 
+                            id="${field.name}"
+                            ${field.required ? 'required aria-required="true"' : ''}
+                            aria-label="${field.label}">
                             <option value="">Select ${field.label}</option>
                             ${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
                         </select>` :
-                        `<input type="${field.type}" class="form-input" name="${field.name}" ${field.required ? 'required' : ''}>`
+                        `<input 
+                            type="${field.type}" 
+                            class="form-input" 
+                            name="${field.name}" 
+                            id="${field.name}"
+                            ${field.required ? 'required aria-required="true"' : ''}
+                            ${field.maxLength ? 'maxlength="' + field.maxLength + '"' : ''}
+                            aria-label="${field.label}"
+                            >`
                     }
                     ${field.hint ? `<div class="form-hint">${field.hint}</div>` : ''}
+                    ${field.maxLength && (field.type === 'textarea' || field.type === 'text') ? 
+                        `<div class="char-counter" id="${counterId}" aria-live="polite">0 / ${field.maxLength}</div>` : ''}
+                    <div class="field-error" id="${errorId}" role="alert"></div>
                 </div>
-            `).join('') + '</div>';
+            `}).join('') + '</div>';
         }
 
         function generateBasicForm() {
@@ -558,33 +1527,72 @@
             }
         }
 
-        function nextStep() {
-            // Validate current step
-            const currentSection = document.querySelector(`.form-section[data-section="${currentStep}"]`);
-            const inputs = currentSection.querySelectorAll('input[required], select[required], textarea[required]');
-            let valid = true;
+        function populateFormsWithData() {
+            for (const [key, value] of Object.entries(formData)) {
+                const input = document.querySelector(`[name="${key}"]`);
+                if (input && value) {
+                    input.value = value;
+                    updateCharCounter(input);
+                }
+            }
+        }
 
-            inputs.forEach(input => {
-                if (!input.value.trim()) {
-                    valid = false;
-                    input.style.borderColor = '#ef4444';
-                } else {
-                    input.style.borderColor = '';
+        // ============================================
+        // FORM DATA COLLECTION (CRITICAL FIX)
+        // ============================================
+
+        function collectCurrentFormData() {
+            const currentSection = document.querySelector(`.form-section[data-section="${currentStep}"]`);
+            if (!currentSection) return;
+
+            const allInputs = currentSection.querySelectorAll('input, select, textarea');
+            
+            allInputs.forEach(input => {
+                if (input.value.trim()) {
+                    formData[input.name] = input.value.trim();
+                }
+            });
+        }
+
+        // ============================================
+        // STEP NAVIGATION
+        // ============================================
+
+        function nextStep() {
+            // CRITICAL: Collect data FIRST before validation
+            collectCurrentFormData();
+
+            // Get current template to validate against
+            const currentSection = document.querySelector(`.form-section[data-section="${currentStep}"]`);
+            let templateFields = [];
+            
+            if (currentStep === 2 && selectedType && formTemplates[selectedType]) {
+                templateFields = formTemplates[selectedType].basic;
+            } else if (currentStep === 3 && selectedType && formTemplates[selectedType]) {
+                templateFields = formTemplates[selectedType].details;
+            }
+
+            // Validate required fields
+            let isValid = true;
+            const requiredInputs = currentSection.querySelectorAll('input[required], select[required], textarea[required]');
+
+            requiredInputs.forEach(input => {
+                const field = templateFields.find(f => f.name === input.name);
+                if (field && !validateField(input, field)) {
+                    isValid = false;
                 }
             });
 
-            if (!valid) {
-                alert('Please fill in all required fields');
+            if (!isValid) {
+                showToast('error', 'Validation Error', 'Please fill in all required fields correctly');
+                // Focus first error
+                const firstError = currentSection.querySelector('.form-input.error, .form-select.error, .form-textarea.error');
+                if (firstError) firstError.focus();
                 return;
             }
 
-            // Save form data
-            inputs.forEach(input => {
-                formData[input.name] = input.value;
-            });
-            currentSection.querySelectorAll('input:not([required]), select:not([required]), textarea:not([required])').forEach(input => {
-                formData[input.name] = input.value;
-            });
+            // Save to localStorage
+            saveDraft();
 
             // Show review on last step
             if (currentStep === 3) {
@@ -595,12 +1603,31 @@
             currentStep++;
             updateStepIndicator();
             showSection(currentStep);
+            updateProgress();
+
+            // Announce to screen readers
+            const stepName = currentStep === 2 ? 'Basic Information' : 
+                           currentStep === 3 ? 'Details' : 
+                           currentStep === 4 ? 'Review' : '';
+            if (stepName) {
+                announceToScreenReader(`Now on ${stepName} step`);
+            }
         }
 
         function prevStep() {
+            // Save current data before going back
+            collectCurrentFormData();
+            saveDraft();
+
             currentStep--;
             updateStepIndicator();
             showSection(currentStep);
+            updateProgress();
+            
+            // Repopulate the previous step's form
+            setTimeout(() => {
+                populateFormsWithData();
+            }, 50);
         }
 
         function updateStepIndicator() {
@@ -609,11 +1636,14 @@
                 if (stepNum < currentStep) {
                     step.classList.add('completed');
                     step.classList.remove('active');
+                    step.setAttribute('aria-current', 'false');
                 } else if (stepNum === currentStep) {
                     step.classList.add('active');
                     step.classList.remove('completed');
+                    step.setAttribute('aria-current', 'step');
                 } else {
                     step.classList.remove('active', 'completed');
+                    step.setAttribute('aria-current', 'false');
                 }
             });
         }
@@ -622,7 +1652,16 @@
             document.querySelectorAll('.form-section').forEach(section => {
                 section.classList.remove('active');
             });
-            document.querySelector(`.form-section[data-section="${step}"]`).classList.add('active');
+            const targetSection = document.querySelector(`.form-section[data-section="${step}"]`);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                
+                // Focus first input in section
+                setTimeout(() => {
+                    const firstInput = targetSection.querySelector('input, select, textarea, button');
+                    if (firstInput) firstInput.focus();
+                }, 100);
+            }
         }
 
         function generateReview() {
@@ -630,8 +1669,14 @@
             let html = '<div style="background: var(--brand-light); padding: 20px; border-radius: 12px;">';
             html += `<div style="margin-bottom: 20px;"><strong>Type:</strong> ${selectedType.toUpperCase()}</div>`;
             
+            if (selectedMode === 'edit') {
+                html += `<div style="margin-bottom: 20px; padding: 12px; background: var(--warning); color: white; border-radius: 8px; font-weight: 600;">
+                    ⚠️ EDITING MODE - This will update the existing item
+                </div>`;
+            }
+            
             for (const [key, value] of Object.entries(formData)) {
-                if (value) {
+                if (value && !['id', 'row_number', 'type', 'owner', 'last_updated'].includes(key)) {
                     html += `<div style="margin-bottom: 12px;">
                         <strong>${key.replace(/_/g, ' ').toUpperCase()}:</strong><br>
                         <span style="color: var(--muted);">${value}</span>
@@ -642,12 +1687,22 @@
             reviewContent.innerHTML = html;
         }
 
+        // ============================================
+        // FORM SUBMISSION
+        // ============================================
+
         async function submitForm() {
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = selectedMode === 'edit' ? 'Updating...' : 'Submitting...';
+
             try {
-                // Add metadata
                 const submitData = {
                     type: selectedType,
-                    action: 'add_item',
+                    action: selectedMode === 'edit' ? 'update_item' : 'add_item',
                     data: {
                         ...formData,
                         owner: 'Web Editor',
@@ -655,7 +1710,10 @@
                     }
                 };
 
-                // Send to n8n webhook
+                if (selectedMode === 'edit' && editingItemId) {
+                    submitData.id = editingItemId;
+                }
+
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -663,25 +1721,93 @@
                 });
 
                 if (response.ok) {
+                    // Clear draft
+                    localStorage.removeItem(DRAFT_KEY);
+                    stopAutosave();
+
                     document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+                    document.getElementById('stepIndicator').style.display = 'none';
+                    
+                    if (selectedMode === 'edit') {
+                        document.getElementById('successTitle').textContent = 'Successfully Updated!';
+                        document.getElementById('successText').textContent = 'Your item has been updated in the knowledge base';
+                    } else {
+                        document.getElementById('successTitle').textContent = 'Successfully Added!';
+                        document.getElementById('successText').textContent = 'Your item has been added to the knowledge base';
+                    }
+                    
                     document.getElementById('successMessage').classList.add('show');
+                    announceToScreenReader('Form submitted successfully');
+                    
                 } else {
-                    alert('Error submitting form. Please try again.');
+                    const errorData = await response.json().catch(() => ({}));
+                    showToast('error', 'Submission Failed', errorData.message || 'Please try again');
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('loading');
+                    submitBtn.textContent = originalText;
                 }
             } catch (error) {
-                alert('Error submitting form: ' + error.message);
+                showToast('error', 'Network Error', error.message);
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+                submitBtn.textContent = originalText;
             }
         }
 
+        // ============================================
+        // RESET FORM
+        // ============================================
+
         function resetForm() {
-            currentStep = 1;
+            currentStep = 0;
+            selectedMode = null;
             selectedType = null;
             formData = {};
+            editingItemId = null;
+            validationErrors = {};
+            
+            stopAutosave();
+            localStorage.removeItem(DRAFT_KEY);
+            
             document.getElementById('successMessage').classList.remove('show');
-            document.querySelectorAll('.type-card').forEach(card => card.classList.remove('selected'));
+            document.querySelectorAll('.type-card').forEach(card => {
+                card.classList.remove('selected');
+                card.setAttribute('aria-pressed', 'false');
+            });
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('selected');
+                card.setAttribute('aria-pressed', 'false');
+            });
             document.getElementById('step1Next').disabled = true;
+            document.getElementById('modeNext').disabled = true;
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').style.display = 'none';
+            document.getElementById('editModeBadge').innerHTML = '';
+            document.getElementById('editModeBadge2').innerHTML = '';
+            document.getElementById('submitBtn').textContent = 'Submit ✓';
+            document.getElementById('submitBtn').className = 'btn btn-primary';
+            document.getElementById('headerSubtitle').textContent = 'Manage Chat3PT database';
+            
             updateStepIndicator();
-            showSection(1);
+            showSection(0);
+            updateProgress();
+        }
+
+        // ============================================
+        // ACCESSIBILITY HELPERS
+        // ============================================
+
+        function announceToScreenReader(message) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('role', 'status');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.className = 'sr-only';
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+            
+            setTimeout(() => {
+                document.body.removeChild(announcement);
+            }, 1000);
         }
     </script>
 </body>
