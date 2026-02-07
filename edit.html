@@ -284,7 +284,7 @@
         searchBox.classList.remove('show');
         formData = {};
         if (selectedType) nextBtn.disabled = false;
-        renderForms(formData); // Clear forms when switching back to Add
+        renderForms(formData);
       }
     }
 
@@ -293,7 +293,6 @@
       document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
 
-      // Clear formData if we are switching types in Add mode to prevent pollution
       if (mode === 'add') formData = {};
       
       renderForms(formData);
@@ -344,7 +343,6 @@
         if (Array.isArray(payload)) {
           row = payload[0] || null;
         } else if (payload && typeof payload === 'object') {
-          // Check common n8n wrappers
           const arrLike = 
             (Array.isArray(payload.data) && payload.data) || 
             (Array.isArray(payload.items) && payload.items) ||
@@ -354,9 +352,7 @@
           if (arrLike) row = arrLike[0] || null;
         }
 
-        // Fallback: maybe the payload IS the row object
         if (!row && payload && typeof payload === 'object' && !payload.error) {
-           // Ensure it's not a wrapper object with a single 'data' or 'item' key that is an object
            row = (payload.data && typeof payload.data === 'object' && !Array.isArray(payload.data) && payload.data) ||
                  (payload.item && typeof payload.item === 'object' && payload.item) ||
                  payload;
@@ -374,10 +370,8 @@
           return;
         }
 
-        // Optional: Verify ID matches what we asked for (case-insensitive check)
         const idKey = selectedType + "_id";
         const returnedId = (row[idKey] || '').toString().trim();
-        // Simple check if ID exists in row
         if (returnedId && returnedId.toLowerCase() !== id.toLowerCase()) {
              console.warn(`Possible ID mismatch: requested ${id}, got ${returnedId}`);
         }
@@ -387,7 +381,10 @@
 
         currentId = id;
         formData = row;
-        renderForms(formData); // Re-render forms with fetched data
+        
+        console.log("Loaded formData:", formData);
+        
+        // Don't render forms here - they'll be rendered when user clicks Next
         document.getElementById('btnStep1').disabled = false;
 
       } catch (e) {
@@ -401,11 +398,12 @@
       if (!selectedType) return;
       const schema = schemas[selectedType];
 
-      // Helper to safely escape HTML attributes
+      console.log("Rendering forms with data:", data);
+
       const escAttr = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
       const buildFields = (fields) => fields.map(f => {
-        const val = data[f.key] ?? ''; // Use nullish coalescing to handle 0 or false, but default to empty string
+        const val = data[f.key] ?? '';
 
         if (f.type === 'hidden') {
           return `<input type="hidden" name="${f.key}" value="${escAttr(val)}">`;
@@ -413,13 +411,11 @@
 
         let inputHtml = '';
         if (f.type === 'textarea') {
-          // Textarea contents should be strictly escaped
           inputHtml = `<textarea name="${f.key}" class="form-textarea">${String(val ?? '')}</textarea>`;
         } else if (f.type === 'select') {
           inputHtml = `<select name="${f.key}" class="form-select">
             <option value="">Select an option...</option>
             ${f.options.map(o => {
-               // Check strict equality or loose equality if numbers/strings differ
                const isSelected = String(val) === String(o) ? 'selected' : '';
                return `<option value="${escAttr(o)}" ${isSelected}>${o}</option>`;
             }).join('')}
@@ -438,8 +434,8 @@
       document.getElementById('formDetails').innerHTML = buildFields(schema.details);
     }
 
-    function nextStep() {
-      // Harvest data from current visible inputs before moving
+    function harvestCurrentFormData() {
+      // Harvest data from currently visible form fields
       const currentSection = document.getElementById(`section${currentStep}`);
       const inputs = currentSection.querySelectorAll('input, select, textarea');
       
@@ -448,18 +444,39 @@
             formData[i.name] = i.value;
         }
       });
+      
+      console.log("Harvested formData:", formData);
+    }
+
+    function nextStep() {
+      // Save current form values before moving
+      harvestCurrentFormData();
 
       if (currentStep < 4) {
         currentStep++;
         updateUI();
+        
+        // Re-render forms with latest data when moving to steps 2 or 3
+        if (currentStep === 2 || currentStep === 3) {
+          renderForms(formData);
+        }
       }
+      
       if (currentStep === 4) renderReview();
     }
 
     function prevStep() {
+      // Save current form values before going back
+      harvestCurrentFormData();
+      
       if (currentStep > 1) {
         currentStep--;
         updateUI();
+        
+        // Re-render forms when going back to steps 2 or 3
+        if (currentStep === 2 || currentStep === 3) {
+          renderForms(formData);
+        }
       }
     }
 
@@ -483,7 +500,6 @@
         if (!val) continue;
         if (key === selectedType + '_id') continue;
 
-        // Escape for display
         const safeVal = String(val).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
         html += `<div class="review-item">
@@ -496,10 +512,8 @@
     }
 
     async function submitData() {
-      // Auto-fill metadata without UI
       if (!formData.owner) formData.owner = DEFAULT_OWNER;
 
-      // Update timestamps if they are empty
       if (selectedType === 'product' || selectedType === 'procedure') {
          formData.last_updated = ISO_DATE();
       }
@@ -516,6 +530,8 @@
       if (mode === 'edit') {
         payload.data[selectedType + '_id'] = currentId;
       }
+
+      console.log("Submitting payload:", payload);
 
       try {
         const btn = document.querySelector('#section4 .btn-primary');
