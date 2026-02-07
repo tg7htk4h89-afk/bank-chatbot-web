@@ -3,229 +3,434 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat3PT - Knowledge Base Manager</title>
+    <title>Chat3PT - Knowledge Base Editor</title>
     <style>
         :root {
             --bg1: #e8f1f6; --bg2: #eef2ff; --card: #ffffff; --text: #0f172a;
             --muted: #64748b; --border: #e2e8f0; --shadow: 0 14px 40px rgba(2, 6, 23, .10);
-            --brand: #1f7a6b; --brand-light: rgba(31, 122, 107, 0.1); --brand2: #0ea5e9;
+            --brand: #1f7a6b; --brand-light: rgba(31, 122, 107, 0.1);
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: ui-sans-serif, system-ui, sans-serif;
             background: linear-gradient(180deg, var(--bg1), var(--bg2));
             min-height: 100vh; padding: 20px; color: var(--text);
         }
+
         .container { max-width: 1000px; margin: 0 auto; }
+        
+        /* Header & Steps */
         .header {
             background: rgba(255,255,255,.9); border-radius: 20px; padding: 24px;
-            margin-bottom: 24px; box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 24px; box-shadow: var(--shadow);
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .mode-switch {
-            background: var(--bg1); padding: 4px; border-radius: 12px; display: flex; gap: 4px;
+        .card {
+            background: white; border-radius: 20px; padding: 30px; 
+            margin-bottom: 24px; box-shadow: var(--shadow);
+            min-height: 400px;
+        }
+
+        .step-indicator {
+            display: flex; justify-content: space-between; margin-bottom: 30px; position: relative;
+        }
+        .step-indicator::before {
+            content: ''; position: absolute; top: 20px; left: 0; right: 0;
+            height: 2px; background: var(--border); z-index: 0;
+        }
+        .step {
+            position: relative; z-index: 1; flex: 1; display: flex; 
+            flex-direction: column; align-items: center; gap: 8px;
+        }
+        .step-circle {
+            width: 40px; height: 40px; border-radius: 50%; background: var(--border);
+            color: var(--muted); display: grid; place-items: center; font-weight: 700;
+            transition: all 0.3s;
+        }
+        .step.active .step-circle { background: var(--brand); color: white; box-shadow: 0 0 0 4px var(--brand-light); }
+        .step.completed .step-circle { background: #22c55e; color: white; }
+        .step-label { font-size: 12px; font-weight: 600; color: var(--muted); }
+        .step.active .step-label { color: var(--brand); }
+
+        /* Form Elements */
+        .form-section { display: none; animation: fadeIn 0.3s; }
+        .form-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .type-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+        .type-card {
+            padding: 24px; border: 2px solid var(--border); border-radius: 16px;
+            text-align: center; cursor: pointer; transition: all 0.3s;
+        }
+        .type-card:hover { transform: translateY(-4px); border-color: var(--brand); }
+        .type-card.selected { border-color: var(--brand); background: var(--brand-light); }
+        .type-icon { font-size: 32px; margin-bottom: 10px; }
+
+        .mode-toggle {
+            display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;
+            background: var(--bg1); padding: 5px; border-radius: 10px; width: fit-content; margin-left: auto; margin-right: auto;
         }
         .mode-btn {
-            padding: 8px 16px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;
+            padding: 8px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;
+            background: transparent; color: var(--muted);
         }
-        .mode-btn.active { background: var(--brand); color: white; }
-        .card {
-            background: white; border-radius: 20px; padding: 30px; margin-bottom: 24px; box-shadow: var(--shadow);
+        .mode-btn.active { background: white; color: var(--brand); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        .search-container {
+            background: var(--brand-light); padding: 20px; border-radius: 12px;
+            margin-top: 20px; display: none;
         }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+        .search-container.show { display: block; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
         .form-group.full { grid-column: 1 / -1; }
-        .form-label { font-size: 14px; font-weight: 600; margin-bottom: 8px; display: block; }
+        .form-label { font-size: 14px; font-weight: 600; }
         .form-input, .form-select, .form-textarea {
-            width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px;
+            padding: 12px; border: 1px solid var(--border); border-radius: 10px; width: 100%;
         }
+        .form-textarea { min-height: 100px; resize: vertical; }
+
+        .button-group { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; }
         .btn {
-            padding: 12px 24px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; background: var(--brand); color: white;
+            padding: 12px 24px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s;
         }
-        .search-box { display: flex; gap: 10px; margin-bottom: 20px; padding: 20px; background: var(--brand-light); border-radius: 12px; }
-        .hidden { display: none; }
+        .btn-primary { background: var(--brand); color: white; }
+        .btn-secondary { background: var(--border); color: var(--text); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Review Styles */
+        .review-item { margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        .review-label { font-size: 12px; color: var(--muted); text-transform: uppercase; }
+        .review-value { font-weight: 500; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div>
-                <h1>📝 Knowledge Base Manager</h1>
-                <p>Add or Update Database Items</p>
-            </div>
-            <div class="mode-switch">
-                <button class="mode-btn active" onclick="setMode('add')">Add New</button>
-                <button class="mode-btn" onclick="setMode('edit')">Edit Existing</button>
-            </div>
+            <h1>📝 Knowledge Base Manager</h1>
         </div>
 
         <div class="card">
-            <div id="searchSection" class="hidden">
-                <div class="search-box">
-                    <input type="text" id="searchId" class="form-input" placeholder="Enter ID (e.g., PRD-001)">
-                    <button class="btn" onclick="fetchItem()">🔍 Load Data</button>
+            <div class="step-indicator">
+                <div class="step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Select Type</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Basic Info</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Details</div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Review</div>
                 </div>
             </div>
 
-            <div class="form-group" style="margin-bottom: 20px;">
-                <label class="form-label">Select Data Type</label>
-                <select id="typeSelect" class="form-select" onchange="renderForm()">
-                    <option value="product">Product</option>
-                    <option value="procedure">Procedure</option>
-                    <option value="policy">Policy</option>
-                </select>
+            <div class="form-section active" id="section1">
+                <h2 style="text-align:center; margin-bottom:20px;">What are you working on?</h2>
+                
+                <div class="mode-toggle">
+                    <button class="mode-btn active" onclick="setMode('add')">Add New Item</button>
+                    <button class="mode-btn" onclick="setMode('edit')">Edit Existing</button>
+                </div>
+
+                <div class="type-selector">
+                    <div class="type-card" onclick="selectType('product', this)">
+                        <div class="type-icon">🏦</div>
+                        <div>Product</div>
+                    </div>
+                    <div class="type-card" onclick="selectType('procedure', this)">
+                        <div class="type-icon">📋</div>
+                        <div>Procedure</div>
+                    </div>
+                    <div class="type-card" onclick="selectType('policy', this)">
+                        <div class="type-icon">📜</div>
+                        <div>Policy</div>
+                    </div>
+                </div>
+
+                <div class="search-container" id="searchBox">
+                    <label class="form-label">Search by ID to Edit</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="searchId" class="form-input" placeholder="e.g. PRD-001">
+                        <button class="btn btn-primary" onclick="fetchData()">Search</button>
+                    </div>
+                    <p id="searchStatus" style="margin-top:10px; font-size:13px; color:var(--muted);"></p>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" id="btnStep1" onclick="nextStep()" disabled>Next Step →</button>
+                </div>
             </div>
 
-            <div id="dynamicForm"></div>
+            <div class="form-section" id="section2">
+                <h2>Basic Information</h2>
+                <div id="formBasic" class="form-grid"></div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Next Step →</button>
+                </div>
+            </div>
 
-            <div style="text-align: right; margin-top: 20px;">
-                <button class="btn" onclick="submitForm()">Submit to Database</button>
+            <div class="form-section" id="section3">
+                <h2>Detailed Information</h2>
+                <div id="formDetails" class="form-grid"></div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Review →</button>
+                </div>
+            </div>
+
+            <div class="form-section" id="section4">
+                <h2>Review & Submit</h2>
+                <div id="reviewContent" style="background:var(--bg1); padding:20px; border-radius:12px;"></div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="submitData()">Submit Data ✓</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Updated Webhook URL
-        const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/webhook"; 
-        
-        let currentMode = 'add';
+        const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/webhook";
+        let currentStep = 1;
+        let mode = 'add';
+        let selectedType = null;
         let currentId = null;
+        let formData = {};
 
+        // Definitions
         const schemas = {
-            product: [
-                { name: 'product_id', label: 'Product ID (Auto/Read-only)', type: 'text', readonly: true },
-                { name: 'product_name', label: 'Product Name', type: 'text' },
-                { name: 'family', label: 'Family', type: 'select', options: ['Cards', 'Accounts', 'Loans'] },
-                { name: 'tier', label: 'Tier', type: 'select', options: ['Basic', 'Standard', 'Plus', 'Premium'] },
-                { name: 'description', label: 'Description', type: 'textarea', full: true },
-                { name: 'features', label: 'Features', type: 'textarea', full: true },
-                { name: 'eligibility', label: 'Eligibility', type: 'textarea', full: true },
-                { name: 'fees', label: 'Fees', type: 'text' },
-                { name: 'channels', label: 'Channels', type: 'text' },
-                { name: 'keywords', label: 'Keywords', type: 'text', full: true },
-                { name: 'owner', label: 'Owner', type: 'text' },
-                { name: 'status', label: 'Status', type: 'select', options: ['draft', 'active', 'inactive'] }
-            ],
-            procedure: [
-                { name: 'procedure_id', label: 'Procedure ID', type: 'text', readonly: true },
-                { name: 'procedure_name', label: 'Procedure Name', type: 'text' },
-                { name: 'related_area', label: 'Related Area', type: 'text' },
-                { name: 'step_by_step', label: 'Steps', type: 'textarea', full: true },
-                { name: 'sla', label: 'SLA', type: 'text' },
-                { name: 'keywords', label: 'Keywords', type: 'text', full: true },
-                { name: 'owner', label: 'Owner', type: 'text' }
-            ],
-            policy: [
-                { name: 'policy_id', label: 'Policy ID', type: 'text', readonly: true },
-                { name: 'policy_name', label: 'Policy Name', type: 'text' },
-                { name: 'scope', label: 'Scope', type: 'text' },
-                { name: 'summary', label: 'Summary', type: 'textarea', full: true },
-                { name: 'do', label: 'Do', type: 'textarea', full: true },
-                { name: 'dont', label: 'Don\'t', type: 'textarea', full: true },
-                { name: 'keywords', label: 'Keywords', type: 'text', full: true },
-                { name: 'owner', label: 'Owner', type: 'text' }
-            ]
+            product: {
+                basic: [
+                    { key: 'product_name', label: 'Product Name', type: 'text' },
+                    { key: 'family', label: 'Family', type: 'select', options: ['Cards', 'Accounts', 'Loans'] },
+                    { key: 'tier', label: 'Tier', type: 'select', options: ['Basic', 'Standard', 'Plus', 'Premium'] },
+                    { key: 'status', label: 'Status', type: 'select', options: ['draft', 'active'] }
+                ],
+                details: [
+                    { key: 'description', label: 'Description', type: 'textarea', full: true },
+                    { key: 'features', label: 'Features', type: 'textarea', full: true },
+                    { key: 'eligibility', label: 'Eligibility', type: 'textarea', full: true },
+                    { key: 'fees', label: 'Fees', type: 'text' },
+                    { key: 'channels', label: 'Channels', type: 'text' },
+                    { key: 'keywords', label: 'Keywords', type: 'text', full: true }
+                ]
+            },
+            procedure: {
+                basic: [
+                    { key: 'procedure_name', label: 'Procedure Name', type: 'text', full: true },
+                    { key: 'related_area', label: 'Related Area', type: 'text' },
+                    { key: 'sla', label: 'SLA', type: 'text' }
+                ],
+                details: [
+                    { key: 'step_by_step', label: 'Steps', type: 'textarea', full: true },
+                    { key: 'when_to_use', label: 'When to Use', type: 'textarea', full: true },
+                    { key: 'systems_used', label: 'Systems', type: 'text', full: true },
+                    { key: 'keywords', label: 'Keywords', type: 'text', full: true }
+                ]
+            },
+            policy: {
+                basic: [
+                    { key: 'policy_name', label: 'Policy Name', type: 'text', full: true },
+                    { key: 'scope', label: 'Scope', type: 'text' },
+                    { key: 'status', label: 'Status', type: 'select', options: ['draft', 'active'] }
+                ],
+                details: [
+                    { key: 'summary', label: 'Summary', type: 'textarea', full: true },
+                    { key: 'do', label: 'Do', type: 'textarea', full: true },
+                    { key: 'dont', label: 'Don\'t', type: 'textarea', full: true },
+                    { key: 'keywords', label: 'Keywords', type: 'text', full: true }
+                ]
+            }
         };
 
-        function setMode(mode) {
-            currentMode = mode;
+        function setMode(m) {
+            mode = m;
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
             
-            if(mode === 'edit') {
-                document.getElementById('searchSection').classList.remove('hidden');
-            } else {
-                document.getElementById('searchSection').classList.add('hidden');
-                document.getElementById('dynamicForm').reset();
-                currentId = null;
-            }
-            renderForm();
-        }
-
-        function renderForm(data = {}) {
-            const type = document.getElementById('typeSelect').value;
-            const fields = schemas[type];
-            let html = '<div class="form-grid">';
+            // Show search if editing
+            const searchBox = document.getElementById('searchBox');
+            const nextBtn = document.getElementById('btnStep1');
             
-            fields.forEach(field => {
-                const value = data[field.name] || '';
-                const isReadOnly = field.readonly || (field.name.includes('_id') && currentMode === 'add');
-                
-                html += `
-                <div class="form-group ${field.full ? 'full' : ''}">
-                    <label class="form-label">${field.label}</label>
-                    ${field.type === 'textarea' 
-                        ? `<textarea name="${field.name}" class="form-textarea" ${isReadOnly ? 'disabled' : ''}>${value}</textarea>`
-                        : field.type === 'select'
-                            ? `<select name="${field.name}" class="form-select">
-                                ${field.options.map(o => `<option value="${o}" ${value === o ? 'selected' : ''}>${o}</option>`).join('')}
-                               </select>`
-                            : `<input type="text" name="${field.name}" value="${value}" class="form-input" ${isReadOnly ? 'disabled' : ''}>`
-                    }
-                </div>`;
-            });
-            html += '</div>';
-            document.getElementById('dynamicForm').innerHTML = html;
+            if (mode === 'edit') {
+                searchBox.classList.add('show');
+                nextBtn.disabled = true; // Must search first
+            } else {
+                searchBox.classList.remove('show');
+                formData = {}; // Clear data
+                if (selectedType) nextBtn.disabled = false;
+            }
         }
 
-        async function fetchItem() {
+        function selectType(type, card) {
+            selectedType = type;
+            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+
+            // Generate forms immediately so they are ready
+            renderForms();
+
+            // Enable Next button if adding
+            if (mode === 'add') {
+                document.getElementById('btnStep1').disabled = false;
+            } else {
+                // If editing, they still need to search
+                document.getElementById('btnStep1').disabled = true;
+            }
+        }
+
+        async function fetchData() {
             const id = document.getElementById('searchId').value;
-            const type = document.getElementById('typeSelect').value;
-            if(!id) return alert("Please enter an ID");
+            const statusEl = document.getElementById('searchStatus');
+            
+            if (!selectedType) return alert("Please select a Type first.");
+            if (!id) return alert("Please enter an ID.");
 
+            statusEl.innerText = "Searching...";
+            
             try {
-                // We send a GET request with query params to the n8n webhook
-                const response = await fetch(`${WEBHOOK_URL}?action=fetch&id=${id}&type=${type}`);
-                const data = await response.json();
-                
-                if(data.error) {
-                    alert("Item not found");
+                const res = await fetch(`${WEBHOOK_URL}?action=fetch&type=${selectedType}&id=${id}`);
+                const data = await res.json();
+
+                if (data.error || Object.keys(data).length === 0) {
+                    statusEl.innerText = "❌ Item not found.";
+                    statusEl.style.color = "red";
                 } else {
+                    statusEl.innerText = "✅ Data loaded! Click Next.";
+                    statusEl.style.color = "green";
                     currentId = id;
-                    renderForm(data); // Populate form
+                    formData = data; // Store fetched data
+                    renderForms(data); // Fill forms
+                    document.getElementById('btnStep1').disabled = false;
                 }
-            } catch(e) {
-                alert("Error fetching data: " + e.message);
+            } catch (e) {
+                statusEl.innerText = "Error connecting to database.";
             }
         }
 
-        async function submitForm() {
-            const type = document.getElementById('typeSelect').value;
-            const inputs = document.querySelectorAll('#dynamicForm [name]');
-            let payload = {
-                type: type,
-                action: currentMode === 'add' ? 'add_item' : 'update_item',
-                data: {}
-            };
-
-            inputs.forEach(input => {
-                if(!input.disabled) {
-                    payload.data[input.name] = input.value;
+        function renderForms(data = {}) {
+            if (!selectedType) return;
+            const schema = schemas[selectedType];
+            
+            // Helper to build HTML
+            const buildFields = (fields) => fields.map(f => {
+                const val = data[f.key] || '';
+                let inputHtml = '';
+                
+                if (f.type === 'textarea') {
+                    inputHtml = `<textarea name="${f.key}" class="form-textarea">${val}</textarea>`;
+                } else if (f.type === 'select') {
+                    inputHtml = `<select name="${f.key}" class="form-select">
+                        ${f.options.map(o => `<option value="${o}" ${val===o?'selected':''}>${o}</option>`).join('')}
+                    </select>`;
+                } else {
+                    inputHtml = `<input type="text" name="${f.key}" value="${val}" class="form-input">`;
                 }
+
+                return `<div class="form-group ${f.full?'full':''}">
+                    <label class="form-label">${f.label}</label>
+                    ${inputHtml}
+                </div>`;
+            }).join('');
+
+            document.getElementById('formBasic').innerHTML = buildFields(schema.basic);
+            document.getElementById('formDetails').innerHTML = buildFields(schema.details);
+        }
+
+        function nextStep() {
+            // Harvest data from current visible inputs before moving
+            const currentSection = document.getElementById(`section${currentStep}`);
+            const inputs = currentSection.querySelectorAll('input, select, textarea');
+            inputs.forEach(i => formData[i.name] = i.value);
+
+            if (currentStep < 4) {
+                currentStep++;
+                updateUI();
+            }
+            if (currentStep === 4) renderReview();
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            // Steps
+            document.querySelectorAll('.step').forEach((el, idx) => {
+                const num = idx + 1;
+                el.classList.remove('active', 'completed');
+                if (num < currentStep) el.classList.add('completed');
+                if (num === currentStep) el.classList.add('active');
             });
 
-            if(currentMode === 'edit') {
-                payload.data[type + '_id'] = currentId; // Ensure ID is sent for updates
+            // Sections
+            document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(`section${currentStep}`).classList.add('active');
+        }
+
+        function renderReview() {
+            let html = `<h3>${selectedType.toUpperCase()} - ${mode.toUpperCase()}</h3>`;
+            html += `<p style="margin-bottom:15px; font-size:12px; color:#666;">ID: ${mode==='edit'?currentId:'Auto-Generated'}</p>`;
+            
+            for (const [key, val] of Object.entries(formData)) {
+                if(val && key !== selectedType+'_id') {
+                    html += `<div class="review-item">
+                        <div class="review-label">${key.replace(/_/g,' ')}</div>
+                        <div class="review-value">${val}</div>
+                    </div>`;
+                }
+            }
+            document.getElementById('reviewContent').innerHTML = html;
+        }
+
+        async function submitData() {
+            const payload = {
+                type: selectedType,
+                action: mode === 'add' ? 'add_item' : 'update_item',
+                data: formData
+            };
+            
+            // Add ID if editing
+            if (mode === 'edit') {
+                payload.data[selectedType + '_id'] = currentId;
             }
 
             try {
-                const response = await fetch(WEBHOOK_URL, {
+                const btn = document.querySelector('#section4 .btn-primary');
+                btn.innerText = "Sending...";
+                btn.disabled = true;
+
+                const res = await fetch(WEBHOOK_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(payload)
                 });
-                
-                if(response.ok) {
+
+                if (res.ok) {
                     alert("Success! Database updated.");
-                    if(currentMode === 'add') location.reload();
+                    location.reload();
                 } else {
-                    alert("Error updating database.");
+                    alert("Error submitting data.");
+                    btn.innerText = "Submit Data";
+                    btn.disabled = false;
                 }
-            } catch(e) {
+            } catch (e) {
                 alert("Network error: " + e.message);
             }
         }
-        
-        // Init
-        renderForm();
     </script>
 </body>
 </html>
