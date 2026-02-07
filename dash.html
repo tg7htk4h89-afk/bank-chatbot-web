@@ -4,125 +4,528 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Knowledge Copilot – KPI Dashboard</title>
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 0; background:#0b1020; color:#e9eefc; }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
-    .top { display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
-    .title { font-size: 18px; font-weight: 700; letter-spacing:.2px; }
-    .sub { opacity:.75; font-size: 13px; }
-    .controls { display:flex; gap:10px; align-items:center; }
-    select, button { background:#121a33; color:#e9eefc; border:1px solid #273258; padding:10px 12px; border-radius:10px; }
-    button { cursor:pointer; }
-    .grid { display:grid; grid-template-columns: repeat(12, 1fr); gap: 12px; margin-top: 16px; }
-    .card { background:#101831; border:1px solid #253056; border-radius:16px; padding:14px; }
-    .kpi { grid-column: span 3; }
-    .kpi .label { font-size: 12px; opacity:.75; }
-    .kpi .val { font-size: 26px; font-weight: 800; margin-top: 6px; }
-    .kpi .hint { font-size: 12px; opacity:.7; margin-top: 6px; }
-    .wide { grid-column: span 12; }
-    .half { grid-column: span 6; }
-    table { width:100%; border-collapse:collapse; }
-    th, td { text-align:left; padding:10px 8px; border-bottom:1px solid #223055; font-size: 13px; }
-    .muted { opacity:.7; }
-    .pill { display:inline-block; padding:6px 10px; border-radius:999px; background:#121a33; border:1px solid #273258; font-size:12px; }
-    .ok { border-color:#2d8a5a; }
-    .warn { border-color:#b98b2f; }
-    .bad { border-color:#b24a4a; }
-    @media (max-width: 900px) {
-      .kpi { grid-column: span 6; }
-      .half { grid-column: span 12; }
+    :root{
+      --bg0:#070A14;
+      --bg1:#0A1022;
+      --card:rgba(255,255,255,.04);
+      --card2:rgba(255,255,255,.06);
+      --stroke:rgba(255,255,255,.10);
+      --stroke2:rgba(255,255,255,.14);
+      --txt:#EAF0FF;
+      --muted:rgba(234,240,255,.70);
+      --muted2:rgba(234,240,255,.55);
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:
+        radial-gradient(1000px 500px at 20% -10%, rgba(84,120,255,.22), transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, rgba(71,224,255,.18), transparent 55%),
+        radial-gradient(900px 700px at 30% 120%, rgba(187,91,255,.14), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      color:var(--txt);
+      min-height:100vh;
+    }
+
+    .wrap{max-width:1200px; margin:0 auto; padding:26px 18px 40px;}
+    .top{
+      display:flex; gap:14px; align-items:center; justify-content:space-between;
+      flex-wrap:wrap;
+      padding:18px 18px;
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border-radius:22px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .brand{
+      display:flex; gap:12px; align-items:center;
+      min-width:260px;
+    }
+    .logo{
+      width:44px; height:44px; border-radius:14px;
+      border:1px solid var(--stroke2);
+      background:
+        radial-gradient(14px 14px at 30% 30%, rgba(255,255,255,.18), transparent 60%),
+        linear-gradient(135deg, rgba(84,120,255,.35), rgba(71,224,255,.18));
+      box-shadow: 0 10px 30px rgba(84,120,255,.14);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; inset:-40%;
+      background:conic-gradient(from 180deg, transparent, rgba(255,255,255,.25), transparent);
+      animation: spin 5s linear infinite;
+      opacity:.7;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .title{font-weight:800; letter-spacing:.2px; font-size:16px}
+    .sub{color:var(--muted); font-size:12.5px; margin-top:4px}
+
+    .controls{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+    select, button, .toggle{
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--stroke);
+      color: var(--txt);
+      padding:10px 12px;
+      border-radius:14px;
+      font-size:13px;
+      outline:none;
+      box-shadow: 0 10px 24px rgba(0,0,0,.22);
+      transition: .18s ease;
+    }
+    select:hover, button:hover, .toggle:hover{border-color: rgba(255,255,255,.22); transform: translateY(-1px);}
+    button{cursor:pointer; font-weight:700;}
+    button:active{transform: translateY(0);}
+    .toggle{
+      display:flex; gap:10px; align-items:center; cursor:pointer;
+      user-select:none;
+    }
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      background: rgba(255,255,255,.25);
+      border:1px solid var(--stroke2);
+      box-shadow: 0 0 0 6px rgba(255,255,255,.06);
+    }
+    .dot.on{ background: rgba(71,224,255,.9); box-shadow: 0 0 0 6px rgba(71,224,255,.18); }
+
+    .grid{display:grid; grid-template-columns: repeat(12, 1fr); gap:12px; margin-top:14px;}
+    .card{
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      padding:14px;
+      position:relative;
+      overflow:hidden;
+    }
+    .card:before{
+      content:"";
+      position:absolute; inset:-60%;
+      background: radial-gradient(closest-side, rgba(255,255,255,.10), transparent 65%);
+      transform: translate3d(-40%, -35%, 0);
+      opacity:.55;
+    }
+    .kpi{grid-column: span 3; min-height:102px;}
+    .kpi .label{font-size:12px; color:var(--muted);}
+    .kpi .val{font-size:28px; font-weight:900; margin-top:6px; letter-spacing:.2px;}
+    .kpi .hint{font-size:12px; color:var(--muted2); margin-top:6px;}
+    .kpi .trend{position:absolute; right:12px; top:12px; font-size:12px; color:var(--muted2);}
+    .wide{grid-column: span 12;}
+    .half{grid-column: span 6;}
+    .third{grid-column: span 4;}
+
+    .row{display:flex; gap:10px; align-items:center; justify-content:space-between; position:relative; z-index:1;}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px; border-radius:999px;
+      border:1px solid var(--stroke2);
+      background: rgba(255,255,255,.04);
+      font-size:12px; color:var(--muted);
+    }
+    .pill b{color:var(--txt)}
+    .pill .mini{width:8px; height:8px; border-radius:999px; background: rgba(255,255,255,.25);}
+    .pill.ok .mini{background: rgba(60,220,150,.95);}
+    .pill.watch .mini{background: rgba(255,190,70,.95);}
+    .pill.bad .mini{background: rgba(255,90,100,.95);}
+
+    .section-title{
+      font-weight:900; letter-spacing:.2px; font-size:13px;
+      margin-bottom:10px; position:relative; z-index:1;
+    }
+
+    .muted{color:var(--muted);}
+    .small{font-size:12px;}
+
+    .err{
+      display:none;
+      margin-top:12px;
+      border:1px solid rgba(255,90,100,.35);
+      background: rgba(255,90,100,.08);
+      border-radius:16px;
+      padding:12px 14px;
+      color: rgba(255,210,215,.95);
+      white-space: pre-wrap;
+    }
+
+    .skeleton{
+      background: linear-gradient(90deg, rgba(255,255,255,.03), rgba(255,255,255,.10), rgba(255,255,255,.03));
+      background-size: 200% 100%;
+      animation: shimmer 1.2s ease-in-out infinite;
+      border-radius: 10px;
+      height: 14px;
+      width: 80%;
+      margin-top: 8px;
+    }
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    table{width:100%; border-collapse:collapse; position:relative; z-index:1;}
+    th, td{padding:10px 8px; border-bottom:1px solid rgba(255,255,255,.08); font-size:13px;}
+    th{color:var(--muted); font-weight:700;}
+    td{color:rgba(234,240,255,.92);}
+
+    .footer{margin-top:14px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; color:var(--muted2); font-size:12px;}
+
+    @media (max-width: 980px){
+      .kpi{grid-column: span 6;}
+      .half{grid-column: span 12;}
+      .third{grid-column: span 12;}
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
+
     <div class="top">
-      <div>
-        <div class="title">Knowledge Copilot – KPI Dashboard</div>
-        <div class="sub" id="subtitle">Loading…</div>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <div class="title">Knowledge Copilot – KPI Dashboard</div>
+          <div class="sub" id="subtitle">Loading…</div>
+        </div>
       </div>
+
       <div class="controls">
         <select id="days">
           <option value="7">Last 7 days</option>
           <option value="30" selected>Last 30 days</option>
           <option value="90">Last 90 days</option>
         </select>
+
+        <div class="toggle" id="autoToggle" title="Auto refresh every 60 seconds">
+          <div class="dot" id="autoDot"></div>
+          <div>Auto refresh</div>
+        </div>
+
         <button id="refresh">Refresh</button>
       </div>
     </div>
 
+    <div id="err" class="err"></div>
+
     <div class="grid">
+      <!-- KPI Cards -->
       <div class="card kpi">
+        <div class="trend" id="reqTrend"></div>
         <div class="label">Employee adoption</div>
-        <div class="val" id="requests">—</div>
-        <div class="hint muted"># requests</div>
+        <div class="val" id="requests"><div class="skeleton"></div></div>
+        <div class="hint"># requests</div>
       </div>
 
       <div class="card kpi">
         <div class="label">Active users</div>
-        <div class="val" id="activeUsers">—</div>
-        <div class="hint muted" id="activeUsersHint">unique sessions/users</div>
+        <div class="val" id="activeUsers"><div class="skeleton"></div></div>
+        <div class="hint" id="activeUsersHint">unique sessions/users</div>
       </div>
 
       <div class="card kpi">
         <div class="label">Correct answer rate (proxy)</div>
-        <div class="val" id="correctProxy">—</div>
-        <div class="hint muted">% high-confidence answers</div>
+        <div class="val" id="correctProxy"><div class="skeleton"></div></div>
+        <div class="hint">% high-confidence answers</div>
       </div>
 
       <div class="card kpi">
         <div class="label">Hallucination rate (proxy)</div>
-        <div class="val" id="hallProxy">—</div>
-        <div class="hint muted">% low-confidence answers</div>
+        <div class="val" id="hallProxy"><div class="skeleton"></div></div>
+        <div class="hint">% low-confidence answers</div>
       </div>
 
       <div class="card kpi">
         <div class="label">Escalation rate</div>
-        <div class="val" id="escalRate">—</div>
-        <div class="hint muted">% needs escalation</div>
+        <div class="val" id="escalRate"><div class="skeleton"></div></div>
+        <div class="hint">% needs escalation</div>
       </div>
 
       <div class="card kpi">
         <div class="label">Avg confidence</div>
-        <div class="val" id="avgConf">—</div>
-        <div class="hint muted">0.0 – 1.0</div>
+        <div class="val" id="avgConf"><div class="skeleton"></div></div>
+        <div class="hint">0.0 – 1.0</div>
       </div>
 
+      <!-- Status -->
       <div class="card half">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div style="font-weight:700;">Status</div>
-          <span class="pill" id="statusPill">—</span>
+        <div class="row">
+          <div class="section-title">Status</div>
+          <div class="pill" id="statusPill"><span class="mini"></span><b id="statusText">—</b></div>
         </div>
-        <div class="muted" style="margin-top:10px; font-size:13px;" id="notes">—</div>
+        <div class="muted small" style="margin-top:10px; position:relative; z-index:1;" id="notes">—</div>
+
+        <div class="footer">
+          <div>Answered rate: <span id="answeredRate">—</span></div>
+          <div>Generated: <span id="generatedAt">—</span></div>
+        </div>
       </div>
 
+      <!-- Trend Chart -->
       <div class="card half">
-        <div style="font-weight:700;">Daily requests</div>
-        <div class="muted" style="margin-top:6px; font-size:12px;">(from log timestamps)</div>
-        <div style="margin-top:10px;">
+        <div class="row">
+          <div>
+            <div class="section-title">Daily requests</div>
+            <div class="muted small">(from log timestamps)</div>
+          </div>
+          <div class="pill"><span class="mini"></span><b>Trend</b></div>
+        </div>
+
+        <div style="margin-top:12px; position:relative; z-index:1;">
+          <canvas id="trendChart" height="120"></canvas>
+        </div>
+      </div>
+
+      <!-- Latest days table -->
+      <div class="card wide">
+        <div class="row">
+          <div>
+            <div class="section-title">Daily breakdown (latest 14 days)</div>
+            <div class="muted small">Useful for spotting adoption spikes</div>
+          </div>
+          <div class="pill"><span class="mini"></span><b id="rangeTag">Last 30 days</b></div>
+        </div>
+
+        <div style="margin-top:12px; position:relative; z-index:1;">
           <table>
-            <thead>
-              <tr><th>Date</th><th>Requests</th></tr>
-            </thead>
+            <thead><tr><th>Date</th><th>Requests</th></tr></thead>
             <tbody id="trendBody"></tbody>
           </table>
         </div>
       </div>
     </div>
+
   </div>
 
   <script>
-    // ✅ CHANGE THIS to your NEW KPI webhook URL (production)
-    // Example:
-    // const KPI_API_URL = "https://taherkib.app.n8n.cloud/webhook/kpi-dashboard";
+    // ✅ CHANGE ONLY THIS LINE:
     const KPI_API_URL = "https://taherkib.app.n8n.cloud/webhook/kpi-dashboard";
+
+    // Cache bust to avoid GitHub Pages 304/cached JS issues
+    const cacheBust = () => `cb=${Date.now()}`;
 
     const els = {
       subtitle: document.getElementById("subtitle"),
+      err: document.getElementById("err"),
+      days: document.getElementById("days"),
+      refresh: document.getElementById("refresh"),
+      autoToggle: document.getElementById("autoToggle"),
+      autoDot: document.getElementById("autoDot"),
+
       requests: document.getElementById("requests"),
+      reqTrend: document.getElementById("reqTrend"),
       activeUsers: document.getElementById("activeUsers"),
       activeUsersHint: document.getElementById("activeUsersHint"),
       correctProxy: document.getElementById("correctProxy"),
       hallProxy: document.getElementById("hallProxy"),
       escalRate: document.getElementById("escalRate"),
-      avgConf: document.getElementById("
+      avgConf: document.getElementById("avgConf"),
+
+      statusPill: document.getElementById("statusPill"),
+      statusText: document.getElementById("statusText"),
+      notes: document.getElementById("notes"),
+      answeredRate: document.getElementById("answeredRate"),
+      generatedAt: document.getElementById("generatedAt"),
+
+      trendBody: document.getElementById("trendBody"),
+      rangeTag: document.getElementById("rangeTag"),
+      trendChart: document.getElementById("trendChart")
+    };
+
+    let autoOn = false;
+    let autoTimer = null;
+    let chart = null;
+
+    const fmtPct = v => (v ?? 0).toFixed(1) + "%";
+    const fmtNum = v => (v === null || v === undefined) ? "N/A" : String(v);
+    const fmtConf = v => (v === null || v === undefined) ? "—" : Number(v).toFixed(3);
+
+    function setError(msg){
+      els.err.style.display = "block";
+      els.err.textContent = msg;
+    }
+    function clearError(){
+      els.err.style.display = "none";
+      els.err.textContent = "";
+    }
+
+    function setStatus(kind, text){
+      els.statusText.textContent = text;
+      els.statusPill.className = "pill " + kind;
+    }
+
+    function ensureChart(labels, values){
+      const ctx = els.trendChart.getContext("2d");
+      if (chart) chart.destroy();
+
+      chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "Requests",
+            data: values,
+            tension: 0.35,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            borderWidth: 2,
+            fill: true,
+            backgroundColor: "rgba(71,224,255,.10)",
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: true }
+          },
+          scales: {
+            x: {
+              ticks: { color: "rgba(234,240,255,.65)" },
+              grid: { color: "rgba(255,255,255,.06)" }
+            },
+            y: {
+              ticks: { color: "rgba(234,240,255,.65)" },
+              grid: { color: "rgba(255,255,255,.06)" },
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    async function load(){
+      clearError();
+
+      const days = els.days.value;
+      els.rangeTag.textContent = `Last ${days} days`;
+
+      const url = `${KPI_API_URL}?days=${encodeURIComponent(days)}&${cacheBust()}`;
+      els.subtitle.textContent = "Loading KPIs…";
+
+      let res, data;
+      try {
+        res = await fetch(url, { method:"GET" });
+      } catch (e){
+        setError("Fetch failed (network).\\n" + e.message + "\\n\\nURL:\\n" + url);
+        els.subtitle.textContent = "Failed to load";
+        return;
+      }
+
+      if (!res.ok){
+        const t = await res.text().catch(()=> "");
+        setError(`API responded with ${res.status}\\n\\n${t}\\n\\nURL:\\n${url}`);
+        els.subtitle.textContent = "Failed to load";
+        return;
+      }
+
+      try{
+        data = await res.json();
+      } catch(e){
+        const t = await res.text().catch(()=> "");
+        setError("Invalid JSON returned.\\n" + e.message + "\\n\\nRaw:\\n" + t);
+        els.subtitle.textContent = "Failed to load";
+        return;
+      }
+
+      // Header
+      els.subtitle.textContent = `Range: last ${data.range_days} days • Source: Log Sheet • API OK`;
+      els.generatedAt.textContent = data.generated_at_utc || "—";
+
+      // KPI values
+      els.requests.textContent = fmtNum(data.totals?.requests);
+      els.activeUsers.textContent = fmtNum(data.totals?.active_users);
+      els.correctProxy.textContent = fmtPct(data.rates?.correct_answer_proxy_rate_pct);
+      els.hallProxy.textContent = fmtPct(data.rates?.hallucination_proxy_rate_pct);
+      els.escalRate.textContent = fmtPct(data.rates?.escalation_rate_pct);
+      els.avgConf.textContent = fmtConf(data.confidence?.avg_confidence);
+
+      els.answeredRate.textContent = fmtPct(data.rates?.answered_rate_pct) + ` (${data.totals?.answered ?? 0}/${data.totals?.requests ?? 0})`;
+
+      // Active users note
+      if (data.notes?.active_users_note){
+        els.activeUsersHint.textContent = "N/A (missing session/user logging)";
+      } else {
+        els.activeUsersHint.textContent = "unique sessions/users";
+      }
+
+      // Status logic
+      const esc = data.rates?.escalation_rate_pct || 0;
+      const hall = data.rates?.hallucination_proxy_rate_pct || 0;
+      const correct = data.rates?.correct_answer_proxy_rate_pct || 0;
+
+      if (esc < 10 && hall < 10 && correct >= 40) setStatus("ok", "Healthy");
+      else if (esc < 20 && hall < 20) setStatus("watch", "Watch");
+      else setStatus("bad", "Needs attention");
+
+      const notes = [];
+      notes.push(`Requests: ${data.totals?.requests ?? 0}`);
+      notes.push(`High confidence: ${data.totals?.high_confidence ?? 0}`);
+      notes.push(`Low confidence: ${data.totals?.low_confidence ?? 0}`);
+      if (data.notes?.active_users_note) notes.push(data.notes.active_users_note);
+      els.notes.textContent = notes.join(" • ");
+
+      // Trend
+      const daily = (data.trend?.daily_requests || []);
+      const last14 = daily.slice(-14);
+
+      // Table
+      els.trendBody.innerHTML = "";
+      if (!last14.length){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td class="muted" colspan="2">No timestamped rows found in this range.</td>`;
+        els.trendBody.appendChild(tr);
+      } else {
+        for (const row of last14){
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${row.date}</td><td>${row.requests}</td>`;
+          els.trendBody.appendChild(tr);
+        }
+      }
+
+      // Chart
+      const labels = daily.map(x => x.date);
+      const values = daily.map(x => x.requests);
+      ensureChart(labels, values);
+
+      // Tiny trend hint (last 7 vs prev 7)
+      if (daily.length >= 14){
+        const last7 = daily.slice(-7).reduce((a,b)=>a + (b.requests||0), 0);
+        const prev7 = daily.slice(-14,-7).reduce((a,b)=>a + (b.requests||0), 0);
+        const diff = last7 - prev7;
+        const sign = diff > 0 ? "+" : "";
+        els.reqTrend.textContent = `7d: ${last7} (${sign}${diff})`;
+      } else {
+        els.reqTrend.textContent = "";
+      }
+    }
+
+    function setAuto(on){
+      autoOn = on;
+      els.autoDot.classList.toggle("on", on);
+      if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+      if (on){
+        autoTimer = setInterval(() => load(), 60000);
+      }
+    }
+
+    els.refresh.addEventListener("click", load);
+    els.days.addEventListener("change", load);
+    els.autoToggle.addEventListener("click", () => setAuto(!autoOn));
+
+    // Start
+    load();
+  </script>
+</body>
+</html>
+
