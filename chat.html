@@ -31,10 +31,7 @@
       padding: 22px 14px 40px;
     }
 
-    .wrap{
-      max-width: 980px;
-      margin: 0 auto;
-    }
+    .wrap{ max-width: 980px; margin: 0 auto; }
 
     .topbar{
       display:flex;
@@ -48,10 +45,7 @@
       backdrop-filter: blur(10px);
       box-shadow: 0 10px 26px rgba(2,6,23,.06);
     }
-    .brand{
-      display:flex; align-items:center; gap:12px;
-      min-width: 0;
-    }
+    .brand{ display:flex; align-items:center; gap:12px; min-width: 0; }
     .logo{
       width:42px; height:42px;
       border-radius: 12px;
@@ -61,18 +55,8 @@
       overflow:hidden;
       flex:0 0 auto;
     }
-    .logo img{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      padding:6px;
-    }
-    .brand h1{
-      font-size: 18px;
-      margin:0;
-      line-height:1.1;
-      letter-spacing:.2px;
-    }
+    .logo img{ width:100%; height:100%; object-fit:contain; padding:6px; }
+    .brand h1{ font-size: 18px; margin:0; line-height:1.1; letter-spacing:.2px; }
     .brand p{
       margin:4px 0 0;
       font-size: 12.5px;
@@ -115,13 +99,7 @@
       background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.78));
     }
 
-    /* Message rows */
-    .msg{
-      display:flex;
-      margin: 12px 0;
-      gap:10px;
-      align-items:flex-end;
-    }
+    .msg{ display:flex; margin: 12px 0; gap:10px; align-items:flex-end; }
     .msg.me{ justify-content:flex-end; }
     .msg.bot{ justify-content:flex-start; }
 
@@ -143,7 +121,6 @@
     }
 
     .bubbleWrap{ max-width: 75%; display:flex; flex-direction:column; gap:6px; }
-
     .bubble{
       padding: 12px 14px;
       border-radius: 16px;
@@ -154,7 +131,6 @@
       font-size: 14px;
       white-space: pre-wrap;
     }
-
     .msg.bot .bubble{
       background: var(--bot);
       color: var(--text);
@@ -174,14 +150,10 @@
       gap:10px;
       align-items:center;
     }
-
     .msg.me .meta{ justify-content:flex-end; }
     .msg.bot .meta{ justify-content:flex-start; }
 
-    .divider{
-      height:1px;
-      background: rgba(226,232,240,.9);
-    }
+    .divider{ height:1px; background: rgba(226,232,240,.9); }
 
     .composer{
       display:flex;
@@ -190,26 +162,10 @@
       padding: 14px;
       background: rgba(255,255,255,.92);
     }
+    .category-row{ display:flex; gap:10px; align-items:center; }
+    .category-label{ font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
 
-    .category-row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
-
-    .category-label{
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-      white-space: nowrap;
-    }
-
-    .composer-row{
-      display:flex;
-      gap:10px;
-      align-items:stretch;
-    }
-
+    .composer-row{ display:flex; gap:10px; align-items:stretch; }
     .select{
       border: 1px solid var(--border);
       border-radius: 14px;
@@ -221,6 +177,10 @@
       cursor: pointer;
       flex: 1;
     }
+    .select:focus{
+      border-color: rgba(14,165,233,.55);
+      box-shadow: 0 0 0 4px rgba(14,165,233,.12);
+    }
 
     .input{
       flex:1;
@@ -230,6 +190,10 @@
       font-size: 14px;
       outline: none;
       background: #fff;
+    }
+    .input:focus{
+      border-color: rgba(14,165,233,.55);
+      box-shadow: 0 0 0 4px rgba(14,165,233,.12);
     }
 
     .btn{
@@ -243,11 +207,7 @@
       min-width: 92px;
       box-shadow: 0 10px 18px rgba(31,122,107,.18);
     }
-    .btn:disabled{
-      opacity:.6;
-      cursor:not-allowed;
-      box-shadow:none;
-    }
+    .btn:disabled{ opacity:.6; cursor:not-allowed; box-shadow:none; }
 
     .foot{
       display:flex;
@@ -262,15 +222,15 @@
     .foot .small{ opacity:.9; }
 
     /* ===== TYPING INDICATOR STYLES ===== */
-    .typing-indicator {
-      display: none;
-      align-items: flex-end;
-      gap: 10px;
+    .typing-indicator{
+      display:none;
+      align-items:flex-end;
+      gap:10px;
       padding: 12px 18px;
       background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.78));
     }
-    .typing-indicator.show { display: flex; }
-    .typing-indicator .avatar {
+    .typing-indicator.show{ display:flex; }
+    .typing-indicator .avatar{
       width: 34px; height: 34px;
       border-radius: 12px;
       border: 1px solid var(--border);
@@ -281,7 +241,7 @@
       font-size: 12px;
       flex: 0 0 auto;
     }
-    .typing-bubble {
+    .typing-bubble{
       background: var(--bot);
       border: 1px solid rgba(226,232,240,.8);
       border-radius: 16px;
@@ -292,17 +252,130 @@
       gap: 4px;
       align-items: center;
     }
-    .typing-dot {
+    .typing-dot{
       width: 8px; height: 8px;
       border-radius: 50%;
       background: var(--muted);
       animation: typingBounce 1.4s infinite;
     }
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes typingBounce {
+    .typing-dot:nth-child(2){ animation-delay: 0.2s; }
+    .typing-dot:nth-child(3){ animation-delay: 0.4s; }
+    @keyframes typingBounce{
       0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
       30% { transform: translateY(-10px); opacity: 1; }
+    }
+
+    /* ===== SUGGESTION SECTION STYLES ===== */
+    .suggestion-section{
+      margin-top: 20px;
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(226,232,240,.95);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .suggestion-header{
+      background: linear-gradient(135deg, rgba(31,122,107,0.05), rgba(14,165,233,0.05));
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .suggestion-header:hover{
+      background: linear-gradient(135deg, rgba(31,122,107,0.08), rgba(14,165,233,0.08));
+    }
+    .suggestion-header h3{
+      margin: 0;
+      font-size: 16px;
+      color: var(--brand);
+      flex: 1;
+    }
+    .suggestion-form{ padding: 20px; display: none; }
+    .suggestion-form.active{ display: block; animation: slideDown 0.3s ease-out; }
+
+    .form-row{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .form-group{ display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full{ grid-column: 1 / -1; }
+
+    .form-label{ font-size: 13px; font-weight: 600; color: var(--text); }
+    .form-input, .form-select, .form-textarea{
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus{
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(31,122,107,0.1);
+    }
+    .form-select{
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+    .form-textarea{ resize: vertical; min-height: 100px; line-height: 1.5; }
+
+    .submit-btn{
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--brand2), #0284c7);
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(14,165,233,.2);
+      transition: all 0.3s;
+    }
+    .submit-btn:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px rgba(14,165,233,.3);
+    }
+    .submit-btn:disabled{ opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .success-message{
+      display: none;
+      padding: 20px;
+      text-align: center;
+      color: var(--brand);
+      font-size: 16px;
+      font-weight: 600;
+      animation: fadeIn 0.5s;
+    }
+    .success-message.show{ display: block; }
+
+    @keyframes slideDown{
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn{
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @media (max-width: 720px){
+      .chat{ height: 68vh; }
+      .brand p{ max-width: 240px; }
+      .bubbleWrap{ max-width: 86%; }
+      .form-row { grid-template-columns: 1fr; }
+      .topbar { flex-direction: column; align-items: stretch; gap: 10px; }
     }
   </style>
 </head>
@@ -362,13 +435,56 @@
         <div class="small">Chat3PT • Web UI</div>
       </div>
     </div>
+
+    <div class="suggestion-section">
+      <div class="suggestion-header" onclick="toggleSuggestionForm()">
+        <span style="font-size: 20px;">💡</span>
+        <h3>Submit a Suggestion</h3>
+        <span id="suggestionToggle" style="font-size: 14px; color: var(--muted);">▼</span>
+      </div>
+
+      <div class="suggestion-form" id="suggestionForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input" id="suggestionName" placeholder="Your Name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Department</label>
+            <input type="text" class="form-input" id="suggestionDept" placeholder="Department" />
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Select Suggestion Category</label>
+          <select class="form-select" id="suggestionCategory">
+            <option value="">Select Suggestion Category</option>
+            <option value="policy">Policy</option>
+            <option value="procedure">Procedure</option>
+            <option value="product">Product</option>
+            <option value="general">General Improvement</option>
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Describe your suggestion</label>
+          <textarea class="form-textarea" id="suggestionText" placeholder="Describe your suggestion..."></textarea>
+        </div>
+
+        <button class="submit-btn" onclick="submitSuggestion()">Submit Feedback</button>
+      </div>
+
+      <div class="success-message" id="successMessage">
+        Thank you! Your suggestion has been sent.
+      </div>
+    </div>
   </div>
 
   <script>
     // ✅ Your n8n Production Webhook
     const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/bf161d07-e9be-48fe-bdfa-0ea9e3e1abb5";
 
-    // ✅ ADDED: Persistent session id (stored in localStorage)
+    // ✅ Session ID (persistent per browser)
     function getSessionId() {
       const key = "kc_session_id";
       let sid = localStorage.getItem(key);
@@ -460,10 +576,12 @@
       showTyping();
 
       try{
+        const sid = getSessionId();
+        console.log("SESSION_ID:", sid); // debug
+
         const payload = {
           message: msg,
-          // ✅ CHANGED ONLY THIS VALUE (was "web-1")
-          session_id: getSessionId(),
+          session_id: sid,
           category: category
         };
 
@@ -522,6 +640,72 @@
     add("bot", "Hi — I'm Chat3PT. Ask me about KIB products, policies, or procedures.");
     btn.addEventListener("click", send);
     inp.addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+
+    function toggleSuggestionForm() {
+      const form = document.getElementById('suggestionForm');
+      const toggle = document.getElementById('suggestionToggle');
+      const success = document.getElementById('successMessage');
+
+      if (form.classList.contains('active')) {
+        form.classList.remove('active');
+        toggle.textContent = '▼';
+        success.classList.remove('show');
+      } else {
+        form.classList.add('active');
+        toggle.textContent = '▲';
+        success.classList.remove('show');
+      }
+    }
+
+    async function submitSuggestion() {
+      const name = document.getElementById('suggestionName').value.trim();
+      const dept = document.getElementById('suggestionDept').value.trim();
+      const category = document.getElementById('suggestionCategory').value;
+      const text = document.getElementById('suggestionText').value.trim();
+
+      if (!name || !dept || !category || !text) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      const submitBtn = event.target;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      try {
+        await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'suggestion',
+            name: name,
+            department: dept,
+            category: category,
+            suggestion: text,
+            timestamp: new Date().toISOString()
+          })
+        });
+
+        document.getElementById('suggestionForm').classList.remove('active');
+        document.getElementById('successMessage').classList.add('show');
+        document.getElementById('suggestionToggle').textContent = '▼';
+
+        document.getElementById('suggestionName').value = '';
+        document.getElementById('suggestionDept').value = '';
+        document.getElementById('suggestionCategory').value = '';
+        document.getElementById('suggestionText').value = '';
+
+        setTimeout(() => {
+          document.getElementById('successMessage').classList.remove('show');
+        }, 5000);
+
+      } catch (error) {
+        alert('Error submitting suggestion. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Feedback';
+      }
+    }
   </script>
 </body>
 </html>
