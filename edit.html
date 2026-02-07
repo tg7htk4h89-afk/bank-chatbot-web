@@ -200,7 +200,7 @@
   <script>
     const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/webhook";
 
-    // Auto-metadata (NO UI change)
+    // Auto-metadata
     const DEFAULT_OWNER = "KB Editor";
     const ISO_DATE = () => new Date().toISOString().slice(0, 10);
 
@@ -210,9 +210,6 @@
     let currentId = null;
     let formData = {};
 
-    // ✅ Schemas aligned with your sheet columns
-    // ✅ Missing columns are stored as hidden inputs (no UI change)
-    // ✅ Dropdown options expanded to match real sheet values
     const schemas = {
       product: {
         basic: [
@@ -228,8 +225,6 @@
           { key: 'fees', label: 'Fees', type: 'text' },
           { key: 'channels', label: 'Channels', type: 'text' },
           { key: 'keywords', label: 'Keywords', type: 'text', full: true },
-
-          // hidden sheet columns
           { key: 'sample_questions', type: 'hidden' },
           { key: 'owner', type: 'hidden' },
           { key: 'last_updated', type: 'hidden' }
@@ -246,8 +241,6 @@
           { key: 'when_to_use', label: 'When to Use', type: 'textarea', full: true },
           { key: 'systems_used', label: 'Systems', type: 'text', full: true },
           { key: 'keywords', label: 'Keywords', type: 'text', full: true },
-
-          // hidden sheet columns
           { key: 'sample_questions', type: 'hidden' },
           { key: 'common_errors', type: 'hidden' },
           { key: 'owner', type: 'hidden' },
@@ -264,10 +257,8 @@
         details: [
           { key: 'summary', label: 'Summary', type: 'textarea', full: true },
           { key: 'do', label: 'Do', type: 'textarea', full: true },
-          { key: 'dont', label: 'Don\\'t', type: 'textarea', full: true },
+          { key: 'dont', label: 'Don\'t', type: 'textarea', full: true },
           { key: 'keywords', label: 'Keywords', type: 'text', full: true },
-
-          // hidden sheet columns
           { key: 'applicable_to', type: 'hidden' },
           { key: 'sample_questions', type: 'hidden' },
           { key: 'escalation', type: 'hidden' },
@@ -293,6 +284,7 @@
         searchBox.classList.remove('show');
         formData = {};
         if (selectedType) nextBtn.disabled = false;
+        renderForms(formData); // Clear forms when switching back to Add
       }
     }
 
@@ -301,6 +293,9 @@
       document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
 
+      // Clear formData if we are switching types in Add mode to prevent pollution
+      if (mode === 'add') formData = {};
+      
       renderForms(formData);
 
       if (mode === 'add') {
@@ -310,7 +305,6 @@
       }
     }
 
-    // ✅ SAFEST edit-search (handles array/object/wrapped responses + better errors)
     async function fetchData() {
       const rawId = document.getElementById('searchId').value || '';
       const statusEl = document.getElementById('searchStatus');
@@ -350,20 +344,22 @@
         if (Array.isArray(payload)) {
           row = payload[0] || null;
         } else if (payload && typeof payload === 'object') {
-          const arrLike =
-            (Array.isArray(payload.data) && payload.data) ||
+          // Check common n8n wrappers
+          const arrLike = 
+            (Array.isArray(payload.data) && payload.data) || 
             (Array.isArray(payload.items) && payload.items) ||
             (Array.isArray(payload.rows) && payload.rows) ||
             null;
-
+          
           if (arrLike) row = arrLike[0] || null;
         }
 
+        // Fallback: maybe the payload IS the row object
         if (!row && payload && typeof payload === 'object' && !payload.error) {
-          row =
-            (payload.data && typeof payload.data === 'object' && !Array.isArray(payload.data) && payload.data) ||
-            (payload.item && typeof payload.item === 'object' && payload.item) ||
-            payload;
+           // Ensure it's not a wrapper object with a single 'data' or 'item' key that is an object
+           row = (payload.data && typeof payload.data === 'object' && !Array.isArray(payload.data) && payload.data) ||
+                 (payload.item && typeof payload.item === 'object' && payload.item) ||
+                 payload;
         }
 
         if (payload && payload.error) {
@@ -378,10 +374,12 @@
           return;
         }
 
+        // Optional: Verify ID matches what we asked for (case-insensitive check)
         const idKey = selectedType + "_id";
         const returnedId = (row[idKey] || '').toString().trim();
+        // Simple check if ID exists in row
         if (returnedId && returnedId.toLowerCase() !== id.toLowerCase()) {
-          console.warn(`ID mismatch: requested ${id}, got ${returnedId}`);
+             console.warn(`Possible ID mismatch: requested ${id}, got ${returnedId}`);
         }
 
         statusEl.innerText = "✅ Data loaded! Click Next.";
@@ -389,7 +387,7 @@
 
         currentId = id;
         formData = row;
-        renderForms(formData);
+        renderForms(formData); // Re-render forms with fetched data
         document.getElementById('btnStep1').disabled = false;
 
       } catch (e) {
@@ -403,10 +401,11 @@
       if (!selectedType) return;
       const schema = schemas[selectedType];
 
+      // Helper to safely escape HTML attributes
       const escAttr = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
       const buildFields = (fields) => fields.map(f => {
-        const val = (data[f.key] ?? '');
+        const val = data[f.key] ?? ''; // Use nullish coalescing to handle 0 or false, but default to empty string
 
         if (f.type === 'hidden') {
           return `<input type="hidden" name="${f.key}" value="${escAttr(val)}">`;
@@ -414,10 +413,16 @@
 
         let inputHtml = '';
         if (f.type === 'textarea') {
+          // Textarea contents should be strictly escaped
           inputHtml = `<textarea name="${f.key}" class="form-textarea">${String(val ?? '')}</textarea>`;
         } else if (f.type === 'select') {
           inputHtml = `<select name="${f.key}" class="form-select">
-            ${f.options.map(o => `<option value="${escAttr(o)}" ${String(val)===String(o)?'selected':''}>${o}</option>`).join('')}
+            <option value="">Select an option...</option>
+            ${f.options.map(o => {
+               // Check strict equality or loose equality if numbers/strings differ
+               const isSelected = String(val) === String(o) ? 'selected' : '';
+               return `<option value="${escAttr(o)}" ${isSelected}>${o}</option>`;
+            }).join('')}
           </select>`;
         } else {
           inputHtml = `<input type="text" name="${f.key}" value="${escAttr(val)}" class="form-input">`;
@@ -434,10 +439,14 @@
     }
 
     function nextStep() {
+      // Harvest data from current visible inputs before moving
       const currentSection = document.getElementById(`section${currentStep}`);
       const inputs = currentSection.querySelectorAll('input, select, textarea');
+      
       inputs.forEach(i => {
-        if (i.name) formData[i.name] = i.value;
+        if (i.name) {
+            formData[i.name] = i.value;
+        }
       });
 
       if (currentStep < 4) {
@@ -474,6 +483,7 @@
         if (!val) continue;
         if (key === selectedType + '_id') continue;
 
+        // Escape for display
         const safeVal = String(val).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
         html += `<div class="review-item">
@@ -489,11 +499,12 @@
       // Auto-fill metadata without UI
       if (!formData.owner) formData.owner = DEFAULT_OWNER;
 
+      // Update timestamps if they are empty
       if (selectedType === 'product' || selectedType === 'procedure') {
-        if (!formData.last_updated) formData.last_updated = ISO_DATE();
+         formData.last_updated = ISO_DATE();
       }
       if (selectedType === 'policy') {
-        if (!formData.last_reviewed) formData.last_reviewed = ISO_DATE();
+         formData.last_reviewed = ISO_DATE();
       }
 
       const payload = {
