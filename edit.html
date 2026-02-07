@@ -42,7 +42,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -227,41 +227,84 @@
             box-shadow: 0 20px 50px rgba(2, 6, 23, .15);
         }
 
-        /* KPI Cards */
+        /* KPI Cards - 5 equal columns for the 5 KPIs */
         .kpi {
-            grid-column: span 3;
-            min-height: 120px;
+            grid-column: span 12;
+            min-height: 140px;
             position: relative;
         }
 
+        /* Desktop: 5 columns */
+        @media (min-width: 1200px) {
+            .kpi {
+                grid-column: span 2.4; /* 12/5 = 2.4 */
+            }
+        }
+
+        /* Tablet: 3 columns, then 2 */
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .kpi:nth-child(-n+3) {
+                grid-column: span 4;
+            }
+            .kpi:nth-child(n+4) {
+                grid-column: span 6;
+            }
+        }
+
+        /* Mobile: 1 column */
+        @media (max-width: 767px) {
+            .kpi {
+                grid-column: span 12;
+            }
+        }
+
+        .kpi-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
         .kpi-label {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--muted);
             font-weight: 600;
             margin-bottom: 8px;
+            min-height: 36px;
         }
 
         .kpi-value {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 900;
             color: var(--brand);
             margin: 8px 0;
         }
 
-        .kpi-hint {
+        .kpi-target {
             font-size: 11px;
             color: var(--muted);
+            margin-top: 4px;
         }
 
-        .kpi-trend {
+        .kpi-status {
             position: absolute;
             top: 16px;
             right: 16px;
-            font-size: 11px;
-            color: var(--muted);
-            background: var(--brand-light);
-            padding: 4px 8px;
-            border-radius: 6px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--muted);
+        }
+
+        .kpi-status.good {
+            background: var(--success);
+        }
+
+        .kpi-status.warning {
+            background: var(--warning);
+        }
+
+        .kpi-status.bad {
+            background: var(--danger);
         }
 
         .skeleton {
@@ -269,8 +312,8 @@
             background-size: 200% 100%;
             animation: shimmer 1.5s ease-in-out infinite;
             border-radius: 8px;
-            height: 32px;
-            width: 80px;
+            height: 36px;
+            width: 100px;
         }
 
         @keyframes shimmer {
@@ -287,6 +330,10 @@
             grid-column: span 6;
         }
 
+        .third {
+            grid-column: span 4;
+        }
+
         /* Section Header */
         .section-header {
             display: flex;
@@ -296,7 +343,7 @@
         }
 
         .section-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--text);
         }
@@ -339,38 +386,11 @@
             background: var(--danger);
         }
 
-        /* Status Section */
-        .status-metrics {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .status-metric {
-            padding: 12px;
-            background: var(--brand-light);
-            border-radius: 10px;
-        }
-
-        .status-metric-label {
-            font-size: 11px;
-            color: var(--muted);
-            font-weight: 600;
-        }
-
-        .status-metric-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--brand);
-            margin-top: 4px;
-        }
-
         /* Chart */
         .chart-container {
             margin-top: 16px;
             position: relative;
-            height: 200px;
+            height: 250px;
         }
 
         /* Table */
@@ -410,87 +430,44 @@
             justify-content: space-between;
             font-size: 12px;
             color: var(--muted);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: var(--brand-light);
+            border: 1px solid rgba(31,122,107,.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-title {
+            font-weight: 700;
+            color: var(--brand);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .info-content {
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.6;
         }
 
         /* Responsive */
         @media (max-width: 980px) {
-            .kpi {
-                grid-column: span 6;
-            }
-            .half {
+            .half, .third {
                 grid-column: span 12;
             }
         }
 
         @media (max-width: 640px) {
-            .kpi {
-                grid-column: span 12;
-            }
             .header-top {
                 flex-direction: column;
                 align-items: flex-start;
             }
-        }
-
-        /* Testing Panel */
-        .test-panel {
-            background: rgba(255,255,255,.95);
-            border: 2px dashed var(--brand);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .test-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .test-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--brand);
-        }
-
-        .test-results {
-            display: grid;
-            gap: 12px;
-        }
-
-        .test-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: var(--brand-light);
-            border-radius: 8px;
-            font-size: 13px;
-        }
-
-        .test-icon {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            font-size: 12px;
-        }
-
-        .test-icon.pass {
-            background: var(--success);
-            color: white;
-        }
-
-        .test-icon.fail {
-            background: var(--danger);
-            color: white;
-        }
-
-        .test-icon.pending {
-            background: var(--muted);
-            color: white;
         }
     </style>
 </head>
@@ -498,28 +475,14 @@
 <body>
     <div class="container">
         
-        <!-- Test Panel -->
-        <div class="test-panel" id="testPanel">
-            <div class="test-header">
-                <div class="test-title">🔧 n8n Integration Test</div>
-                <button class="primary" onclick="runTests()">Run Tests</button>
-            </div>
-            <div class="test-results" id="testResults">
-                <div class="test-item">
-                    <div class="test-icon pending">⏳</div>
-                    <div>Click "Run Tests" to verify n8n connection and data flow</div>
-                </div>
-            </div>
-        </div>
-
         <!-- Header -->
         <div class="header">
             <div class="header-top">
                 <div class="brand">
                     <div class="logo">📊</div>
                     <div class="brand-text">
-                        <h1>KPI Dashboard</h1>
-                        <p id="subtitle">Loading metrics...</p>
+                        <h1>Knowledge Copilot KPI Dashboard</h1>
+                        <p id="subtitle">Key Performance Indicators</p>
                     </div>
                 </div>
 
@@ -545,95 +508,125 @@
             </div>
         </div>
 
+        <!-- KPI Definition Info -->
+        <div class="info-box">
+            <div class="info-title">📋 KPI Definitions (as per Initiative Charter)</div>
+            <div class="info-content">
+                <strong>1. Employee Adoption:</strong> Total number of requests/queries submitted to the system<br>
+                <strong>2. Active Users:</strong> Percentage or count of employees actively using the system<br>
+                <strong>3. Correct Answer Rate:</strong> Percentage of queries answered correctly (high confidence ≥85%)<br>
+                <strong>4. Hallucination Rate:</strong> Percentage of incorrect or low-confidence responses<br>
+                <strong>5. Escalation Rate:</strong> Percentage of queries that could not be answered and needed escalation
+            </div>
+        </div>
+
         <!-- Error Display -->
         <div class="error-box" id="errorBox">
             <div class="error-title">⚠️ Error Loading Dashboard</div>
             <div class="error-message" id="errorMessage"></div>
         </div>
 
-        <!-- KPI Grid -->
+        <!-- KPI Grid - 5 Key Performance Indicators -->
         <div class="grid">
-            <!-- Employee Adoption -->
+            <!-- KPI 1: Employee Adoption -->
             <div class="card kpi">
-                <div class="kpi-trend" id="reqTrend"></div>
-                <div class="kpi-label">Employee adoption</div>
-                <div class="kpi-value" id="requests">
+                <div class="kpi-status" id="status1"></div>
+                <div class="kpi-icon">👥</div>
+                <div class="kpi-label">1. Employee Adoption</div>
+                <div class="kpi-value" id="kpi1">
                     <div class="skeleton"></div>
                 </div>
-                <div class="kpi-hint"># requests</div>
+                <div class="kpi-target">Total requests</div>
             </div>
 
-            <!-- Active Users -->
+            <!-- KPI 2: Active Users -->
             <div class="card kpi">
-                <div class="kpi-label">Active users</div>
-                <div class="kpi-value" id="activeUsers">
+                <div class="kpi-status" id="status2"></div>
+                <div class="kpi-icon">✓</div>
+                <div class="kpi-label">2. Active Users</div>
+                <div class="kpi-value" id="kpi2">
                     <div class="skeleton"></div>
                 </div>
-                <div class="kpi-hint" id="activeUsersHint">unique sessions/users</div>
+                <div class="kpi-target" id="kpi2hint">% of employees</div>
             </div>
 
-            <!-- Correct Answer Rate -->
+            <!-- KPI 3: Correct Answer Rate -->
             <div class="card kpi">
-                <div class="kpi-label">Correct answer rate</div>
-                <div class="kpi-value" id="correctProxy">
+                <div class="kpi-status" id="status3"></div>
+                <div class="kpi-icon">✅</div>
+                <div class="kpi-label">3. Correct Answer Rate</div>
+                <div class="kpi-value" id="kpi3">
                     <div class="skeleton"></div>
                 </div>
-                <div class="kpi-hint">% high-confidence answers</div>
+                <div class="kpi-target">Target: ≥70%</div>
             </div>
 
-            <!-- Hallucination Rate -->
+            <!-- KPI 4: Hallucination Rate -->
             <div class="card kpi">
-                <div class="kpi-label">Hallucination rate</div>
-                <div class="kpi-value" id="hallProxy">
+                <div class="kpi-status" id="status4"></div>
+                <div class="kpi-icon">⚠️</div>
+                <div class="kpi-label">4. Hallucination Rate</div>
+                <div class="kpi-value" id="kpi4">
                     <div class="skeleton"></div>
                 </div>
-                <div class="kpi-hint">% low-confidence answers</div>
+                <div class="kpi-target">Target: ≤10%</div>
             </div>
 
-            <!-- Escalation Rate -->
+            <!-- KPI 5: Escalation Rate -->
             <div class="card kpi">
-                <div class="kpi-label">Escalation rate</div>
-                <div class="kpi-value" id="escalRate">
+                <div class="kpi-status" id="status5"></div>
+                <div class="kpi-icon">🔼</div>
+                <div class="kpi-label">5. Escalation Rate</div>
+                <div class="kpi-value" id="kpi5">
                     <div class="skeleton"></div>
                 </div>
-                <div class="kpi-hint">% needs escalation</div>
+                <div class="kpi-target">Target: ≤15%</div>
             </div>
+        </div>
 
-            <!-- Avg Confidence -->
-            <div class="card kpi">
-                <div class="kpi-label">Avg confidence</div>
-                <div class="kpi-value" id="avgConf">
-                    <div class="skeleton"></div>
-                </div>
-                <div class="kpi-hint">0.0 – 1.0</div>
-            </div>
-
-            <!-- Status Card -->
+        <!-- Charts and Details Section -->
+        <div class="grid" style="margin-top: 16px;">
+            
+            <!-- Overall Status -->
             <div class="card half">
                 <div class="section-header">
                     <div>
-                        <div class="section-title">System Status</div>
-                        <div class="section-subtitle">Overall health metrics</div>
+                        <div class="section-title">System Health</div>
+                        <div class="section-subtitle">Overall performance status</div>
                     </div>
-                    <div class="pill" id="statusPill">
+                    <div class="pill" id="overallPill">
                         <span class="mini"></span>
-                        <span id="statusText">—</span>
+                        <span id="overallStatus">—</span>
                     </div>
                 </div>
 
-                <div class="status-metrics">
-                    <div class="status-metric">
-                        <div class="status-metric-label">Answered Rate</div>
-                        <div class="status-metric-value" id="answeredRate">—</div>
-                    </div>
-                    <div class="status-metric">
-                        <div class="status-metric-label">Total Requests</div>
-                        <div class="status-metric-value" id="totalRequests">—</div>
-                    </div>
+                <div style="margin-top: 20px;">
+                    <table>
+                        <tr>
+                            <td><strong>Total Requests</strong></td>
+                            <td id="detailRequests">—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Answered</strong></td>
+                            <td id="detailAnswered">—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>High Confidence</strong></td>
+                            <td id="detailHighConf">—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Low Confidence</strong></td>
+                            <td id="detailLowConf">—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Escalated</strong></td>
+                            <td id="detailEscalated">—</td>
+                        </tr>
+                    </table>
                 </div>
 
                 <div class="footer">
-                    <div id="notes">—</div>
+                    <div>Range: <span id="rangeDisplay">—</span></div>
                     <div>Generated: <span id="generatedAt">—</span></div>
                 </div>
             </div>
@@ -642,12 +635,12 @@
             <div class="card half">
                 <div class="section-header">
                     <div>
-                        <div class="section-title">Daily Requests</div>
-                        <div class="section-subtitle">Request volume over time</div>
+                        <div class="section-title">Adoption Trend</div>
+                        <div class="section-subtitle">Daily request volume</div>
                     </div>
                     <div class="pill">
                         <span class="mini"></span>
-                        <span>Trend</span>
+                        <span id="trendIndicator">—</span>
                     </div>
                 </div>
 
@@ -656,16 +649,26 @@
                 </div>
             </div>
 
-            <!-- Daily Breakdown Table -->
-            <div class="card wide">
+            <!-- Performance Over Time Chart -->
+            <div class="card half">
                 <div class="section-header">
                     <div>
-                        <div class="section-title">Daily Breakdown</div>
-                        <div class="section-subtitle">Latest 14 days activity</div>
+                        <div class="section-title">KPI Performance</div>
+                        <div class="section-subtitle">Correct vs Hallucination vs Escalation</div>
                     </div>
-                    <div class="pill">
-                        <span class="mini"></span>
-                        <span id="rangeTag">Last 30 days</span>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Daily Breakdown Table -->
+            <div class="card half">
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Recent Activity</div>
+                        <div class="section-subtitle">Last 10 days</div>
                     </div>
                 </div>
 
@@ -674,10 +677,10 @@
                         <tr>
                             <th>Date</th>
                             <th>Requests</th>
-                            <th>% of Total</th>
+                            <th>Trend</th>
                         </tr>
                     </thead>
-                    <tbody id="trendBody">
+                    <tbody id="dailyTable">
                         <tr>
                             <td colspan="3" style="text-align: center; color: var(--muted);">
                                 Loading data...
@@ -705,37 +708,45 @@
             autoToggle: document.getElementById("autoToggle"),
             autoDot: document.getElementById("autoDot"),
             
-            requests: document.getElementById("requests"),
-            reqTrend: document.getElementById("reqTrend"),
-            activeUsers: document.getElementById("activeUsers"),
-            activeUsersHint: document.getElementById("activeUsersHint"),
-            correctProxy: document.getElementById("correctProxy"),
-            hallProxy: document.getElementById("hallProxy"),
-            escalRate: document.getElementById("escalRate"),
-            avgConf: document.getElementById("avgConf"),
+            kpi1: document.getElementById("kpi1"),
+            kpi2: document.getElementById("kpi2"),
+            kpi2hint: document.getElementById("kpi2hint"),
+            kpi3: document.getElementById("kpi3"),
+            kpi4: document.getElementById("kpi4"),
+            kpi5: document.getElementById("kpi5"),
             
-            statusPill: document.getElementById("statusPill"),
-            statusText: document.getElementById("statusText"),
-            notes: document.getElementById("notes"),
-            answeredRate: document.getElementById("answeredRate"),
-            totalRequests: document.getElementById("totalRequests"),
+            status1: document.getElementById("status1"),
+            status2: document.getElementById("status2"),
+            status3: document.getElementById("status3"),
+            status4: document.getElementById("status4"),
+            status5: document.getElementById("status5"),
+            
+            overallPill: document.getElementById("overallPill"),
+            overallStatus: document.getElementById("overallStatus"),
+            
+            detailRequests: document.getElementById("detailRequests"),
+            detailAnswered: document.getElementById("detailAnswered"),
+            detailHighConf: document.getElementById("detailHighConf"),
+            detailLowConf: document.getElementById("detailLowConf"),
+            detailEscalated: document.getElementById("detailEscalated"),
+            
+            rangeDisplay: document.getElementById("rangeDisplay"),
             generatedAt: document.getElementById("generatedAt"),
+            trendIndicator: document.getElementById("trendIndicator"),
+            dailyTable: document.getElementById("dailyTable"),
             
-            trendBody: document.getElementById("trendBody"),
-            rangeTag: document.getElementById("rangeTag"),
             trendChart: document.getElementById("trendChart"),
-            
-            testResults: document.getElementById("testResults")
+            performanceChart: document.getElementById("performanceChart")
         };
 
         let autoOn = false;
         let autoTimer = null;
-        let chart = null;
+        let trendChart = null;
+        let performanceChart = null;
 
         // Formatting helpers
         const fmtPct = v => (v ?? 0).toFixed(1) + "%";
         const fmtNum = v => (v === null || v === undefined) ? "N/A" : String(v);
-        const fmtConf = v => (v === null || v === undefined) ? "—" : Number(v).toFixed(3);
 
         // Error handling
         function showError(title, message) {
@@ -749,25 +760,37 @@
             els.errorMessage.textContent = "";
         }
 
-        // Status pill
-        function setStatus(kind, text) {
-            els.statusText.textContent = text;
-            els.statusPill.className = "pill " + kind;
+        // KPI Status indicators
+        function setKPIStatus(element, value, target, inverse = false) {
+            if (!element) return;
+            
+            let status = 'good';
+            if (inverse) {
+                // For metrics where lower is better (hallucination, escalation)
+                if (value > target * 1.5) status = 'bad';
+                else if (value > target) status = 'warning';
+            } else {
+                // For metrics where higher is better (correct answer rate)
+                if (value < target * 0.7) status = 'bad';
+                else if (value < target) status = 'warning';
+            }
+            
+            element.className = 'kpi-status ' + status;
         }
 
-        // Chart creation
-        function ensureChart(labels, values) {
+        // Create trend chart
+        function createTrendChart(labels, values) {
             const ctx = els.trendChart.getContext("2d");
-            if (chart) chart.destroy();
+            if (trendChart) trendChart.destroy();
 
-            chart = new Chart(ctx, {
+            trendChart = new Chart(ctx, {
                 type: "line",
                 data: {
                     labels,
                     datasets: [{
-                        label: "Requests",
+                        label: "Daily Requests",
                         data: values,
-                        tension: 0.35,
+                        tension: 0.4,
                         pointRadius: 4,
                         pointHoverRadius: 6,
                         borderWidth: 3,
@@ -784,9 +807,7 @@
                         tooltip: { 
                             enabled: true,
                             backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                            padding: 12,
-                            titleFont: { size: 14, weight: 'bold' },
-                            bodyFont: { size: 13 }
+                            padding: 12
                         }
                     },
                     scales: {
@@ -804,13 +825,71 @@
             });
         }
 
+        // Create performance chart
+        function createPerformanceChart(correctRate, hallRate, escalRate) {
+            const ctx = els.performanceChart.getContext("2d");
+            if (performanceChart) performanceChart.destroy();
+
+            performanceChart = new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: ["Correct Answer", "Hallucination", "Escalation"],
+                    datasets: [{
+                        label: "Rate (%)",
+                        data: [correctRate, hallRate, escalRate],
+                        backgroundColor: [
+                            "rgba(34, 197, 94, 0.8)",
+                            "rgba(239, 68, 68, 0.8)",
+                            "rgba(245, 158, 11, 0.8)"
+                        ],
+                        borderColor: [
+                            "#22c55e",
+                            "#ef4444",
+                            "#f59e0b"
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { 
+                            enabled: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y.toFixed(1) + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { 
+                                color: "#64748b",
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: { color: "rgba(226, 232, 240, 0.5)" }
+                        },
+                        x: {
+                            ticks: { color: "#64748b" },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
         // Main load function
         async function load() {
             clearError();
             
             const days = els.days.value;
-            els.rangeTag.textContent = `Last ${days} days`;
-            
             const url = `${KPI_API_URL}?days=${encodeURIComponent(days)}&cb=${Date.now()}`;
             els.subtitle.textContent = "Loading KPIs...";
             els.statusBar.textContent = "📡 Fetching data from n8n...";
@@ -820,14 +899,14 @@
             try {
                 res = await fetch(url, { method: "GET" });
             } catch (e) {
-                showError("Network Error", `Failed to connect to n8n webhook.\n\nError: ${e.message}\n\nURL: ${url}\n\nPlease check:\n1. n8n workflow is active\n2. Webhook URL is correct\n3. Network connectivity`);
+                showError("Network Error", `Failed to connect to n8n.\n\nError: ${e.message}\n\nURL: ${url}`);
                 els.subtitle.textContent = "Failed to load";
                 return;
             }
 
             if (!res.ok) {
                 const text = await res.text().catch(() => "");
-                showError(`HTTP ${res.status}`, `API returned error status.\n\nStatus: ${res.status} ${res.statusText}\n\nResponse:\n${text}\n\nURL: ${url}`);
+                showError(`HTTP ${res.status}`, `API error.\n\nStatus: ${res.status}\n\nResponse:\n${text}`);
                 els.subtitle.textContent = "Failed to load";
                 return;
             }
@@ -836,92 +915,111 @@
                 data = await res.json();
             } catch (e) {
                 const text = await res.text().catch(() => "");
-                showError("Invalid JSON", `Could not parse API response.\n\nError: ${e.message}\n\nRaw response:\n${text}`);
+                showError("Invalid JSON", `Could not parse response.\n\nError: ${e.message}\n\nRaw:\n${text}`);
                 els.subtitle.textContent = "Failed to load";
                 return;
             }
 
-            // Update UI
-            els.subtitle.textContent = `Range: last ${data.range_days} days • Source: Log Sheet`;
-            els.statusBar.textContent = `✅ Connected to n8n • Last updated: ${new Date().toLocaleTimeString()}`;
+            // Update header
+            els.subtitle.textContent = `Monitoring ${data.range_days} days of activity`;
+            els.statusBar.textContent = `✅ Data refreshed at ${new Date().toLocaleTimeString()}`;
+            els.rangeDisplay.textContent = `Last ${data.range_days} days`;
             els.generatedAt.textContent = new Date(data.generated_at_utc).toLocaleString();
 
-            // KPI values
-            els.requests.textContent = fmtNum(data.totals?.requests);
-            els.totalRequests.textContent = fmtNum(data.totals?.requests);
-            els.activeUsers.textContent = fmtNum(data.totals?.active_users);
-            els.correctProxy.textContent = fmtPct(data.rates?.correct_answer_proxy_rate_pct);
-            els.hallProxy.textContent = fmtPct(data.rates?.hallucination_proxy_rate_pct);
-            els.escalRate.textContent = fmtPct(data.rates?.escalation_rate_pct);
-            els.avgConf.textContent = fmtConf(data.confidence?.avg_confidence);
-            els.answeredRate.textContent = fmtPct(data.rates?.answered_rate_pct);
+            // KPI 1: Employee Adoption (# requests)
+            const adoptionCount = data.totals?.requests || 0;
+            els.kpi1.textContent = fmtNum(adoptionCount);
+            els.status1.className = adoptionCount > 0 ? 'kpi-status good' : 'kpi-status bad';
 
-            // Active users note
-            if (data.notes?.active_users_note) {
-                els.activeUsersHint.textContent = "N/A (missing session/user logging)";
+            // KPI 2: Active Users (% of employees or count)
+            const activeUsers = data.totals?.active_users;
+            if (activeUsers !== null && activeUsers !== undefined) {
+                els.kpi2.textContent = fmtNum(activeUsers);
+                els.kpi2hint.textContent = "unique users";
+                els.status2.className = activeUsers > 0 ? 'kpi-status good' : 'kpi-status bad';
             } else {
-                els.activeUsersHint.textContent = "unique sessions/users";
+                els.kpi2.textContent = "N/A";
+                els.kpi2hint.textContent = "Session tracking required";
+                els.status2.className = 'kpi-status';
             }
 
-            // Status logic
-            const esc = data.rates?.escalation_rate_pct || 0;
-            const hall = data.rates?.hallucination_proxy_rate_pct || 0;
-            const correct = data.rates?.correct_answer_proxy_rate_pct || 0;
+            // KPI 3: Correct Answer Rate (%)
+            const correctRate = data.rates?.correct_answer_proxy_rate_pct || 0;
+            els.kpi3.textContent = fmtPct(correctRate);
+            setKPIStatus(els.status3, correctRate, 70, false);
 
-            if (esc < 10 && hall < 10 && correct >= 40) {
-                setStatus("ok", "Healthy");
-            } else if (esc < 20 && hall < 20) {
-                setStatus("watch", "Watch");
+            // KPI 4: Hallucination Rate (%)
+            const hallRate = data.rates?.hallucination_proxy_rate_pct || 0;
+            els.kpi4.textContent = fmtPct(hallRate);
+            setKPIStatus(els.status4, hallRate, 10, true);
+
+            // KPI 5: Escalation Rate (%)
+            const escalRate = data.rates?.escalation_rate_pct || 0;
+            els.kpi5.textContent = fmtPct(escalRate);
+            setKPIStatus(els.status5, escalRate, 15, true);
+
+            // Overall status
+            if (correctRate >= 70 && hallRate <= 10 && escalRate <= 15) {
+                els.overallStatus.textContent = "Excellent";
+                els.overallPill.className = "pill ok";
+            } else if (correctRate >= 50 && hallRate <= 20 && escalRate <= 25) {
+                els.overallStatus.textContent = "Good";
+                els.overallPill.className = "pill watch";
             } else {
-                setStatus("bad", "Needs attention");
+                els.overallStatus.textContent = "Needs Improvement";
+                els.overallPill.className = "pill bad";
             }
 
-            // Notes
-            const notes = [];
-            notes.push(`High confidence: ${data.totals?.high_confidence ?? 0}`);
-            notes.push(`Low confidence: ${data.totals?.low_confidence ?? 0}`);
-            if (data.notes?.active_users_note) notes.push(data.notes.active_users_note);
-            els.notes.textContent = notes.join(" • ");
+            // Detail table
+            els.detailRequests.textContent = fmtNum(data.totals?.requests);
+            els.detailAnswered.textContent = `${fmtNum(data.totals?.answered)} (${fmtPct(data.rates?.answered_rate_pct)})`;
+            els.detailHighConf.textContent = fmtNum(data.totals?.high_confidence);
+            els.detailLowConf.textContent = fmtNum(data.totals?.low_confidence);
+            els.detailEscalated.textContent = fmtNum(data.totals?.escalated);
 
             // Trend data
             const daily = data.trend?.daily_requests || [];
-            const last14 = daily.slice(-14);
-
-            // Table
-            els.trendBody.innerHTML = "";
-            if (!last14.length) {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `<td colspan="3" style="text-align: center; color: var(--muted);">No timestamped rows found in this range.</td>`;
-                els.trendBody.appendChild(tr);
+            
+            // Update trend indicator
+            if (daily.length >= 7) {
+                const lastWeek = daily.slice(-7).reduce((sum, d) => sum + (d.requests || 0), 0);
+                const prevWeek = daily.length >= 14 ? 
+                    daily.slice(-14, -7).reduce((sum, d) => sum + (d.requests || 0), 0) : 0;
+                const change = lastWeek - prevWeek;
+                const arrow = change > 0 ? "↑" : change < 0 ? "↓" : "→";
+                els.trendIndicator.textContent = `${arrow} ${change > 0 ? '+' : ''}${change} vs prev week`;
             } else {
-                const total = daily.reduce((sum, row) => sum + (row.requests || 0), 0);
-                for (const row of last14) {
-                    const pct = total > 0 ? ((row.requests / total) * 100).toFixed(1) : 0;
+                els.trendIndicator.textContent = "Insufficient data";
+            }
+
+            // Daily table (last 10 days)
+            const last10 = daily.slice(-10);
+            els.dailyTable.innerHTML = "";
+            if (!last10.length) {
+                els.dailyTable.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--muted);">No data available</td></tr>`;
+            } else {
+                last10.reverse().forEach((day, idx) => {
+                    const prevDay = last10[idx + 1];
+                    let trend = "—";
+                    if (prevDay) {
+                        const diff = day.requests - prevDay.requests;
+                        trend = diff > 0 ? `+${diff}` : diff < 0 ? `${diff}` : "0";
+                    }
                     const tr = document.createElement("tr");
                     tr.innerHTML = `
-                        <td><strong>${row.date}</strong></td>
-                        <td>${row.requests}</td>
-                        <td>${pct}%</td>
+                        <td><strong>${day.date}</strong></td>
+                        <td>${day.requests}</td>
+                        <td style="color: ${trend.startsWith('+') ? 'var(--success)' : trend.startsWith('-') ? 'var(--danger)' : 'var(--muted)'};">${trend}</td>
                     `;
-                    els.trendBody.appendChild(tr);
-                }
+                    els.dailyTable.appendChild(tr);
+                });
             }
 
-            // Chart
-            const labels = daily.map(x => x.date);
-            const values = daily.map(x => x.requests);
-            ensureChart(labels, values);
-
-            // Trend indicator
-            if (daily.length >= 14) {
-                const last7 = daily.slice(-7).reduce((a, b) => a + (b.requests || 0), 0);
-                const prev7 = daily.slice(-14, -7).reduce((a, b) => a + (b.requests || 0), 0);
-                const diff = last7 - prev7;
-                const sign = diff > 0 ? "+" : "";
-                els.reqTrend.textContent = `7d: ${last7} (${sign}${diff})`;
-            } else {
-                els.reqTrend.textContent = "";
-            }
+            // Charts
+            const labels = daily.map(d => d.date);
+            const values = daily.map(d => d.requests);
+            createTrendChart(labels, values);
+            createPerformanceChart(correctRate, hallRate, escalRate);
         }
 
         // Auto-refresh
@@ -934,115 +1032,7 @@
             }
             if (on) {
                 autoTimer = setInterval(() => load(), 60000);
-                els.statusBar.textContent += " • Auto-refresh enabled (60s)";
             }
-        }
-
-        // Testing functions
-        async function runTests() {
-            const tests = [];
-            els.testResults.innerHTML = '<div class="test-item"><div class="test-icon pending">⏳</div><div>Running tests...</div></div>';
-
-            // Test 1: Webhook connectivity
-            try {
-                const res = await fetch(KPI_API_URL + "?days=7", { method: "GET" });
-                if (res.ok) {
-                    tests.push({ name: "Webhook connectivity", pass: true, detail: `HTTP ${res.status} OK` });
-                } else {
-                    tests.push({ name: "Webhook connectivity", pass: false, detail: `HTTP ${res.status} ${res.statusText}` });
-                }
-            } catch (e) {
-                tests.push({ name: "Webhook connectivity", pass: false, detail: e.message });
-            }
-
-            // Test 2: JSON response format
-            try {
-                const res = await fetch(KPI_API_URL + "?days=7", { method: "GET" });
-                const data = await res.json();
-                const hasRequiredFields = data.totals && data.rates && data.trend;
-                tests.push({ 
-                    name: "JSON response format", 
-                    pass: hasRequiredFields, 
-                    detail: hasRequiredFields ? "All required fields present" : "Missing required fields"
-                });
-            } catch (e) {
-                tests.push({ name: "JSON response format", pass: false, detail: e.message });
-            }
-
-            // Test 3: Data validity
-            try {
-                const res = await fetch(KPI_API_URL + "?days=7", { method: "GET" });
-                const data = await res.json();
-                const hasData = data.totals?.requests !== undefined;
-                tests.push({ 
-                    name: "Data validity", 
-                    pass: hasData, 
-                    detail: hasData ? `${data.totals.requests} requests found` : "No request data"
-                });
-            } catch (e) {
-                tests.push({ name: "Data validity", pass: false, detail: e.message });
-            }
-
-            // Test 4: Google Sheets integration
-            try {
-                const res = await fetch(KPI_API_URL + "?days=30", { method: "GET" });
-                const data = await res.json();
-                const hasSheetData = data.trend?.daily_requests?.length > 0;
-                tests.push({ 
-                    name: "Google Sheets integration", 
-                    pass: hasSheetData, 
-                    detail: hasSheetData ? `${data.trend.daily_requests.length} days of data` : "No data from sheets"
-                });
-            } catch (e) {
-                tests.push({ name: "Google Sheets integration", pass: false, detail: e.message });
-            }
-
-            // Test 5: CORS headers
-            try {
-                const res = await fetch(KPI_API_URL + "?days=7", { method: "GET" });
-                const corsHeader = res.headers.get("Access-Control-Allow-Origin");
-                tests.push({ 
-                    name: "CORS configuration", 
-                    pass: corsHeader === "*", 
-                    detail: corsHeader ? `Header: ${corsHeader}` : "No CORS header"
-                });
-            } catch (e) {
-                tests.push({ name: "CORS configuration", pass: false, detail: e.message });
-            }
-
-            // Display results
-            let html = "";
-            const allPassed = tests.every(t => t.pass);
-            
-            for (const test of tests) {
-                html += `
-                    <div class="test-item">
-                        <div class="test-icon ${test.pass ? 'pass' : 'fail'}">${test.pass ? '✓' : '✗'}</div>
-                        <div>
-                            <strong>${test.name}</strong>
-                            <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">${test.detail}</div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            if (allPassed) {
-                html += `
-                    <div class="test-item" style="background: rgba(34,197,94,0.1); border: 1px solid var(--success);">
-                        <div class="test-icon pass">✓</div>
-                        <div><strong>All tests passed! n8n integration is working correctly.</strong></div>
-                    </div>
-                `;
-            } else {
-                html += `
-                    <div class="test-item" style="background: rgba(239,68,68,0.1); border: 1px solid var(--danger);">
-                        <div class="test-icon fail">✗</div>
-                        <div><strong>Some tests failed. Please check the n8n workflow configuration.</strong></div>
-                    </div>
-                `;
-            }
-
-            els.testResults.innerHTML = html;
         }
 
         // Event listeners
