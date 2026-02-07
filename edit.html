@@ -3,45 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat3PT - Knowledge Base Editor (DEBUG)</title>
+  <title>Chat3PT KB Editor</title>
   <style>
     :root {
       --bg1: #e8f1f6; --bg2: #eef2ff; --card: #ffffff; --text: #0f172a;
       --muted: #64748b; --border: #e2e8f0; --shadow: 0 14px 40px rgba(2, 6, 23, .10);
       --brand: #1f7a6b; --brand-light: rgba(31, 122, 107, 0.1);
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: ui-sans-serif, system-ui, sans-serif;
       background: linear-gradient(180deg, var(--bg1), var(--bg2));
       min-height: 100vh; padding: 20px; color: var(--text);
     }
-
-    .container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 400px; gap: 20px; }
-
-    .main-panel { }
-    .debug-panel {
-      background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 12px;
-      font-family: 'Courier New', monospace; font-size: 11px;
-      max-height: 90vh; overflow-y: auto;
-    }
-    .debug-panel h3 { color: #4ec9b0; margin-bottom: 10px; }
-    .debug-log { margin-bottom: 10px; }
-    .debug-log.error { color: #f48771; }
-    .debug-log.success { color: #89d185; }
-    .debug-log.info { color: #569cd6; }
-
+    .container { max-width: 1000px; margin: 0 auto; }
     .header {
       background: rgba(255,255,255,.9); border-radius: 20px; padding: 24px;
       margin-bottom: 24px; box-shadow: var(--shadow);
     }
     .card {
       background: white; border-radius: 20px; padding: 30px;
-      margin-bottom: 24px; box-shadow: var(--shadow);
-      min-height: 400px;
+      margin-bottom: 24px; box-shadow: var(--shadow); min-height: 400px;
     }
-
     .step-indicator {
       display: flex; justify-content: space-between; margin-bottom: 30px; position: relative;
     }
@@ -62,11 +45,9 @@
     .step.completed .step-circle { background: #22c55e; color: white; }
     .step-label { font-size: 12px; font-weight: 600; color: var(--muted); }
     .step.active .step-label { color: var(--brand); }
-
     .form-section { display: none; animation: fadeIn 0.3s; }
     .form-section.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
     .type-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
     .type-card {
       padding: 24px; border: 2px solid var(--border); border-radius: 16px;
@@ -75,7 +56,6 @@
     .type-card:hover { transform: translateY(-4px); border-color: var(--brand); }
     .type-card.selected { border-color: var(--brand); background: var(--brand-light); }
     .type-icon { font-size: 32px; margin-bottom: 10px; }
-
     .mode-toggle {
       display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;
       background: var(--bg1); padding: 5px; border-radius: 10px; width: fit-content; margin-left: auto; margin-right: auto;
@@ -85,13 +65,11 @@
       background: transparent; color: var(--muted);
     }
     .mode-btn.active { background: white; color: var(--brand); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-
     .search-container {
       background: var(--brand-light); padding: 20px; border-radius: 12px;
       margin-top: 20px; display: none;
     }
     .search-container.show { display: block; }
-
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .form-group { display: flex; flex-direction: column; gap: 8px; }
     .form-group.full { grid-column: 1 / -1; }
@@ -100,7 +78,6 @@
       padding: 12px; border: 1px solid var(--border); border-radius: 10px; width: 100%;
     }
     .form-textarea { min-height: 100px; resize: vertical; }
-
     .button-group { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; }
     .btn {
       padding: 12px 24px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;
@@ -109,136 +86,96 @@
     .btn-primary { background: var(--brand); color: white; }
     .btn-secondary { background: var(--border); color: var(--text); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
     .review-item { margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
     .review-label { font-size: 12px; color: var(--muted); text-transform: uppercase; }
     .review-value { font-weight: 500; }
   </style>
 </head>
-
 <body>
   <div class="container">
-    <div class="main-panel">
-      <div class="header">
-        <h1>📝 Knowledge Base Manager (DEBUG MODE)</h1>
-      </div>
-
-      <div class="card">
-        <div class="step-indicator">
-          <div class="step active" data-step="1">
-            <div class="step-circle">1</div>
-            <div class="step-label">Select Type</div>
-          </div>
-          <div class="step" data-step="2">
-            <div class="step-circle">2</div>
-            <div class="step-label">Basic Info</div>
-          </div>
-          <div class="step" data-step="3">
-            <div class="step-circle">3</div>
-            <div class="step-label">Details</div>
-          </div>
-          <div class="step" data-step="4">
-            <div class="step-circle">4</div>
-            <div class="step-label">Review</div>
-          </div>
-        </div>
-
-        <div class="form-section active" id="section1">
-          <h2 style="text-align:center; margin-bottom:20px;">What are you working on?</h2>
-
-          <div class="mode-toggle">
-            <button class="mode-btn active" onclick="setMode('add', event)">Add New Item</button>
-            <button class="mode-btn" onclick="setMode('edit', event)">Edit Existing</button>
-          </div>
-
-          <div class="type-selector">
-            <div class="type-card" onclick="selectType('product', this)">
-              <div class="type-icon">🏦</div>
-              <div>Product</div>
-            </div>
-            <div class="type-card" onclick="selectType('procedure', this)">
-              <div class="type-icon">📋</div>
-              <div>Procedure</div>
-            </div>
-            <div class="type-card" onclick="selectType('policy', this)">
-              <div class="type-icon">📜</div>
-              <div>Policy</div>
-            </div>
-          </div>
-
-          <div class="search-container" id="searchBox">
-            <label class="form-label">Search by ID to Edit</label>
-            <div style="display:flex; gap:10px;">
-              <input type="text" id="searchId" class="form-input" placeholder="e.g. PRD-0002" value="PRD-0002">
-              <button class="btn btn-primary" onclick="fetchData()">Search</button>
-            </div>
-            <p id="searchStatus" style="margin-top:10px; font-size:13px; color:var(--muted);"></p>
-          </div>
-
-          <div class="button-group">
-            <button class="btn btn-primary" id="btnStep1" onclick="nextStep()" disabled>Next Step →</button>
-          </div>
-        </div>
-
-        <div class="form-section" id="section2">
-          <h2>Basic Information</h2>
-          <div id="formBasic" class="form-grid"></div>
-          <div class="button-group">
-            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-            <button class="btn btn-primary" onclick="nextStep()">Next Step →</button>
-          </div>
-        </div>
-
-        <div class="form-section" id="section3">
-          <h2>Detailed Information</h2>
-          <div id="formDetails" class="form-grid"></div>
-          <div class="button-group">
-            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-            <button class="btn btn-primary" onclick="nextStep()">Review →</button>
-          </div>
-        </div>
-
-        <div class="form-section" id="section4">
-          <h2>Review & Submit</h2>
-          <div id="reviewContent" style="background:var(--bg1); padding:20px; border-radius:12px;"></div>
-          <div class="button-group">
-            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-            <button class="btn btn-primary" onclick="submitData()">Submit Data ✓</button>
-          </div>
-        </div>
-      </div>
+    <div class="header">
+      <h1>📝 Knowledge Base Manager</h1>
     </div>
-
-    <div class="debug-panel" id="debugPanel">
-      <h3>🐛 Debug Console</h3>
-      <div id="debugLogs"></div>
+    <div class="card">
+      <div class="step-indicator">
+        <div class="step active" data-step="1">
+          <div class="step-circle">1</div>
+          <div class="step-label">Select Type</div>
+        </div>
+        <div class="step" data-step="2">
+          <div class="step-circle">2</div>
+          <div class="step-label">Basic Info</div>
+        </div>
+        <div class="step" data-step="3">
+          <div class="step-circle">3</div>
+          <div class="step-label">Details</div>
+        </div>
+        <div class="step" data-step="4">
+          <div class="step-circle">4</div>
+          <div class="step-label">Review</div>
+        </div>
+      </div>
+      <div class="form-section active" id="section1">
+        <h2 style="text-align:center; margin-bottom:20px;">What are you working on?</h2>
+        <div class="mode-toggle">
+          <button class="mode-btn active" onclick="setMode('add', event)">Add New Item</button>
+          <button class="mode-btn" onclick="setMode('edit', event)">Edit Existing</button>
+        </div>
+        <div class="type-selector">
+          <div class="type-card" onclick="selectType('product', this)">
+            <div class="type-icon">🏦</div>
+            <div>Product</div>
+          </div>
+          <div class="type-card" onclick="selectType('procedure', this)">
+            <div class="type-icon">📋</div>
+            <div>Procedure</div>
+          </div>
+          <div class="type-card" onclick="selectType('policy', this)">
+            <div class="type-icon">📜</div>
+            <div>Policy</div>
+          </div>
+        </div>
+        <div class="search-container" id="searchBox">
+          <label class="form-label">Search by ID to Edit</label>
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="searchId" class="form-input" placeholder="e.g. PRD-001">
+            <button class="btn btn-primary" onclick="fetchData()">Search</button>
+          </div>
+          <p id="searchStatus" style="margin-top:10px; font-size:13px; color:var(--muted);"></p>
+        </div>
+        <div class="button-group">
+          <button class="btn btn-primary" id="btnStep1" onclick="nextStep()" disabled>Next Step →</button>
+        </div>
+      </div>
+      <div class="form-section" id="section2">
+        <h2>Basic Information</h2>
+        <div id="formBasic" class="form-grid"></div>
+        <div class="button-group">
+          <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+          <button class="btn btn-primary" onclick="nextStep()">Next Step →</button>
+        </div>
+      </div>
+      <div class="form-section" id="section3">
+        <h2>Detailed Information</h2>
+        <div id="formDetails" class="form-grid"></div>
+        <div class="button-group">
+          <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+          <button class="btn btn-primary" onclick="nextStep()">Review →</button>
+        </div>
+      </div>
+      <div class="form-section" id="section4">
+        <h2>Review & Submit</h2>
+        <div id="reviewContent" style="background:var(--bg1); padding:20px; border-radius:12px;"></div>
+        <div class="button-group">
+          <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+          <button class="btn btn-primary" onclick="submitData()">Submit Data ✓</button>
+        </div>
+      </div>
     </div>
   </div>
-
   <script>
     const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/webhook";
-
-    const DEFAULT_OWNER = "KB Editor";
-    const ISO_DATE = () => new Date().toISOString().slice(0, 10);
-
-    let currentStep = 1;
-    let mode = 'add';
-    let selectedType = null;
-    let currentId = null;
-    let formData = {};
-
-    // Debug logging
-    function debugLog(message, type = 'info') {
-      const debugLogs = document.getElementById('debugLogs');
-      const timestamp = new Date().toLocaleTimeString();
-      const logEntry = document.createElement('div');
-      logEntry.className = `debug-log ${type}`;
-      logEntry.textContent = `[${timestamp}] ${message}`;
-      debugLogs.appendChild(logEntry);
-      debugLogs.scrollTop = debugLogs.scrollHeight;
-      console.log(`[${type.toUpperCase()}]`, message);
-    }
-
+    let currentStep = 1, mode = 'add', selectedType = null, currentId = null, formData = {};
     const schemas = {
       product: {
         basic: [
@@ -278,7 +215,7 @@
         details: [
           { key: 'summary', label: 'Summary', type: 'textarea', full: true },
           { key: 'do', label: 'Do', type: 'textarea', full: true },
-          { key: 'dont', label: 'Don\'t', type: 'textarea', full: true },
+          { key: 'dont', label: "Don't", type: 'textarea', full: true },
           { key: 'keywords', label: 'Keywords', type: 'text', full: true }
         ]
       }
@@ -286,13 +223,10 @@
 
     function setMode(m, ev) {
       mode = m;
-      debugLog(`Mode changed to: ${m}`);
       document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
       if (ev && ev.target) ev.target.classList.add('active');
-
       const searchBox = document.getElementById('searchBox');
       const nextBtn = document.getElementById('btnStep1');
-
       if (mode === 'edit') {
         searchBox.classList.add('show');
         nextBtn.disabled = true;
@@ -309,10 +243,8 @@
 
     function selectType(type, card) {
       selectedType = type;
-      debugLog(`Type selected: ${type}`);
       document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
-
       if (mode === 'add') {
         formData = {};
         renderForms(formData);
@@ -325,99 +257,60 @@
     async function fetchData() {
       const rawId = document.getElementById('searchId').value || '';
       const statusEl = document.getElementById('searchStatus');
-
-      if (!selectedType) {
-        alert("Please select a Type first.");
-        return;
-      }
-
+      if (!selectedType) return alert("Please select a Type first.");
       const id = rawId.trim();
-      if (!id) {
-        alert("Please enter an ID.");
-        return;
-      }
-
-      debugLog(`=== FETCH STARTED ===`, 'info');
-      debugLog(`Type: ${selectedType}, ID: ${id}`, 'info');
-
+      if (!id) return alert("Please enter an ID.");
       statusEl.innerText = "Searching...";
       statusEl.style.color = "var(--muted)";
-
       const url = `${WEBHOOK_URL}?action=fetch&type=${encodeURIComponent(selectedType)}&id=${encodeURIComponent(id)}`;
-      debugLog(`URL: ${url}`);
-
       try {
         const res = await fetch(url, { method: 'GET' });
-        debugLog(`Response status: ${res.status}`);
-
         if (!res.ok) {
           statusEl.innerText = `❌ Server error (${res.status}).`;
           statusEl.style.color = "red";
-          debugLog(`HTTP error: ${res.status}`, 'error');
           return;
         }
-
         const payload = await res.json();
-        debugLog(`=== RAW PAYLOAD ===`, 'info');
-        debugLog(`Type: ${Array.isArray(payload) ? 'Array' : typeof payload}`);
-        debugLog(`JSON: ${JSON.stringify(payload, null, 2).substring(0, 500)}...`);
-
-        if (Array.isArray(payload)) {
-          debugLog(`Array length: ${payload.length}`);
-          payload.forEach((item, idx) => {
-            debugLog(`--- Item [${idx}] ---`);
-            debugLog(`Type: ${Array.isArray(item) ? 'Array' : typeof item}`);
-            debugLog(`Keys: ${Object.keys(item || {}).join(', ')}`);
-            if (item && item.json) {
-              debugLog(`  Has .json property! Keys inside: ${Object.keys(item.json).join(', ')}`);
-            }
-          });
-        }
-
+        console.log("📦 Fetch:", payload);
         let row = null;
-        const idKey = selectedType + "_id";
-        debugLog(`Looking for key: ${idKey}`);
-
-        // Extract the actual data
         if (Array.isArray(payload)) {
-          for (const item of payload) {
-            if (!item || typeof item !== 'object') continue;
-
-            // n8n Code nodes wrap output in {json: {...}}
+          const idKey = selectedType + "_id";
+          row = payload.find(item => {
+            if (!item || typeof item !== 'object') return false;
             const checkItem = (item.json && typeof item.json === 'object') ? item.json : item;
-
-            if (checkItem[idKey]) {
-              row = checkItem;
-              debugLog(`✅ FOUND! Item with ${idKey}`, 'success');
-              debugLog(`Data keys: ${Object.keys(row).join(', ')}`, 'success');
-              break;
-            }
+            return checkItem[idKey] && checkItem[idKey].toString().toLowerCase() === id.toLowerCase();
+          });
+          if (row && row.json) row = row.json;
+          if (!row) {
+            row = payload.find(item => {
+              const checkItem = (item?.json && typeof item.json === 'object') ? item.json : item;
+              return checkItem && !checkItem.headers && !checkItem.webhookUrl && Object.keys(checkItem).length > 3;
+            });
+            if (row && row.json) row = row.json;
+          }
+        } else if (payload && typeof payload === 'object') {
+          const idKey = selectedType + "_id";
+          if (payload[idKey]) {
+            row = payload;
+          } else if (payload.ok === false) {
+            statusEl.innerText = `❌ ${payload.error || 'Not found'}`;
+            statusEl.style.color = "red";
+            return;
           }
         }
-
-        if (!row) {
-          debugLog(`❌ Could not find item with ${idKey}`, 'error');
+        if (!row || Object.keys(row).length === 0) {
           statusEl.innerText = "❌ Item not found.";
           statusEl.style.color = "red";
           return;
         }
-
-        debugLog(`=== EXTRACTED ROW ===`, 'success');
-        debugLog(`Type: ${Array.isArray(row) ? 'Array' : typeof row}`, 'success');
-        debugLog(`Keys: ${Object.keys(row).join(', ')}`, 'success');
-        debugLog(`Sample values: product_name=${row.product_name}, family=${row.family}`, 'success');
-
-        statusEl.innerText = "✅ Data loaded! Click Next.";
+        statusEl.innerText = "✅ Data loaded!";
         statusEl.style.color = "green";
-
         currentId = id;
         formData = row;
-
-        debugLog(`formData assigned. Keys: ${Object.keys(formData).join(', ')}`, 'success');
+        console.log("✅ Loaded:", formData);
         document.getElementById('btnStep1').disabled = false;
-
       } catch (e) {
-        debugLog(`❌ ERROR: ${e.message}`, 'error');
+        console.error(e);
         statusEl.innerText = "❌ Network error.";
         statusEl.style.color = "red";
       }
@@ -426,20 +319,15 @@
     function renderForms(data = {}) {
       if (!selectedType) return;
       const schema = schemas[selectedType];
-
-      debugLog(`Rendering forms with ${Object.keys(data).length} keys`);
-
       const escAttr = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
       const buildFields = (fields) => fields.map(f => {
         const val = data[f.key] ?? '';
-
         let inputHtml = '';
         if (f.type === 'textarea') {
           inputHtml = `<textarea name="${f.key}" class="form-textarea">${String(val ?? '')}</textarea>`;
         } else if (f.type === 'select') {
           inputHtml = `<select name="${f.key}" class="form-select">
-            <option value="">Select an option...</option>
+            <option value="">Select...</option>
             ${f.options.map(o => {
                const isSelected = String(val) === String(o) ? 'selected' : '';
                return `<option value="${escAttr(o)}" ${isSelected}>${o}</option>`;
@@ -448,55 +336,40 @@
         } else {
           inputHtml = `<input type="text" name="${f.key}" value="${escAttr(val)}" class="form-input">`;
         }
-
         return `<div class="form-group ${f.full ? 'full' : ''}">
           <label class="form-label">${f.label}</label>
           ${inputHtml}
         </div>`;
       }).join('');
-
       document.getElementById('formBasic').innerHTML = buildFields(schema.basic);
       document.getElementById('formDetails').innerHTML = buildFields(schema.details);
-      
-      debugLog(`Forms rendered`);
     }
 
     function harvestCurrentFormData() {
       const currentSection = document.getElementById(`section${currentStep}`);
       const inputs = currentSection.querySelectorAll('input, select, textarea');
-      
-      debugLog(`Harvesting ${inputs.length} inputs from step ${currentStep}`);
-      
       inputs.forEach(i => {
-        if (i.name) {
-            formData[i.name] = i.value;
-        }
+        if (i.name) formData[i.name] = i.value;
       });
     }
 
     function nextStep() {
-      debugLog(`Moving from step ${currentStep} to ${currentStep + 1}`);
       harvestCurrentFormData();
-
       if (currentStep < 4) {
         currentStep++;
         updateUI();
-        
         if (currentStep === 2 || currentStep === 3) {
           renderForms(formData);
         }
       }
-      
       if (currentStep === 4) renderReview();
     }
 
     function prevStep() {
       harvestCurrentFormData();
-      
       if (currentStep > 1) {
         currentStep--;
         updateUI();
-        
         if (currentStep === 2 || currentStep === 3) {
           renderForms(formData);
         }
@@ -510,7 +383,6 @@
         if (num < currentStep) el.classList.add('completed');
         if (num === currentStep) el.classList.add('active');
       });
-
       document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
       document.getElementById(`section${currentStep}`).classList.add('active');
     }
@@ -518,60 +390,52 @@
     function renderReview() {
       let html = `<h3>${selectedType.toUpperCase()} - ${mode.toUpperCase()}</h3>`;
       html += `<p style="margin-bottom:15px; font-size:12px; color:#666;">ID: ${mode==='edit' ? currentId : 'Auto-Generated'}</p>`;
-
       for (const [key, val] of Object.entries(formData)) {
-        if (!val) continue;
-        if (key === selectedType + '_id') continue;
-
+        if (!val || key === selectedType + '_id') continue;
         const safeVal = String(val).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
         html += `<div class="review-item">
           <div class="review-label">${key.replace(/_/g,' ')}</div>
           <div class="review-value">${safeVal}</div>
         </div>`;
       }
-
       document.getElementById('reviewContent').innerHTML = html;
     }
 
     async function submitData() {
-      if (!formData.owner) formData.owner = DEFAULT_OWNER;
-      if (selectedType === 'product' || selectedType === 'procedure') formData.last_updated = ISO_DATE();
-      if (selectedType === 'policy') formData.last_reviewed = ISO_DATE();
-
+      if (!formData.owner) formData.owner = 'KB Editor';
+      const today = new Date().toISOString().slice(0,10);
+      if (selectedType === 'product' || selectedType === 'procedure') {
+         formData.last_updated = today;
+      }
+      if (selectedType === 'policy') {
+         formData.last_reviewed = today;
+      }
       const payload = {
         type: selectedType,
         action: mode === 'add' ? 'add_item' : 'update_item',
         data: formData
       };
-
-      if (mode === 'edit') payload.data[selectedType + '_id'] = currentId;
-
-      debugLog(`Submitting: ${JSON.stringify(payload, null, 2)}`);
-
+      if (mode === 'edit') {
+        payload.data[selectedType + '_id'] = currentId;
+      }
       try {
         const btn = document.querySelector('#section4 .btn-primary');
         btn.innerText = "Sending...";
         btn.disabled = true;
-
         const res = await fetch(WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-
         if (res.ok) {
-          debugLog('✅ Submit successful!', 'success');
-          alert("Success! Database updated.");
+          alert("Success!");
           location.reload();
         } else {
-          debugLog(`❌ Submit failed: ${res.status}`, 'error');
-          alert("Error submitting data.");
+          alert("Error");
           btn.innerText = "Submit Data ✓";
           btn.disabled = false;
         }
       } catch (e) {
-        debugLog(`❌ Submit error: ${e.message}`, 'error');
         alert("Network error: " + e.message);
       }
     }
