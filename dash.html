@@ -596,6 +596,7 @@
 
                 <div class="controls">
                     <select id="days">
+                        <option value="1">Today</option>
                         <option value="7">Last 7 days</option>
                         <option value="30" selected>Last 30 days</option>
                         <option value="90">Last 90 days</option>
@@ -890,6 +891,17 @@
         const fmtPct = v => (v ?? 0).toFixed(1) + "%";
         const fmtNum = v => (v === null || v === undefined) ? "N/A" : String(v);
 
+        // Get display text for time range
+        function getTimeRangeText(days) {
+            switch(days) {
+                case "1": return "Today";
+                case "7": return "Last 7 days";
+                case "30": return "Last 30 days";
+                case "90": return "Last 90 days";
+                default: return `Last ${days} days`;
+            }
+        }
+
         // Error handling
         function showError(title, message) {
             els.errorBox.classList.add('show');
@@ -1115,6 +1127,8 @@
             
             const days = els.days.value;
             const url = `${KPI_API_URL}?days=${encodeURIComponent(days)}&cb=${Date.now()}`;
+            const timeRangeText = getTimeRangeText(days);
+            
             els.subtitle.textContent = "Loading KPIs...";
             els.statusBar.textContent = "📡 Fetching data from n8n...";
 
@@ -1145,9 +1159,9 @@
             }
 
             // Update header
-            els.subtitle.textContent = `Monitoring ${data.range_days} days of activity`;
+            els.subtitle.textContent = `Monitoring ${timeRangeText}`;
             els.statusBar.textContent = `✅ Data refreshed at ${new Date().toLocaleTimeString()}`;
-            els.rangeDisplay.textContent = `Last ${data.range_days} days`;
+            els.rangeDisplay.textContent = timeRangeText;
             els.generatedAt.textContent = new Date(data.generated_at_utc).toLocaleString();
 
             // KPI 1: Employee Adoption (# requests)
