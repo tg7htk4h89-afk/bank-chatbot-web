@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat3PT - KPI Dashboard</title>
-    
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
+    <title>Chat3PT - Knowledge Base Editor</title>
     <style>
         :root {
             --bg1: #e8f1f6;
@@ -20,9 +16,6 @@
             --brand: #1f7a6b;
             --brand-light: rgba(31, 122, 107, 0.1);
             --brand2: #0ea5e9;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --danger: #ef4444;
         }
 
         * {
@@ -42,1006 +35,654 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
-        /* Header */
         .header {
             background: rgba(255,255,255,.85);
             border: 1px solid rgba(226,232,240,.95);
             border-radius: 20px;
             padding: 24px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             box-shadow: var(--shadow);
-            backdrop-filter: blur(10px);
-        }
-
-        .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 16px;
         }
 
-        .brand {
-            display: flex;
-            gap: 14px;
-            align-items: center;
-        }
-
-        .logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, var(--brand), var(--brand2));
-            display: grid;
-            place-items: center;
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-            box-shadow: 0 4px 12px rgba(31,122,107,.3);
-        }
-
-        .brand-text h1 {
+        .header h1 {
             font-size: 24px;
             color: var(--brand);
             margin: 0;
         }
 
-        .brand-text p {
+        .header p {
             color: var(--muted);
-            font-size: 13px;
+            font-size: 14px;
             margin: 4px 0 0;
         }
 
-        .controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        select, button, .toggle {
-            background: white;
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 10px 16px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            outline: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,.05);
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        select:hover, button:hover, .toggle:hover {
-            border-color: var(--brand);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(31,122,107,.2);
-        }
-
-        button.primary {
+        .back-btn {
+            padding: 10px 20px;
             background: var(--brand);
             color: white;
-            border-color: var(--brand);
-        }
-
-        button.primary:hover {
-            background: #186557;
-        }
-
-        .toggle {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            user-select: none;
-        }
-
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--border);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
             transition: all 0.3s;
         }
 
-        .dot.on {
-            background: var(--success);
-            box-shadow: 0 0 0 4px rgba(34,197,94,.2);
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(31,122,107,.3);
         }
 
-        /* Status Bar */
-        .status-bar {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            padding: 12px 16px;
-            background: var(--brand-light);
-            border-radius: 12px;
-            font-size: 13px;
-        }
-
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Error Display */
-        .error-box {
-            display: none;
-            background: rgba(239,68,68,.1);
-            border: 1px solid rgba(239,68,68,.3);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-            color: var(--danger);
-        }
-
-        .error-box.show {
-            display: block;
-        }
-
-        .error-title {
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .error-message {
-            font-size: 13px;
-            white-space: pre-wrap;
-            font-family: monospace;
-        }
-
-        /* Grid Layout */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 16px;
-        }
-
-        /* Card Styles */
         .card {
             background: rgba(255,255,255,.85);
             border: 1px solid rgba(226,232,240,.95);
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 24px;
             box-shadow: var(--shadow);
-            backdrop-filter: blur(10px);
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--border);
+            color: var(--muted);
+            display: grid;
+            place-items: center;
+            font-weight: 700;
             transition: all 0.3s;
         }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 50px rgba(2, 6, 23, .15);
+        .step.active .step-circle {
+            background: var(--brand);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(31,122,107,.15);
         }
 
-        /* KPI Cards - 5 equal columns for the 5 KPIs */
-        .kpi {
-            grid-column: span 12;
-            min-height: 140px;
-            position: relative;
+        .step.completed .step-circle {
+            background: #22c55e;
+            color: white;
         }
 
-        /* Desktop: 5 columns */
-        @media (min-width: 1200px) {
-            .kpi {
-                grid-column: span 2.4; /* 12/5 = 2.4 */
-            }
-        }
-
-        /* Tablet: 3 columns, then 2 */
-        @media (min-width: 768px) and (max-width: 1199px) {
-            .kpi:nth-child(-n+3) {
-                grid-column: span 4;
-            }
-            .kpi:nth-child(n+4) {
-                grid-column: span 6;
-            }
-        }
-
-        /* Mobile: 1 column */
-        @media (max-width: 767px) {
-            .kpi {
-                grid-column: span 12;
-            }
-        }
-
-        .kpi-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-            display: block;
-        }
-
-        .kpi-label {
-            font-size: 13px;
-            color: var(--muted);
+        .step-label {
+            font-size: 12px;
             font-weight: 600;
-            margin-bottom: 8px;
-            min-height: 36px;
-        }
-
-        .kpi-value {
-            font-size: 36px;
-            font-weight: 900;
-            color: var(--brand);
-            margin: 8px 0;
-        }
-
-        .kpi-target {
-            font-size: 11px;
             color: var(--muted);
-            margin-top: 4px;
+            text-align: center;
         }
 
-        .kpi-status {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--muted);
+        .step.active .step-label {
+            color: var(--brand);
         }
 
-        .kpi-status.good {
-            background: var(--success);
+        .form-section {
+            display: none;
         }
 
-        .kpi-status.warning {
-            background: var(--warning);
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s;
         }
 
-        .kpi-status.bad {
-            background: var(--danger);
-        }
-
-        .skeleton {
-            background: linear-gradient(90deg, #f1f5f9, #e2e8f0, #f1f5f9);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s ease-in-out infinite;
-            border-radius: 8px;
-            height: 36px;
-            width: 100px;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* Wide Cards */
-        .wide {
-            grid-column: span 12;
-        }
-
-        .half {
-            grid-column: span 6;
-        }
-
-        .third {
-            grid-column: span 4;
-        }
-
-        /* Section Header */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .section-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
+            margin-bottom: 20px;
             color: var(--text);
         }
 
-        .section-subtitle {
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-label .required {
+            color: #ef4444;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(31,122,107,0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-hint {
             font-size: 12px;
             color: var(--muted);
             margin-top: 4px;
         }
 
-        /* Pills */
-        .pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 999px;
-            font-size: 12px;
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
             font-weight: 600;
-            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--brand);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(31,122,107,.3);
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--muted);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .type-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .type-card {
+            padding: 24px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
             background: white;
         }
 
-        .pill .mini {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--muted);
+        .type-card:hover {
+            border-color: var(--brand);
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(31,122,107,.15);
         }
 
-        .pill.ok .mini {
-            background: var(--success);
+        .type-card.selected {
+            border-color: var(--brand);
+            background: var(--brand-light);
         }
 
-        .pill.watch .mini {
-            background: var(--warning);
+        .type-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
         }
 
-        .pill.bad .mini {
-            background: var(--danger);
-        }
-
-        /* Chart */
-        .chart-container {
-            margin-top: 16px;
-            position: relative;
-            height: 250px;
-        }
-
-        /* Table */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 16px;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            font-size: 13px;
-        }
-
-        th {
-            color: var(--muted);
+        .type-name {
+            font-size: 16px;
             font-weight: 700;
-            background: var(--brand-light);
+            margin-bottom: 4px;
         }
 
-        td {
-            color: var(--text);
-        }
-
-        tr:hover {
-            background: var(--brand-light);
-        }
-
-        /* Footer */
-        .footer {
-            margin-top: 16px;
-            padding-top: 12px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
+        .type-desc {
             font-size: 12px;
             color: var(--muted);
-            flex-wrap: wrap;
-            gap: 8px;
         }
 
-        /* Info Box */
-        .info-box {
-            background: var(--brand-light);
-            border: 1px solid rgba(31,122,107,.2);
-            border-radius: 12px;
-            padding: 16px;
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 60px;
             margin-bottom: 20px;
         }
 
-        .info-title {
+        .success-title {
+            font-size: 24px;
             font-weight: 700;
             color: var(--brand);
-            margin-bottom: 8px;
-            font-size: 14px;
+            margin-bottom: 12px;
         }
 
-        .info-content {
-            font-size: 13px;
-            color: var(--text);
-            line-height: 1.6;
+        .success-text {
+            color: var(--muted);
+            margin-bottom: 24px;
         }
 
-        /* Responsive */
-        @media (max-width: 980px) {
-            .half, .third {
-                grid-column: span 12;
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
             }
-        }
-
-        @media (max-width: 640px) {
-            .header-top {
-                flex-direction: column;
-                align-items: flex-start;
+            .type-selector {
+                grid-template-columns: 1fr;
+            }
+            .step-label {
+                font-size: 10px;
             }
         }
     </style>
 </head>
-
 <body>
     <div class="container">
-        
-        <!-- Header -->
         <div class="header">
-            <div class="header-top">
-                <div class="brand">
-                    <div class="logo">📊</div>
-                    <div class="brand-text">
-                        <h1>Knowledge Copilot KPI Dashboard</h1>
-                        <p id="subtitle">Key Performance Indicators</p>
-                    </div>
-                </div>
-
-                <div class="controls">
-                    <select id="days">
-                        <option value="7">Last 7 days</option>
-                        <option value="30" selected>Last 30 days</option>
-                        <option value="90">Last 90 days</option>
-                    </select>
-
-                    <div class="toggle" id="autoToggle">
-                        <div class="dot" id="autoDot"></div>
-                        <span>Auto refresh</span>
-                    </div>
-
-                    <button class="primary" id="refresh">↻ Refresh</button>
-                </div>
+            <div>
+                <h1>📝 Knowledge Base Editor</h1>
+                <p>Add new items to Chat3PT database</p>
             </div>
-
-            <div class="status-bar">
-                <div class="status-indicator"></div>
-                <span id="statusBar">Initializing dashboard...</span>
-            </div>
+            <a href="https://tg7htk4h89-afk.github.io/bank-chatbot-web/chat.html" class="back-btn">←Chat</a>
         </div>
 
-        <!-- KPI Definition Info -->
-        <div class="info-box">
-            <div class="info-title">📋 KPI Definitions (as per Initiative Charter)</div>
-            <div class="info-content">
-                <strong>1. Employee Adoption:</strong> Total number of requests/queries submitted to the system<br>
-                <strong>2. Active Users:</strong> Percentage or count of employees actively using the system<br>
-                <strong>3. Correct Answer Rate:</strong> Percentage of queries answered correctly (high confidence ≥85%)<br>
-                <strong>4. Hallucination Rate:</strong> Percentage of incorrect or low-confidence responses<br>
-                <strong>5. Escalation Rate:</strong> Percentage of queries that could not be answered and needed escalation
+        <div class="card">
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Select Type</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Basic Info</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Details</div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Review</div>
+                </div>
+            </div>
+
+            <!-- Step 1: Type Selection -->
+            <div class="form-section active" data-section="1">
+                <h2 class="section-title">What would you like to add?</h2>
+                <div class="type-selector">
+                    <div class="type-card" onclick="selectType('product')">
+                        <div class="type-icon">🏦</div>
+                        <div class="type-name">Product</div>
+                        <div class="type-desc">Banking products, cards, accounts</div>
+                    </div>
+                    <div class="type-card" onclick="selectType('procedure')">
+                        <div class="type-icon">📋</div>
+                        <div class="type-name">Procedure</div>
+                        <div class="type-desc">Step-by-step processes</div>
+                    </div>
+                    <div class="type-card" onclick="selectType('policy')">
+                        <div class="type-icon">📜</div>
+                        <div class="type-name">Policy</div>
+                        <div class="type-desc">Rules and regulations</div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="nextStep()" id="step1Next" disabled>Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Basic Info (Dynamic based on type) -->
+            <div class="form-section" data-section="2">
+                <h2 class="section-title">Basic Information</h2>
+                <div id="basicInfoForm"></div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Detailed Info -->
+            <div class="form-section" data-section="3">
+                <h2 class="section-title">Detailed Information</h2>
+                <div id="detailsForm"></div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Review -->
+            <div class="form-section" data-section="4">
+                <h2 class="section-title">Review & Submit</h2>
+                <div id="reviewContent"></div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="submitForm()">Submit ✓</button>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">✅</div>
+                <div class="success-title">Successfully Added!</div>
+                <div class="success-text">Your item has been added to the knowledge base</div>
+                <button class="btn btn-primary" onclick="resetForm()">Add Another Item</button>
             </div>
         </div>
-
-        <!-- Error Display -->
-        <div class="error-box" id="errorBox">
-            <div class="error-title">⚠️ Error Loading Dashboard</div>
-            <div class="error-message" id="errorMessage"></div>
-        </div>
-
-        <!-- KPI Grid - 5 Key Performance Indicators -->
-        <div class="grid">
-            <!-- KPI 1: Employee Adoption -->
-            <div class="card kpi">
-                <div class="kpi-status" id="status1"></div>
-                <div class="kpi-icon">👥</div>
-                <div class="kpi-label">1. Employee Adoption</div>
-                <div class="kpi-value" id="kpi1">
-                    <div class="skeleton"></div>
-                </div>
-                <div class="kpi-target">Total requests</div>
-            </div>
-
-            <!-- KPI 2: Active Users -->
-            <div class="card kpi">
-                <div class="kpi-status" id="status2"></div>
-                <div class="kpi-icon">✓</div>
-                <div class="kpi-label">2. Active Users</div>
-                <div class="kpi-value" id="kpi2">
-                    <div class="skeleton"></div>
-                </div>
-                <div class="kpi-target" id="kpi2hint">% of employees</div>
-            </div>
-
-            <!-- KPI 3: Correct Answer Rate -->
-            <div class="card kpi">
-                <div class="kpi-status" id="status3"></div>
-                <div class="kpi-icon">✅</div>
-                <div class="kpi-label">3. Correct Answer Rate</div>
-                <div class="kpi-value" id="kpi3">
-                    <div class="skeleton"></div>
-                </div>
-                <div class="kpi-target">Target: ≥70%</div>
-            </div>
-
-            <!-- KPI 4: Hallucination Rate -->
-            <div class="card kpi">
-                <div class="kpi-status" id="status4"></div>
-                <div class="kpi-icon">⚠️</div>
-                <div class="kpi-label">4. Hallucination Rate</div>
-                <div class="kpi-value" id="kpi4">
-                    <div class="skeleton"></div>
-                </div>
-                <div class="kpi-target">Target: ≤10%</div>
-            </div>
-
-            <!-- KPI 5: Escalation Rate -->
-            <div class="card kpi">
-                <div class="kpi-status" id="status5"></div>
-                <div class="kpi-icon">🔼</div>
-                <div class="kpi-label">5. Escalation Rate</div>
-                <div class="kpi-value" id="kpi5">
-                    <div class="skeleton"></div>
-                </div>
-                <div class="kpi-target">Target: ≤15%</div>
-            </div>
-        </div>
-
-        <!-- Charts and Details Section -->
-        <div class="grid" style="margin-top: 16px;">
-            
-            <!-- Overall Status -->
-            <div class="card half">
-                <div class="section-header">
-                    <div>
-                        <div class="section-title">System Health</div>
-                        <div class="section-subtitle">Overall performance status</div>
-                    </div>
-                    <div class="pill" id="overallPill">
-                        <span class="mini"></span>
-                        <span id="overallStatus">—</span>
-                    </div>
-                </div>
-
-                <div style="margin-top: 20px;">
-                    <table>
-                        <tr>
-                            <td><strong>Total Requests</strong></td>
-                            <td id="detailRequests">—</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Answered</strong></td>
-                            <td id="detailAnswered">—</td>
-                        </tr>
-                        <tr>
-                            <td><strong>High Confidence</strong></td>
-                            <td id="detailHighConf">—</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Low Confidence</strong></td>
-                            <td id="detailLowConf">—</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Escalated</strong></td>
-                            <td id="detailEscalated">—</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="footer">
-                    <div>Range: <span id="rangeDisplay">—</span></div>
-                    <div>Generated: <span id="generatedAt">—</span></div>
-                </div>
-            </div>
-
-            <!-- Trend Chart -->
-            <div class="card half">
-                <div class="section-header">
-                    <div>
-                        <div class="section-title">Adoption Trend</div>
-                        <div class="section-subtitle">Daily request volume</div>
-                    </div>
-                    <div class="pill">
-                        <span class="mini"></span>
-                        <span id="trendIndicator">—</span>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <canvas id="trendChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Performance Over Time Chart -->
-            <div class="card half">
-                <div class="section-header">
-                    <div>
-                        <div class="section-title">KPI Performance</div>
-                        <div class="section-subtitle">Correct vs Hallucination vs Escalation</div>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <canvas id="performanceChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Daily Breakdown Table -->
-            <div class="card half">
-                <div class="section-header">
-                    <div>
-                        <div class="section-title">Recent Activity</div>
-                        <div class="section-subtitle">Last 10 days</div>
-                    </div>
-                </div>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Requests</th>
-                            <th>Trend</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dailyTable">
-                        <tr>
-                            <td colspan="3" style="text-align: center; color: var(--muted);">
-                                Loading data...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
     </div>
 
     <script>
-        // ✅ API Configuration
-        const KPI_API_URL = "https://taherkib.app.n8n.cloud/webhook/kpi-dashboard";
-        
-        // DOM Elements
-        const els = {
-            subtitle: document.getElementById("subtitle"),
-            statusBar: document.getElementById("statusBar"),
-            errorBox: document.getElementById("errorBox"),
-            errorMessage: document.getElementById("errorMessage"),
-            days: document.getElementById("days"),
-            refresh: document.getElementById("refresh"),
-            autoToggle: document.getElementById("autoToggle"),
-            autoDot: document.getElementById("autoDot"),
-            
-            kpi1: document.getElementById("kpi1"),
-            kpi2: document.getElementById("kpi2"),
-            kpi2hint: document.getElementById("kpi2hint"),
-            kpi3: document.getElementById("kpi3"),
-            kpi4: document.getElementById("kpi4"),
-            kpi5: document.getElementById("kpi5"),
-            
-            status1: document.getElementById("status1"),
-            status2: document.getElementById("status2"),
-            status3: document.getElementById("status3"),
-            status4: document.getElementById("status4"),
-            status5: document.getElementById("status5"),
-            
-            overallPill: document.getElementById("overallPill"),
-            overallStatus: document.getElementById("overallStatus"),
-            
-            detailRequests: document.getElementById("detailRequests"),
-            detailAnswered: document.getElementById("detailAnswered"),
-            detailHighConf: document.getElementById("detailHighConf"),
-            detailLowConf: document.getElementById("detailLowConf"),
-            detailEscalated: document.getElementById("detailEscalated"),
-            
-            rangeDisplay: document.getElementById("rangeDisplay"),
-            generatedAt: document.getElementById("generatedAt"),
-            trendIndicator: document.getElementById("trendIndicator"),
-            dailyTable: document.getElementById("dailyTable"),
-            
-            trendChart: document.getElementById("trendChart"),
-            performanceChart: document.getElementById("performanceChart")
+        let currentStep = 1;
+        let selectedType = null;
+        let formData = {};
+
+        const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/bf161d07-e9be-48fe-bdfa-0ea9e3e1abb5";
+
+        // Form templates for each type
+        const formTemplates = {
+            product: {
+                basic: [
+                    { name: 'product_name', label: 'Product Name', type: 'text', required: true, full: true },
+                    { name: 'family', label: 'Product Family', type: 'select', required: true, options: ['Cards', 'Accounts', 'Loans', 'Services'] },
+                    { name: 'tier', label: 'Tier', type: 'select', required: true, options: ['Basic', 'Standard', 'Plus', 'Premium'] },
+                    { name: 'status', label: 'Status', type: 'select', required: true, options: ['draft', 'active', 'inactive'] },
+                ],
+                details: [
+                    { name: 'description', label: 'Description', type: 'textarea', required: true, full: true },
+                    { name: 'features', label: 'Features', type: 'textarea', required: true, full: true, hint: 'Comma-separated list' },
+                    { name: 'eligibility', label: 'Eligibility', type: 'textarea', required: true, full: true },
+                    { name: 'fees', label: 'Fees', type: 'text', required: false },
+                    { name: 'channels', label: 'Channels', type: 'text', required: false, hint: 'e.g., Branch, Mobile App, Call Center' },
+                    { name: 'keywords', label: 'Keywords', type: 'text', required: true, full: true, hint: 'Comma-separated for search' },
+                    { name: 'sample_questions', label: 'Sample Questions', type: 'textarea', required: false, full: true },
+                ]
+            },
+            procedure: {
+                basic: [
+                    { name: 'procedure_name', label: 'Procedure Name', type: 'text', required: true, full: true },
+                    { name: 'related_area', label: 'Related Area', type: 'text', required: true },
+                    { name: 'risk_level', label: 'Risk Level', type: 'select', required: true, options: ['low', 'medium', 'high'] },
+                    { name: 'sla', label: 'SLA', type: 'text', required: true, hint: 'e.g., Same day, Immediate' },
+                ],
+                details: [
+                    { name: 'when_to_use', label: 'When to Use', type: 'textarea', required: true, full: true },
+                    { name: 'step_by_step', label: 'Step by Step Instructions', type: 'textarea', required: true, full: true, hint: 'Use \\n for new lines' },
+                    { name: 'systems_used', label: 'Systems Used', type: 'text', required: true, full: true, hint: 'Comma-separated' },
+                    { name: 'keywords', label: 'Keywords', type: 'text', required: true, full: true, hint: 'Comma-separated for search' },
+                    { name: 'sample_questions', label: 'Sample Questions', type: 'textarea', required: false, full: true },
+                    { name: 'common_errors', label: 'Common Errors', type: 'textarea', required: false, full: true },
+                ]
+            },
+            policy: {
+                basic: [
+                    { name: 'policy_name', label: 'Policy Name', type: 'text', required: true, full: true },
+                    { name: 'scope', label: 'Scope', type: 'select', required: true, options: ['Retail', 'Corporate', 'All'] },
+                    { name: 'status', label: 'Status', type: 'select', required: true, options: ['draft', 'active', 'inactive'] },
+                    { name: 'review_cycle', label: 'Review Cycle', type: 'select', required: true, options: ['annual', 'semi-annual', 'quarterly'] },
+                ],
+                details: [
+                    { name: 'summary', label: 'Summary', type: 'textarea', required: true, full: true },
+                    { name: 'do', label: 'Do (Required Actions)', type: 'textarea', required: true, full: true, hint: 'Comma-separated' },
+                    { name: 'dont', label: "Don't (Prohibited Actions)", type: 'textarea', required: true, full: true, hint: 'Comma-separated' },
+                    { name: 'applicable_to', label: 'Applicable To', type: 'text', required: true },
+                    { name: 'escalation', label: 'Escalation', type: 'text', required: false },
+                    { name: 'keywords', label: 'Keywords', type: 'text', required: true, full: true, hint: 'Comma-separated for search' },
+                    { name: 'sample_questions', label: 'Sample Questions', type: 'textarea', required: false, full: true },
+                ]
+            }
         };
 
-        let autoOn = false;
-        let autoTimer = null;
-        let trendChart = null;
-        let performanceChart = null;
-
-        // Formatting helpers
-        const fmtPct = v => (v ?? 0).toFixed(1) + "%";
-        const fmtNum = v => (v === null || v === undefined) ? "N/A" : String(v);
-
-        // Error handling
-        function showError(title, message) {
-            els.errorBox.classList.add('show');
-            els.errorMessage.textContent = message;
-            els.statusBar.textContent = `❌ ${title}`;
-        }
-
-        function clearError() {
-            els.errorBox.classList.remove('show');
-            els.errorMessage.textContent = "";
-        }
-
-        // KPI Status indicators
-        function setKPIStatus(element, value, target, inverse = false) {
-            if (!element) return;
+        function selectType(type) {
+            selectedType = type;
+            document.querySelectorAll('.type-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.type-card').classList.add('selected');
+            document.getElementById('step1Next').disabled = false;
             
-            let status = 'good';
-            if (inverse) {
-                // For metrics where lower is better (hallucination, escalation)
-                if (value > target * 1.5) status = 'bad';
-                else if (value > target) status = 'warning';
-            } else {
-                // For metrics where higher is better (correct answer rate)
-                if (value < target * 0.7) status = 'bad';
-                else if (value < target) status = 'warning';
-            }
-            
-            element.className = 'kpi-status ' + status;
+            // Generate forms for this type
+            generateBasicForm();
+            generateDetailsForm();
         }
 
-        // Create trend chart
-        function createTrendChart(labels, values) {
-            const ctx = els.trendChart.getContext("2d");
-            if (trendChart) trendChart.destroy();
-
-            trendChart = new Chart(ctx, {
-                type: "line",
-                data: {
-                    labels,
-                    datasets: [{
-                        label: "Daily Requests",
-                        data: values,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        borderWidth: 3,
-                        borderColor: "#1f7a6b",
-                        backgroundColor: "rgba(31, 122, 107, 0.1)",
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { 
-                            enabled: true,
-                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                            padding: 12
-                        }
-                    },
-                    scales: {
-                        x: {
-                            ticks: { color: "#64748b", font: { size: 11 } },
-                            grid: { color: "rgba(226, 232, 240, 0.5)" }
-                        },
-                        y: {
-                            ticks: { color: "#64748b", font: { size: 11 } },
-                            grid: { color: "rgba(226, 232, 240, 0.5)" },
-                            beginAtZero: true
-                        }
+        function generateForm(fields, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '<div class="form-grid">' + fields.map(field => `
+                <div class="form-group ${field.full ? 'full' : ''}">
+                    <label class="form-label">
+                        ${field.label}
+                        ${field.required ? '<span class="required">*</span>' : ''}
+                    </label>
+                    ${field.type === 'textarea' ? 
+                        `<textarea class="form-textarea" name="${field.name}" ${field.required ? 'required' : ''}></textarea>` :
+                    field.type === 'select' ?
+                        `<select class="form-select" name="${field.name}" ${field.required ? 'required' : ''}>
+                            <option value="">Select ${field.label}</option>
+                            ${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                        </select>` :
+                        `<input type="${field.type}" class="form-input" name="${field.name}" ${field.required ? 'required' : ''}>`
                     }
+                    ${field.hint ? `<div class="form-hint">${field.hint}</div>` : ''}
+                </div>
+            `).join('') + '</div>';
+        }
+
+        function generateBasicForm() {
+            if (selectedType && formTemplates[selectedType]) {
+                generateForm(formTemplates[selectedType].basic, 'basicInfoForm');
+            }
+        }
+
+        function generateDetailsForm() {
+            if (selectedType && formTemplates[selectedType]) {
+                generateForm(formTemplates[selectedType].details, 'detailsForm');
+            }
+        }
+
+        function nextStep() {
+            // Validate current step
+            const currentSection = document.querySelector(`.form-section[data-section="${currentStep}"]`);
+            const inputs = currentSection.querySelectorAll('input[required], select[required], textarea[required]');
+            let valid = true;
+
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    valid = false;
+                    input.style.borderColor = '#ef4444';
+                } else {
+                    input.style.borderColor = '';
+                }
+            });
+
+            if (!valid) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Save form data
+            inputs.forEach(input => {
+                formData[input.name] = input.value;
+            });
+            currentSection.querySelectorAll('input:not([required]), select:not([required]), textarea:not([required])').forEach(input => {
+                formData[input.name] = input.value;
+            });
+
+            // Show review on last step
+            if (currentStep === 3) {
+                generateReview();
+            }
+
+            // Move to next step
+            currentStep++;
+            updateStepIndicator();
+            showSection(currentStep);
+        }
+
+        function prevStep() {
+            currentStep--;
+            updateStepIndicator();
+            showSection(currentStep);
+        }
+
+        function updateStepIndicator() {
+            document.querySelectorAll('.step').forEach((step, index) => {
+                const stepNum = index + 1;
+                if (stepNum < currentStep) {
+                    step.classList.add('completed');
+                    step.classList.remove('active');
+                } else if (stepNum === currentStep) {
+                    step.classList.add('active');
+                    step.classList.remove('completed');
+                } else {
+                    step.classList.remove('active', 'completed');
                 }
             });
         }
 
-        // Create performance chart
-        function createPerformanceChart(correctRate, hallRate, escalRate) {
-            const ctx = els.performanceChart.getContext("2d");
-            if (performanceChart) performanceChart.destroy();
-
-            performanceChart = new Chart(ctx, {
-                type: "bar",
-                data: {
-                    labels: ["Correct Answer", "Hallucination", "Escalation"],
-                    datasets: [{
-                        label: "Rate (%)",
-                        data: [correctRate, hallRate, escalRate],
-                        backgroundColor: [
-                            "rgba(34, 197, 94, 0.8)",
-                            "rgba(239, 68, 68, 0.8)",
-                            "rgba(245, 158, 11, 0.8)"
-                        ],
-                        borderColor: [
-                            "#22c55e",
-                            "#ef4444",
-                            "#f59e0b"
-                        ],
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { 
-                            enabled: true,
-                            callbacks: {
-                                label: function(context) {
-                                    return context.parsed.y.toFixed(1) + '%';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: { 
-                                color: "#64748b",
-                                callback: function(value) {
-                                    return value + '%';
-                                }
-                            },
-                            grid: { color: "rgba(226, 232, 240, 0.5)" }
-                        },
-                        x: {
-                            ticks: { color: "#64748b" },
-                            grid: { display: false }
-                        }
-                    }
-                }
+        function showSection(step) {
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
             });
+            document.querySelector(`.form-section[data-section="${step}"]`).classList.add('active');
         }
 
-        // Main load function
-        async function load() {
-            clearError();
+        function generateReview() {
+            const reviewContent = document.getElementById('reviewContent');
+            let html = '<div style="background: var(--brand-light); padding: 20px; border-radius: 12px;">';
+            html += `<div style="margin-bottom: 20px;"><strong>Type:</strong> ${selectedType.toUpperCase()}</div>`;
             
-            const days = els.days.value;
-            const url = `${KPI_API_URL}?days=${encodeURIComponent(days)}&cb=${Date.now()}`;
-            els.subtitle.textContent = "Loading KPIs...";
-            els.statusBar.textContent = "📡 Fetching data from n8n...";
+            for (const [key, value] of Object.entries(formData)) {
+                if (value) {
+                    html += `<div style="margin-bottom: 12px;">
+                        <strong>${key.replace(/_/g, ' ').toUpperCase()}:</strong><br>
+                        <span style="color: var(--muted);">${value}</span>
+                    </div>`;
+                }
+            }
+            html += '</div>';
+            reviewContent.innerHTML = html;
+        }
 
-            let res, data;
-            
+        async function submitForm() {
             try {
-                res = await fetch(url, { method: "GET" });
-            } catch (e) {
-                showError("Network Error", `Failed to connect to n8n.\n\nError: ${e.message}\n\nURL: ${url}`);
-                els.subtitle.textContent = "Failed to load";
-                return;
-            }
-
-            if (!res.ok) {
-                const text = await res.text().catch(() => "");
-                showError(`HTTP ${res.status}`, `API error.\n\nStatus: ${res.status}\n\nResponse:\n${text}`);
-                els.subtitle.textContent = "Failed to load";
-                return;
-            }
-
-            try {
-                data = await res.json();
-            } catch (e) {
-                const text = await res.text().catch(() => "");
-                showError("Invalid JSON", `Could not parse response.\n\nError: ${e.message}\n\nRaw:\n${text}`);
-                els.subtitle.textContent = "Failed to load";
-                return;
-            }
-
-            // Update header
-            els.subtitle.textContent = `Monitoring ${data.range_days} days of activity`;
-            els.statusBar.textContent = `✅ Data refreshed at ${new Date().toLocaleTimeString()}`;
-            els.rangeDisplay.textContent = `Last ${data.range_days} days`;
-            els.generatedAt.textContent = new Date(data.generated_at_utc).toLocaleString();
-
-            // KPI 1: Employee Adoption (# requests)
-            const adoptionCount = data.totals?.requests || 0;
-            els.kpi1.textContent = fmtNum(adoptionCount);
-            els.status1.className = adoptionCount > 0 ? 'kpi-status good' : 'kpi-status bad';
-
-            // KPI 2: Active Users (% of employees or count)
-            const activeUsers = data.totals?.active_users;
-            if (activeUsers !== null && activeUsers !== undefined) {
-                els.kpi2.textContent = fmtNum(activeUsers);
-                els.kpi2hint.textContent = "unique users";
-                els.status2.className = activeUsers > 0 ? 'kpi-status good' : 'kpi-status bad';
-            } else {
-                els.kpi2.textContent = "N/A";
-                els.kpi2hint.textContent = "Session tracking required";
-                els.status2.className = 'kpi-status';
-            }
-
-            // KPI 3: Correct Answer Rate (%)
-            const correctRate = data.rates?.correct_answer_proxy_rate_pct || 0;
-            els.kpi3.textContent = fmtPct(correctRate);
-            setKPIStatus(els.status3, correctRate, 70, false);
-
-            // KPI 4: Hallucination Rate (%)
-            const hallRate = data.rates?.hallucination_proxy_rate_pct || 0;
-            els.kpi4.textContent = fmtPct(hallRate);
-            setKPIStatus(els.status4, hallRate, 10, true);
-
-            // KPI 5: Escalation Rate (%)
-            const escalRate = data.rates?.escalation_rate_pct || 0;
-            els.kpi5.textContent = fmtPct(escalRate);
-            setKPIStatus(els.status5, escalRate, 15, true);
-
-            // Overall status
-            if (correctRate >= 70 && hallRate <= 10 && escalRate <= 15) {
-                els.overallStatus.textContent = "Excellent";
-                els.overallPill.className = "pill ok";
-            } else if (correctRate >= 50 && hallRate <= 20 && escalRate <= 25) {
-                els.overallStatus.textContent = "Good";
-                els.overallPill.className = "pill watch";
-            } else {
-                els.overallStatus.textContent = "Needs Improvement";
-                els.overallPill.className = "pill bad";
-            }
-
-            // Detail table
-            els.detailRequests.textContent = fmtNum(data.totals?.requests);
-            els.detailAnswered.textContent = `${fmtNum(data.totals?.answered)} (${fmtPct(data.rates?.answered_rate_pct)})`;
-            els.detailHighConf.textContent = fmtNum(data.totals?.high_confidence);
-            els.detailLowConf.textContent = fmtNum(data.totals?.low_confidence);
-            els.detailEscalated.textContent = fmtNum(data.totals?.escalated);
-
-            // Trend data
-            const daily = data.trend?.daily_requests || [];
-            
-            // Update trend indicator
-            if (daily.length >= 7) {
-                const lastWeek = daily.slice(-7).reduce((sum, d) => sum + (d.requests || 0), 0);
-                const prevWeek = daily.length >= 14 ? 
-                    daily.slice(-14, -7).reduce((sum, d) => sum + (d.requests || 0), 0) : 0;
-                const change = lastWeek - prevWeek;
-                const arrow = change > 0 ? "↑" : change < 0 ? "↓" : "→";
-                els.trendIndicator.textContent = `${arrow} ${change > 0 ? '+' : ''}${change} vs prev week`;
-            } else {
-                els.trendIndicator.textContent = "Insufficient data";
-            }
-
-            // Daily table (last 10 days)
-            const last10 = daily.slice(-10);
-            els.dailyTable.innerHTML = "";
-            if (!last10.length) {
-                els.dailyTable.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--muted);">No data available</td></tr>`;
-            } else {
-                last10.reverse().forEach((day, idx) => {
-                    const prevDay = last10[idx + 1];
-                    let trend = "—";
-                    if (prevDay) {
-                        const diff = day.requests - prevDay.requests;
-                        trend = diff > 0 ? `+${diff}` : diff < 0 ? `${diff}` : "0";
+                // Add metadata
+                const submitData = {
+                    type: selectedType,
+                    action: 'add_item',
+                    data: {
+                        ...formData,
+                        owner: 'Web Editor',
+                        last_updated: new Date().toISOString().split('T')[0]
                     }
-                    const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                        <td><strong>${day.date}</strong></td>
-                        <td>${day.requests}</td>
-                        <td style="color: ${trend.startsWith('+') ? 'var(--success)' : trend.startsWith('-') ? 'var(--danger)' : 'var(--muted)'};">${trend}</td>
-                    `;
-                    els.dailyTable.appendChild(tr);
+                };
+
+                // Send to n8n webhook
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(submitData)
                 });
-            }
 
-            // Charts
-            const labels = daily.map(d => d.date);
-            const values = daily.map(d => d.requests);
-            createTrendChart(labels, values);
-            createPerformanceChart(correctRate, hallRate, escalRate);
-        }
-
-        // Auto-refresh
-        function setAuto(on) {
-            autoOn = on;
-            els.autoDot.classList.toggle("on", on);
-            if (autoTimer) {
-                clearInterval(autoTimer);
-                autoTimer = null;
-            }
-            if (on) {
-                autoTimer = setInterval(() => load(), 60000);
+                if (response.ok) {
+                    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+                    document.getElementById('successMessage').classList.add('show');
+                } else {
+                    alert('Error submitting form. Please try again.');
+                }
+            } catch (error) {
+                alert('Error submitting form: ' + error.message);
             }
         }
 
-        // Event listeners
-        els.refresh.addEventListener("click", load);
-        els.days.addEventListener("change", load);
-        els.autoToggle.addEventListener("click", () => setAuto(!autoOn));
-
-        // Initial load
-        load();
+        function resetForm() {
+            currentStep = 1;
+            selectedType = null;
+            formData = {};
+            document.getElementById('successMessage').classList.remove('show');
+            document.querySelectorAll('.type-card').forEach(card => card.classList.remove('selected'));
+            document.getElementById('step1Next').disabled = true;
+            updateStepIndicator();
+            showSection(1);
+        }
     </script>
 </body>
 </html>
