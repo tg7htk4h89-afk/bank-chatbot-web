@@ -280,11 +280,15 @@
       if (mode === 'edit') {
         searchBox.classList.add('show');
         nextBtn.disabled = true;
+        // Clear any previous edit data
+        formData = {};
       } else {
         searchBox.classList.remove('show');
         formData = {};
-        if (selectedType) nextBtn.disabled = false;
-        renderForms(formData);
+        if (selectedType) {
+          renderForms(formData); // Render empty forms for add mode
+          nextBtn.disabled = false;
+        }
       }
     }
 
@@ -293,13 +297,12 @@
       document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
 
-      if (mode === 'add') formData = {};
-      
-      renderForms(formData);
-
       if (mode === 'add') {
+        formData = {};
+        renderForms(formData); // Only render in add mode
         document.getElementById('btnStep1').disabled = false;
       } else {
+        // In edit mode, don't render forms yet - wait for data to be fetched
         document.getElementById('btnStep1').disabled = true;
       }
     }
@@ -382,9 +385,9 @@
         currentId = id;
         formData = row;
         
-        console.log("Loaded formData:", formData);
+        console.log("✅ Loaded formData:", formData);
+        console.log("✅ Number of keys in formData:", Object.keys(formData).length);
         
-        // Don't render forms here - they'll be rendered when user clicks Next
         document.getElementById('btnStep1').disabled = false;
 
       } catch (e) {
@@ -398,7 +401,9 @@
       if (!selectedType) return;
       const schema = schemas[selectedType];
 
-      console.log("Rendering forms with data:", data);
+      console.log("📝 Rendering forms for type:", selectedType);
+      console.log("📝 Data being used:", data);
+      console.log("📝 Keys in data:", Object.keys(data));
 
       const escAttr = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
@@ -439,16 +444,20 @@
       const currentSection = document.getElementById(`section${currentStep}`);
       const inputs = currentSection.querySelectorAll('input, select, textarea');
       
+      console.log("🌾 Harvesting from step", currentStep, "- found", inputs.length, "inputs");
+      
       inputs.forEach(i => {
         if (i.name) {
             formData[i.name] = i.value;
         }
       });
       
-      console.log("Harvested formData:", formData);
+      console.log("🌾 Harvested formData:", formData);
     }
 
     function nextStep() {
+      console.log("⏭️ Moving from step", currentStep, "to step", currentStep + 1);
+      
       // Save current form values before moving
       harvestCurrentFormData();
 
@@ -456,8 +465,11 @@
         currentStep++;
         updateUI();
         
+        console.log("⏭️ Now on step", currentStep);
+        
         // Re-render forms with latest data when moving to steps 2 or 3
         if (currentStep === 2 || currentStep === 3) {
+          console.log("⏭️ Re-rendering forms with formData");
           renderForms(formData);
         }
       }
@@ -559,4 +571,3 @@
   </script>
 </body>
 </html>
-
