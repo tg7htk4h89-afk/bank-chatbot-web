@@ -1,531 +1,1047 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Knowledge Copilot – KPI Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat3PT - KPI Dashboard</title>
+    
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg1: #e8f1f6;
+            --bg2: #eef2ff;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 14px 40px rgba(2, 6, 23, .10);
+            --brand: #1f7a6b;
+            --brand-light: rgba(31, 122, 107, 0.1);
+            --brand2: #0ea5e9;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
 
-  <style>
-    :root{
-      --bg0:#070A14;
-      --bg1:#0A1022;
-      --card:rgba(255,255,255,.04);
-      --card2:rgba(255,255,255,.06);
-      --stroke:rgba(255,255,255,.10);
-      --stroke2:rgba(255,255,255,.14);
-      --txt:#EAF0FF;
-      --muted:rgba(234,240,255,.70);
-      --muted2:rgba(234,240,255,.55);
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
-      --radius:18px;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background:
-        radial-gradient(1000px 500px at 20% -10%, rgba(84,120,255,.22), transparent 60%),
-        radial-gradient(900px 500px at 90% 0%, rgba(71,224,255,.18), transparent 55%),
-        radial-gradient(900px 700px at 30% 120%, rgba(187,91,255,.14), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      color:var(--txt);
-      min-height:100vh;
-    }
+        body {
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            background: radial-gradient(900px 500px at 20% 10%, rgba(14,165,233,.12), transparent 60%),
+                        radial-gradient(900px 500px at 80% 15%, rgba(31,122,107,.14), transparent 55%),
+                        linear-gradient(180deg, var(--bg1), var(--bg2));
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text);
+        }
 
-    .wrap{max-width:1200px; margin:0 auto; padding:26px 18px 40px;}
-    .top{
-      display:flex; gap:14px; align-items:center; justify-content:space-between;
-      flex-wrap:wrap;
-      padding:18px 18px;
-      border:1px solid var(--stroke);
-      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border-radius:22px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-    }
-    .brand{
-      display:flex; gap:12px; align-items:center;
-      min-width:260px;
-    }
-    .logo{
-      width:44px; height:44px; border-radius:14px;
-      border:1px solid var(--stroke2);
-      background:
-        radial-gradient(14px 14px at 30% 30%, rgba(255,255,255,.18), transparent 60%),
-        linear-gradient(135deg, rgba(84,120,255,.35), rgba(71,224,255,.18));
-      box-shadow: 0 10px 30px rgba(84,120,255,.14);
-      position:relative;
-      overflow:hidden;
-    }
-    .logo:after{
-      content:"";
-      position:absolute; inset:-40%;
-      background:conic-gradient(from 180deg, transparent, rgba(255,255,255,.25), transparent);
-      animation: spin 5s linear infinite;
-      opacity:.7;
-    }
-    @keyframes spin{to{transform:rotate(360deg)}}
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
-    .title{font-weight:800; letter-spacing:.2px; font-size:16px}
-    .sub{color:var(--muted); font-size:12.5px; margin-top:4px}
+        /* Header */
+        .header {
+            background: rgba(255,255,255,.85);
+            border: 1px solid rgba(226,232,240,.95);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
 
-    .controls{
-      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-    }
-    select, button, .toggle{
-      background: rgba(255,255,255,.04);
-      border: 1px solid var(--stroke);
-      color: var(--txt);
-      padding:10px 12px;
-      border-radius:14px;
-      font-size:13px;
-      outline:none;
-      box-shadow: 0 10px 24px rgba(0,0,0,.22);
-      transition: .18s ease;
-    }
-    select:hover, button:hover, .toggle:hover{border-color: rgba(255,255,255,.22); transform: translateY(-1px);}
-    button{cursor:pointer; font-weight:700;}
-    button:active{transform: translateY(0);}
-    .toggle{
-      display:flex; gap:10px; align-items:center; cursor:pointer;
-      user-select:none;
-    }
-    .dot{
-      width:10px; height:10px; border-radius:999px;
-      background: rgba(255,255,255,.25);
-      border:1px solid var(--stroke2);
-      box-shadow: 0 0 0 6px rgba(255,255,255,.06);
-    }
-    .dot.on{ background: rgba(71,224,255,.9); box-shadow: 0 0 0 6px rgba(71,224,255,.18); }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
 
-    .grid{display:grid; grid-template-columns: repeat(12, 1fr); gap:12px; margin-top:14px;}
-    .card{
-      border:1px solid var(--stroke);
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
-      padding:14px;
-      position:relative;
-      overflow:hidden;
-    }
-    .card:before{
-      content:"";
-      position:absolute; inset:-60%;
-      background: radial-gradient(closest-side, rgba(255,255,255,.10), transparent 65%);
-      transform: translate3d(-40%, -35%, 0);
-      opacity:.55;
-    }
-    .kpi{grid-column: span 3; min-height:102px;}
-    .kpi .label{font-size:12px; color:var(--muted);}
-    .kpi .val{font-size:28px; font-weight:900; margin-top:6px; letter-spacing:.2px;}
-    .kpi .hint{font-size:12px; color:var(--muted2); margin-top:6px;}
-    .kpi .trend{position:absolute; right:12px; top:12px; font-size:12px; color:var(--muted2);}
-    .wide{grid-column: span 12;}
-    .half{grid-column: span 6;}
-    .third{grid-column: span 4;}
+        .brand {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
 
-    .row{display:flex; gap:10px; align-items:center; justify-content:space-between; position:relative; z-index:1;}
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 12px; border-radius:999px;
-      border:1px solid var(--stroke2);
-      background: rgba(255,255,255,.04);
-      font-size:12px; color:var(--muted);
-    }
-    .pill b{color:var(--txt)}
-    .pill .mini{width:8px; height:8px; border-radius:999px; background: rgba(255,255,255,.25);}
-    .pill.ok .mini{background: rgba(60,220,150,.95);}
-    .pill.watch .mini{background: rgba(255,190,70,.95);}
-    .pill.bad .mini{background: rgba(255,90,100,.95);}
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--brand), var(--brand2));
+            display: grid;
+            place-items: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(31,122,107,.3);
+        }
 
-    .section-title{
-      font-weight:900; letter-spacing:.2px; font-size:13px;
-      margin-bottom:10px; position:relative; z-index:1;
-    }
+        .brand-text h1 {
+            font-size: 24px;
+            color: var(--brand);
+            margin: 0;
+        }
 
-    .muted{color:var(--muted);}
-    .small{font-size:12px;}
+        .brand-text p {
+            color: var(--muted);
+            font-size: 13px;
+            margin: 4px 0 0;
+        }
 
-    .err{
-      display:none;
-      margin-top:12px;
-      border:1px solid rgba(255,90,100,.35);
-      background: rgba(255,90,100,.08);
-      border-radius:16px;
-      padding:12px 14px;
-      color: rgba(255,210,215,.95);
-      white-space: pre-wrap;
-    }
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
 
-    .skeleton{
-      background: linear-gradient(90deg, rgba(255,255,255,.03), rgba(255,255,255,.10), rgba(255,255,255,.03));
-      background-size: 200% 100%;
-      animation: shimmer 1.2s ease-in-out infinite;
-      border-radius: 10px;
-      height: 14px;
-      width: 80%;
-      margin-top: 8px;
-    }
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+        select, button, .toggle {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
 
-    table{width:100%; border-collapse:collapse; position:relative; z-index:1;}
-    th, td{padding:10px 8px; border-bottom:1px solid rgba(255,255,255,.08); font-size:13px;}
-    th{color:var(--muted); font-weight:700;}
-    td{color:rgba(234,240,255,.92);}
+        select:hover, button:hover, .toggle:hover {
+            border-color: var(--brand);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(31,122,107,.2);
+        }
 
-    .footer{margin-top:14px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; color:var(--muted2); font-size:12px;}
+        button.primary {
+            background: var(--brand);
+            color: white;
+            border-color: var(--brand);
+        }
 
-    @media (max-width: 980px){
-      .kpi{grid-column: span 6;}
-      .half{grid-column: span 12;}
-      .third{grid-column: span 12;}
-    }
-  </style>
+        button.primary:hover {
+            background: #186557;
+        }
+
+        .toggle {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            user-select: none;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: all 0.3s;
+        }
+
+        .dot.on {
+            background: var(--success);
+            box-shadow: 0 0 0 4px rgba(34,197,94,.2);
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--brand-light);
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Error Display */
+        .error-box {
+            display: none;
+            background: rgba(239,68,68,.1);
+            border: 1px solid rgba(239,68,68,.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            color: var(--danger);
+        }
+
+        .error-box.show {
+            display: block;
+        }
+
+        .error-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .error-message {
+            font-size: 13px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+
+        /* Card Styles */
+        .card {
+            background: rgba(255,255,255,.85);
+            border: 1px solid rgba(226,232,240,.95);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 50px rgba(2, 6, 23, .15);
+        }
+
+        /* KPI Cards - 5 equal columns for the 5 KPIs */
+        .kpi {
+            grid-column: span 12;
+            min-height: 140px;
+            position: relative;
+        }
+
+        /* Desktop: 5 columns */
+        @media (min-width: 1200px) {
+            .kpi {
+                grid-column: span 2.4; /* 12/5 = 2.4 */
+            }
+        }
+
+        /* Tablet: 3 columns, then 2 */
+        @media (min-width: 768px) and (max-width: 1199px) {
+            .kpi:nth-child(-n+3) {
+                grid-column: span 4;
+            }
+            .kpi:nth-child(n+4) {
+                grid-column: span 6;
+            }
+        }
+
+        /* Mobile: 1 column */
+        @media (max-width: 767px) {
+            .kpi {
+                grid-column: span 12;
+            }
+        }
+
+        .kpi-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .kpi-label {
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 600;
+            margin-bottom: 8px;
+            min-height: 36px;
+        }
+
+        .kpi-value {
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--brand);
+            margin: 8px 0;
+        }
+
+        .kpi-target {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .kpi-status {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--muted);
+        }
+
+        .kpi-status.good {
+            background: var(--success);
+        }
+
+        .kpi-status.warning {
+            background: var(--warning);
+        }
+
+        .kpi-status.bad {
+            background: var(--danger);
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f1f5f9, #e2e8f0, #f1f5f9);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s ease-in-out infinite;
+            border-radius: 8px;
+            height: 36px;
+            width: 100px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Wide Cards */
+        .wide {
+            grid-column: span 12;
+        }
+
+        .half {
+            grid-column: span 6;
+        }
+
+        .third {
+            grid-column: span 4;
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .section-subtitle {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* Pills */
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: white;
+        }
+
+        .pill .mini {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--muted);
+        }
+
+        .pill.ok .mini {
+            background: var(--success);
+        }
+
+        .pill.watch .mini {
+            background: var(--warning);
+        }
+
+        .pill.bad .mini {
+            background: var(--danger);
+        }
+
+        /* Chart */
+        .chart-container {
+            margin-top: 16px;
+            position: relative;
+            height: 250px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        th {
+            color: var(--muted);
+            font-weight: 700;
+            background: var(--brand-light);
+        }
+
+        td {
+            color: var(--text);
+        }
+
+        tr:hover {
+            background: var(--brand-light);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--muted);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: var(--brand-light);
+            border: 1px solid rgba(31,122,107,.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-title {
+            font-weight: 700;
+            color: var(--brand);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .info-content {
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 980px) {
+            .half, .third {
+                grid-column: span 12;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
 
 <body>
-  <div class="wrap">
+    <div class="container">
+        
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <div class="brand">
+                    <div class="logo">📊</div>
+                    <div class="brand-text">
+                        <h1>Knowledge Copilot KPI Dashboard</h1>
+                        <p id="subtitle">Key Performance Indicators</p>
+                    </div>
+                </div>
 
-    <div class="top">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <div class="title">Knowledge Copilot – KPI Dashboard</div>
-          <div class="sub" id="subtitle">Loading…</div>
+                <div class="controls">
+                    <select id="days">
+                        <option value="7">Last 7 days</option>
+                        <option value="30" selected>Last 30 days</option>
+                        <option value="90">Last 90 days</option>
+                    </select>
+
+                    <div class="toggle" id="autoToggle">
+                        <div class="dot" id="autoDot"></div>
+                        <span>Auto refresh</span>
+                    </div>
+
+                    <button class="primary" id="refresh">↻ Refresh</button>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <div class="status-indicator"></div>
+                <span id="statusBar">Initializing dashboard...</span>
+            </div>
         </div>
-      </div>
 
-      <div class="controls">
-        <select id="days">
-          <option value="7">Last 7 days</option>
-          <option value="30" selected>Last 30 days</option>
-          <option value="90">Last 90 days</option>
-        </select>
-
-        <div class="toggle" id="autoToggle" title="Auto refresh every 60 seconds">
-          <div class="dot" id="autoDot"></div>
-          <div>Auto refresh</div>
+        <!-- KPI Definition Info -->
+        <div class="info-box">
+            <div class="info-title">📋 KPI Definitions (as per Initiative Charter)</div>
+            <div class="info-content">
+                <strong>1. Employee Adoption:</strong> Total number of requests/queries submitted to the system<br>
+                <strong>2. Active Users:</strong> Percentage or count of employees actively using the system<br>
+                <strong>3. Correct Answer Rate:</strong> Percentage of queries answered correctly (high confidence ≥85%)<br>
+                <strong>4. Hallucination Rate:</strong> Percentage of incorrect or low-confidence responses<br>
+                <strong>5. Escalation Rate:</strong> Percentage of queries that could not be answered and needed escalation
+            </div>
         </div>
 
-        <button id="refresh">Refresh</button>
-      </div>
+        <!-- Error Display -->
+        <div class="error-box" id="errorBox">
+            <div class="error-title">⚠️ Error Loading Dashboard</div>
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <!-- KPI Grid - 5 Key Performance Indicators -->
+        <div class="grid">
+            <!-- KPI 1: Employee Adoption -->
+            <div class="card kpi">
+                <div class="kpi-status" id="status1"></div>
+                <div class="kpi-icon">👥</div>
+                <div class="kpi-label">1. Employee Adoption</div>
+                <div class="kpi-value" id="kpi1">
+                    <div class="skeleton"></div>
+                </div>
+                <div class="kpi-target">Total requests</div>
+            </div>
+
+            <!-- KPI 2: Active Users -->
+            <div class="card kpi">
+                <div class="kpi-status" id="status2"></div>
+                <div class="kpi-icon">✓</div>
+                <div class="kpi-label">2. Active Users</div>
+                <div class="kpi-value" id="kpi2">
+                    <div class="skeleton"></div>
+                </div>
+                <div class="kpi-target" id="kpi2hint">% of employees</div>
+            </div>
+
+            <!-- KPI 3: Correct Answer Rate -->
+            <div class="card kpi">
+                <div class="kpi-status" id="status3"></div>
+                <div class="kpi-icon">✅</div>
+                <div class="kpi-label">3. Correct Answer Rate</div>
+                <div class="kpi-value" id="kpi3">
+                    <div class="skeleton"></div>
+                </div>
+                <div class="kpi-target">Target: ≥70%</div>
+            </div>
+
+            <!-- KPI 4: Hallucination Rate -->
+            <div class="card kpi">
+                <div class="kpi-status" id="status4"></div>
+                <div class="kpi-icon">⚠️</div>
+                <div class="kpi-label">4. Hallucination Rate</div>
+                <div class="kpi-value" id="kpi4">
+                    <div class="skeleton"></div>
+                </div>
+                <div class="kpi-target">Target: ≤10%</div>
+            </div>
+
+            <!-- KPI 5: Escalation Rate -->
+            <div class="card kpi">
+                <div class="kpi-status" id="status5"></div>
+                <div class="kpi-icon">🔼</div>
+                <div class="kpi-label">5. Escalation Rate</div>
+                <div class="kpi-value" id="kpi5">
+                    <div class="skeleton"></div>
+                </div>
+                <div class="kpi-target">Target: ≤15%</div>
+            </div>
+        </div>
+
+        <!-- Charts and Details Section -->
+        <div class="grid" style="margin-top: 16px;">
+            
+            <!-- Overall Status -->
+            <div class="card half">
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">System Health</div>
+                        <div class="section-subtitle">Overall performance status</div>
+                    </div>
+                    <div class="pill" id="overallPill">
+                        <span class="mini"></span>
+                        <span id="overallStatus">—</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <table>
+                        <tr>
+                            <td><strong>Total Requests</strong></td>
+                            <td id="detailRequests">—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Answered</strong></td>
+                            <td id="detailAnswered">—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>High Confidence</strong></td>
+                            <td id="detailHighConf">—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Low Confidence</strong></td>
+                            <td id="detailLowConf">—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Escalated</strong></td>
+                            <td id="detailEscalated">—</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="footer">
+                    <div>Range: <span id="rangeDisplay">—</span></div>
+                    <div>Generated: <span id="generatedAt">—</span></div>
+                </div>
+            </div>
+
+            <!-- Trend Chart -->
+            <div class="card half">
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Adoption Trend</div>
+                        <div class="section-subtitle">Daily request volume</div>
+                    </div>
+                    <div class="pill">
+                        <span class="mini"></span>
+                        <span id="trendIndicator">—</span>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Performance Over Time Chart -->
+            <div class="card half">
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">KPI Performance</div>
+                        <div class="section-subtitle">Correct vs Hallucination vs Escalation</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Daily Breakdown Table -->
+            <div class="card half">
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Recent Activity</div>
+                        <div class="section-subtitle">Last 10 days</div>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Requests</th>
+                            <th>Trend</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dailyTable">
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: var(--muted);">
+                                Loading data...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
-    <div id="err" class="err"></div>
+    <script>
+        // ✅ API Configuration
+        const KPI_API_URL = "https://taherkib.app.n8n.cloud/webhook/kpi-dashboard";
+        
+        // DOM Elements
+        const els = {
+            subtitle: document.getElementById("subtitle"),
+            statusBar: document.getElementById("statusBar"),
+            errorBox: document.getElementById("errorBox"),
+            errorMessage: document.getElementById("errorMessage"),
+            days: document.getElementById("days"),
+            refresh: document.getElementById("refresh"),
+            autoToggle: document.getElementById("autoToggle"),
+            autoDot: document.getElementById("autoDot"),
+            
+            kpi1: document.getElementById("kpi1"),
+            kpi2: document.getElementById("kpi2"),
+            kpi2hint: document.getElementById("kpi2hint"),
+            kpi3: document.getElementById("kpi3"),
+            kpi4: document.getElementById("kpi4"),
+            kpi5: document.getElementById("kpi5"),
+            
+            status1: document.getElementById("status1"),
+            status2: document.getElementById("status2"),
+            status3: document.getElementById("status3"),
+            status4: document.getElementById("status4"),
+            status5: document.getElementById("status5"),
+            
+            overallPill: document.getElementById("overallPill"),
+            overallStatus: document.getElementById("overallStatus"),
+            
+            detailRequests: document.getElementById("detailRequests"),
+            detailAnswered: document.getElementById("detailAnswered"),
+            detailHighConf: document.getElementById("detailHighConf"),
+            detailLowConf: document.getElementById("detailLowConf"),
+            detailEscalated: document.getElementById("detailEscalated"),
+            
+            rangeDisplay: document.getElementById("rangeDisplay"),
+            generatedAt: document.getElementById("generatedAt"),
+            trendIndicator: document.getElementById("trendIndicator"),
+            dailyTable: document.getElementById("dailyTable"),
+            
+            trendChart: document.getElementById("trendChart"),
+            performanceChart: document.getElementById("performanceChart")
+        };
 
-    <div class="grid">
-      <!-- KPI Cards -->
-      <div class="card kpi">
-        <div class="trend" id="reqTrend"></div>
-        <div class="label">Employee adoption</div>
-        <div class="val" id="requests"><div class="skeleton"></div></div>
-        <div class="hint"># requests</div>
-      </div>
+        let autoOn = false;
+        let autoTimer = null;
+        let trendChart = null;
+        let performanceChart = null;
 
-      <div class="card kpi">
-        <div class="label">Active users</div>
-        <div class="val" id="activeUsers"><div class="skeleton"></div></div>
-        <div class="hint" id="activeUsersHint">unique sessions/users</div>
-      </div>
+        // Formatting helpers
+        const fmtPct = v => (v ?? 0).toFixed(1) + "%";
+        const fmtNum = v => (v === null || v === undefined) ? "N/A" : String(v);
 
-      <div class="card kpi">
-        <div class="label">Correct answer rate (proxy)</div>
-        <div class="val" id="correctProxy"><div class="skeleton"></div></div>
-        <div class="hint">% high-confidence answers</div>
-      </div>
+        // Error handling
+        function showError(title, message) {
+            els.errorBox.classList.add('show');
+            els.errorMessage.textContent = message;
+            els.statusBar.textContent = `❌ ${title}`;
+        }
 
-      <div class="card kpi">
-        <div class="label">Hallucination rate (proxy)</div>
-        <div class="val" id="hallProxy"><div class="skeleton"></div></div>
-        <div class="hint">% low-confidence answers</div>
-      </div>
+        function clearError() {
+            els.errorBox.classList.remove('show');
+            els.errorMessage.textContent = "";
+        }
 
-      <div class="card kpi">
-        <div class="label">Escalation rate</div>
-        <div class="val" id="escalRate"><div class="skeleton"></div></div>
-        <div class="hint">% needs escalation</div>
-      </div>
-
-      <div class="card kpi">
-        <div class="label">Avg confidence</div>
-        <div class="val" id="avgConf"><div class="skeleton"></div></div>
-        <div class="hint">0.0 – 1.0</div>
-      </div>
-
-      <!-- Status -->
-      <div class="card half">
-        <div class="row">
-          <div class="section-title">Status</div>
-          <div class="pill" id="statusPill"><span class="mini"></span><b id="statusText">—</b></div>
-        </div>
-        <div class="muted small" style="margin-top:10px; position:relative; z-index:1;" id="notes">—</div>
-
-        <div class="footer">
-          <div>Answered rate: <span id="answeredRate">—</span></div>
-          <div>Generated: <span id="generatedAt">—</span></div>
-        </div>
-      </div>
-
-      <!-- Trend Chart -->
-      <div class="card half">
-        <div class="row">
-          <div>
-            <div class="section-title">Daily requests</div>
-            <div class="muted small">(from log timestamps)</div>
-          </div>
-          <div class="pill"><span class="mini"></span><b>Trend</b></div>
-        </div>
-
-        <div style="margin-top:12px; position:relative; z-index:1;">
-          <canvas id="trendChart" height="120"></canvas>
-        </div>
-      </div>
-
-      <!-- Latest days table -->
-      <div class="card wide">
-        <div class="row">
-          <div>
-            <div class="section-title">Daily breakdown (latest 14 days)</div>
-            <div class="muted small">Useful for spotting adoption spikes</div>
-          </div>
-          <div class="pill"><span class="mini"></span><b id="rangeTag">Last 30 days</b></div>
-        </div>
-
-        <div style="margin-top:12px; position:relative; z-index:1;">
-          <table>
-            <thead><tr><th>Date</th><th>Requests</th></tr></thead>
-            <tbody id="trendBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <script>
-    // ✅ CHANGE ONLY THIS LINE:
-    const KPI_API_URL = "https://taherkib.app.n8n.cloud/webhook/kpi-dashboard";
-
-    // Cache bust to avoid GitHub Pages 304/cached JS issues
-    const cacheBust = () => `cb=${Date.now()}`;
-
-    const els = {
-      subtitle: document.getElementById("subtitle"),
-      err: document.getElementById("err"),
-      days: document.getElementById("days"),
-      refresh: document.getElementById("refresh"),
-      autoToggle: document.getElementById("autoToggle"),
-      autoDot: document.getElementById("autoDot"),
-
-      requests: document.getElementById("requests"),
-      reqTrend: document.getElementById("reqTrend"),
-      activeUsers: document.getElementById("activeUsers"),
-      activeUsersHint: document.getElementById("activeUsersHint"),
-      correctProxy: document.getElementById("correctProxy"),
-      hallProxy: document.getElementById("hallProxy"),
-      escalRate: document.getElementById("escalRate"),
-      avgConf: document.getElementById("avgConf"),
-
-      statusPill: document.getElementById("statusPill"),
-      statusText: document.getElementById("statusText"),
-      notes: document.getElementById("notes"),
-      answeredRate: document.getElementById("answeredRate"),
-      generatedAt: document.getElementById("generatedAt"),
-
-      trendBody: document.getElementById("trendBody"),
-      rangeTag: document.getElementById("rangeTag"),
-      trendChart: document.getElementById("trendChart")
-    };
-
-    let autoOn = false;
-    let autoTimer = null;
-    let chart = null;
-
-    const fmtPct = v => (v ?? 0).toFixed(1) + "%";
-    const fmtNum = v => (v === null || v === undefined) ? "N/A" : String(v);
-    const fmtConf = v => (v === null || v === undefined) ? "—" : Number(v).toFixed(3);
-
-    function setError(msg){
-      els.err.style.display = "block";
-      els.err.textContent = msg;
-    }
-    function clearError(){
-      els.err.style.display = "none";
-      els.err.textContent = "";
-    }
-
-    function setStatus(kind, text){
-      els.statusText.textContent = text;
-      els.statusPill.className = "pill " + kind;
-    }
-
-    function ensureChart(labels, values){
-      const ctx = els.trendChart.getContext("2d");
-      if (chart) chart.destroy();
-
-      chart = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels,
-          datasets: [{
-            label: "Requests",
-            data: values,
-            tension: 0.35,
-            pointRadius: 3,
-            pointHoverRadius: 5,
-            borderWidth: 2,
-            fill: true,
-            backgroundColor: "rgba(71,224,255,.10)",
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            tooltip: { enabled: true }
-          },
-          scales: {
-            x: {
-              ticks: { color: "rgba(234,240,255,.65)" },
-              grid: { color: "rgba(255,255,255,.06)" }
-            },
-            y: {
-              ticks: { color: "rgba(234,240,255,.65)" },
-              grid: { color: "rgba(255,255,255,.06)" },
-              beginAtZero: true
+        // KPI Status indicators
+        function setKPIStatus(element, value, target, inverse = false) {
+            if (!element) return;
+            
+            let status = 'good';
+            if (inverse) {
+                // For metrics where lower is better (hallucination, escalation)
+                if (value > target * 1.5) status = 'bad';
+                else if (value > target) status = 'warning';
+            } else {
+                // For metrics where higher is better (correct answer rate)
+                if (value < target * 0.7) status = 'bad';
+                else if (value < target) status = 'warning';
             }
-          }
+            
+            element.className = 'kpi-status ' + status;
         }
-      });
-    }
 
-    async function load(){
-      clearError();
+        // Create trend chart
+        function createTrendChart(labels, values) {
+            const ctx = els.trendChart.getContext("2d");
+            if (trendChart) trendChart.destroy();
 
-      const days = els.days.value;
-      els.rangeTag.textContent = `Last ${days} days`;
-
-      const url = `${KPI_API_URL}?days=${encodeURIComponent(days)}&${cacheBust()}`;
-      els.subtitle.textContent = "Loading KPIs…";
-
-      let res, data;
-      try {
-        res = await fetch(url, { method:"GET" });
-      } catch (e){
-        setError("Fetch failed (network).\\n" + e.message + "\\n\\nURL:\\n" + url);
-        els.subtitle.textContent = "Failed to load";
-        return;
-      }
-
-      if (!res.ok){
-        const t = await res.text().catch(()=> "");
-        setError(`API responded with ${res.status}\\n\\n${t}\\n\\nURL:\\n${url}`);
-        els.subtitle.textContent = "Failed to load";
-        return;
-      }
-
-      try{
-        data = await res.json();
-      } catch(e){
-        const t = await res.text().catch(()=> "");
-        setError("Invalid JSON returned.\\n" + e.message + "\\n\\nRaw:\\n" + t);
-        els.subtitle.textContent = "Failed to load";
-        return;
-      }
-
-      // Header
-      els.subtitle.textContent = `Range: last ${data.range_days} days • Source: Log Sheet • API OK`;
-      els.generatedAt.textContent = data.generated_at_utc || "—";
-
-      // KPI values
-      els.requests.textContent = fmtNum(data.totals?.requests);
-      els.activeUsers.textContent = fmtNum(data.totals?.active_users);
-      els.correctProxy.textContent = fmtPct(data.rates?.correct_answer_proxy_rate_pct);
-      els.hallProxy.textContent = fmtPct(data.rates?.hallucination_proxy_rate_pct);
-      els.escalRate.textContent = fmtPct(data.rates?.escalation_rate_pct);
-      els.avgConf.textContent = fmtConf(data.confidence?.avg_confidence);
-
-      els.answeredRate.textContent = fmtPct(data.rates?.answered_rate_pct) + ` (${data.totals?.answered ?? 0}/${data.totals?.requests ?? 0})`;
-
-      // Active users note
-      if (data.notes?.active_users_note){
-        els.activeUsersHint.textContent = "N/A (missing session/user logging)";
-      } else {
-        els.activeUsersHint.textContent = "unique sessions/users";
-      }
-
-      // Status logic
-      const esc = data.rates?.escalation_rate_pct || 0;
-      const hall = data.rates?.hallucination_proxy_rate_pct || 0;
-      const correct = data.rates?.correct_answer_proxy_rate_pct || 0;
-
-      if (esc < 10 && hall < 10 && correct >= 40) setStatus("ok", "Healthy");
-      else if (esc < 20 && hall < 20) setStatus("watch", "Watch");
-      else setStatus("bad", "Needs attention");
-
-      const notes = [];
-      notes.push(`Requests: ${data.totals?.requests ?? 0}`);
-      notes.push(`High confidence: ${data.totals?.high_confidence ?? 0}`);
-      notes.push(`Low confidence: ${data.totals?.low_confidence ?? 0}`);
-      if (data.notes?.active_users_note) notes.push(data.notes.active_users_note);
-      els.notes.textContent = notes.join(" • ");
-
-      // Trend
-      const daily = (data.trend?.daily_requests || []);
-      const last14 = daily.slice(-14);
-
-      // Table
-      els.trendBody.innerHTML = "";
-      if (!last14.length){
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td class="muted" colspan="2">No timestamped rows found in this range.</td>`;
-        els.trendBody.appendChild(tr);
-      } else {
-        for (const row of last14){
-          const tr = document.createElement("tr");
-          tr.innerHTML = `<td>${row.date}</td><td>${row.requests}</td>`;
-          els.trendBody.appendChild(tr);
+            trendChart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels,
+                    datasets: [{
+                        label: "Daily Requests",
+                        data: values,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        borderWidth: 3,
+                        borderColor: "#1f7a6b",
+                        backgroundColor: "rgba(31, 122, 107, 0.1)",
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { 
+                            enabled: true,
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            padding: 12
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: "#64748b", font: { size: 11 } },
+                            grid: { color: "rgba(226, 232, 240, 0.5)" }
+                        },
+                        y: {
+                            ticks: { color: "#64748b", font: { size: 11 } },
+                            grid: { color: "rgba(226, 232, 240, 0.5)" },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
         }
-      }
 
-      // Chart
-      const labels = daily.map(x => x.date);
-      const values = daily.map(x => x.requests);
-      ensureChart(labels, values);
+        // Create performance chart
+        function createPerformanceChart(correctRate, hallRate, escalRate) {
+            const ctx = els.performanceChart.getContext("2d");
+            if (performanceChart) performanceChart.destroy();
 
-      // Tiny trend hint (last 7 vs prev 7)
-      if (daily.length >= 14){
-        const last7 = daily.slice(-7).reduce((a,b)=>a + (b.requests||0), 0);
-        const prev7 = daily.slice(-14,-7).reduce((a,b)=>a + (b.requests||0), 0);
-        const diff = last7 - prev7;
-        const sign = diff > 0 ? "+" : "";
-        els.reqTrend.textContent = `7d: ${last7} (${sign}${diff})`;
-      } else {
-        els.reqTrend.textContent = "";
-      }
-    }
+            performanceChart = new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: ["Correct Answer", "Hallucination", "Escalation"],
+                    datasets: [{
+                        label: "Rate (%)",
+                        data: [correctRate, hallRate, escalRate],
+                        backgroundColor: [
+                            "rgba(34, 197, 94, 0.8)",
+                            "rgba(239, 68, 68, 0.8)",
+                            "rgba(245, 158, 11, 0.8)"
+                        ],
+                        borderColor: [
+                            "#22c55e",
+                            "#ef4444",
+                            "#f59e0b"
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { 
+                            enabled: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y.toFixed(1) + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { 
+                                color: "#64748b",
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: { color: "rgba(226, 232, 240, 0.5)" }
+                        },
+                        x: {
+                            ticks: { color: "#64748b" },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
 
-    function setAuto(on){
-      autoOn = on;
-      els.autoDot.classList.toggle("on", on);
-      if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
-      if (on){
-        autoTimer = setInterval(() => load(), 60000);
-      }
-    }
+        // Main load function
+        async function load() {
+            clearError();
+            
+            const days = els.days.value;
+            const url = `${KPI_API_URL}?days=${encodeURIComponent(days)}&cb=${Date.now()}`;
+            els.subtitle.textContent = "Loading KPIs...";
+            els.statusBar.textContent = "📡 Fetching data from n8n...";
 
-    els.refresh.addEventListener("click", load);
-    els.days.addEventListener("change", load);
-    els.autoToggle.addEventListener("click", () => setAuto(!autoOn));
+            let res, data;
+            
+            try {
+                res = await fetch(url, { method: "GET" });
+            } catch (e) {
+                showError("Network Error", `Failed to connect to n8n.\n\nError: ${e.message}\n\nURL: ${url}`);
+                els.subtitle.textContent = "Failed to load";
+                return;
+            }
 
-    // Start
-    load();
-  </script>
+            if (!res.ok) {
+                const text = await res.text().catch(() => "");
+                showError(`HTTP ${res.status}`, `API error.\n\nStatus: ${res.status}\n\nResponse:\n${text}`);
+                els.subtitle.textContent = "Failed to load";
+                return;
+            }
+
+            try {
+                data = await res.json();
+            } catch (e) {
+                const text = await res.text().catch(() => "");
+                showError("Invalid JSON", `Could not parse response.\n\nError: ${e.message}\n\nRaw:\n${text}`);
+                els.subtitle.textContent = "Failed to load";
+                return;
+            }
+
+            // Update header
+            els.subtitle.textContent = `Monitoring ${data.range_days} days of activity`;
+            els.statusBar.textContent = `✅ Data refreshed at ${new Date().toLocaleTimeString()}`;
+            els.rangeDisplay.textContent = `Last ${data.range_days} days`;
+            els.generatedAt.textContent = new Date(data.generated_at_utc).toLocaleString();
+
+            // KPI 1: Employee Adoption (# requests)
+            const adoptionCount = data.totals?.requests || 0;
+            els.kpi1.textContent = fmtNum(adoptionCount);
+            els.status1.className = adoptionCount > 0 ? 'kpi-status good' : 'kpi-status bad';
+
+            // KPI 2: Active Users (% of employees or count)
+            const activeUsers = data.totals?.active_users;
+            if (activeUsers !== null && activeUsers !== undefined) {
+                els.kpi2.textContent = fmtNum(activeUsers);
+                els.kpi2hint.textContent = "unique users";
+                els.status2.className = activeUsers > 0 ? 'kpi-status good' : 'kpi-status bad';
+            } else {
+                els.kpi2.textContent = "N/A";
+                els.kpi2hint.textContent = "Session tracking required";
+                els.status2.className = 'kpi-status';
+            }
+
+            // KPI 3: Correct Answer Rate (%)
+            const correctRate = data.rates?.correct_answer_proxy_rate_pct || 0;
+            els.kpi3.textContent = fmtPct(correctRate);
+            setKPIStatus(els.status3, correctRate, 70, false);
+
+            // KPI 4: Hallucination Rate (%)
+            const hallRate = data.rates?.hallucination_proxy_rate_pct || 0;
+            els.kpi4.textContent = fmtPct(hallRate);
+            setKPIStatus(els.status4, hallRate, 10, true);
+
+            // KPI 5: Escalation Rate (%)
+            const escalRate = data.rates?.escalation_rate_pct || 0;
+            els.kpi5.textContent = fmtPct(escalRate);
+            setKPIStatus(els.status5, escalRate, 15, true);
+
+            // Overall status
+            if (correctRate >= 70 && hallRate <= 10 && escalRate <= 15) {
+                els.overallStatus.textContent = "Excellent";
+                els.overallPill.className = "pill ok";
+            } else if (correctRate >= 50 && hallRate <= 20 && escalRate <= 25) {
+                els.overallStatus.textContent = "Good";
+                els.overallPill.className = "pill watch";
+            } else {
+                els.overallStatus.textContent = "Needs Improvement";
+                els.overallPill.className = "pill bad";
+            }
+
+            // Detail table
+            els.detailRequests.textContent = fmtNum(data.totals?.requests);
+            els.detailAnswered.textContent = `${fmtNum(data.totals?.answered)} (${fmtPct(data.rates?.answered_rate_pct)})`;
+            els.detailHighConf.textContent = fmtNum(data.totals?.high_confidence);
+            els.detailLowConf.textContent = fmtNum(data.totals?.low_confidence);
+            els.detailEscalated.textContent = fmtNum(data.totals?.escalated);
+
+            // Trend data
+            const daily = data.trend?.daily_requests || [];
+            
+            // Update trend indicator
+            if (daily.length >= 7) {
+                const lastWeek = daily.slice(-7).reduce((sum, d) => sum + (d.requests || 0), 0);
+                const prevWeek = daily.length >= 14 ? 
+                    daily.slice(-14, -7).reduce((sum, d) => sum + (d.requests || 0), 0) : 0;
+                const change = lastWeek - prevWeek;
+                const arrow = change > 0 ? "↑" : change < 0 ? "↓" : "→";
+                els.trendIndicator.textContent = `${arrow} ${change > 0 ? '+' : ''}${change} vs prev week`;
+            } else {
+                els.trendIndicator.textContent = "Insufficient data";
+            }
+
+            // Daily table (last 10 days)
+            const last10 = daily.slice(-10);
+            els.dailyTable.innerHTML = "";
+            if (!last10.length) {
+                els.dailyTable.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--muted);">No data available</td></tr>`;
+            } else {
+                last10.reverse().forEach((day, idx) => {
+                    const prevDay = last10[idx + 1];
+                    let trend = "—";
+                    if (prevDay) {
+                        const diff = day.requests - prevDay.requests;
+                        trend = diff > 0 ? `+${diff}` : diff < 0 ? `${diff}` : "0";
+                    }
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td><strong>${day.date}</strong></td>
+                        <td>${day.requests}</td>
+                        <td style="color: ${trend.startsWith('+') ? 'var(--success)' : trend.startsWith('-') ? 'var(--danger)' : 'var(--muted)'};">${trend}</td>
+                    `;
+                    els.dailyTable.appendChild(tr);
+                });
+            }
+
+            // Charts
+            const labels = daily.map(d => d.date);
+            const values = daily.map(d => d.requests);
+            createTrendChart(labels, values);
+            createPerformanceChart(correctRate, hallRate, escalRate);
+        }
+
+        // Auto-refresh
+        function setAuto(on) {
+            autoOn = on;
+            els.autoDot.classList.toggle("on", on);
+            if (autoTimer) {
+                clearInterval(autoTimer);
+                autoTimer = null;
+            }
+            if (on) {
+                autoTimer = setInterval(() => load(), 60000);
+            }
+        }
+
+        // Event listeners
+        els.refresh.addEventListener("click", load);
+        els.days.addEventListener("change", load);
+        els.autoToggle.addEventListener("click", () => setAuto(!autoOn));
+
+        // Initial load
+        load();
+    </script>
 </body>
 </html>
-
