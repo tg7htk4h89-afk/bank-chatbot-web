@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat3PT - Knowledge Base Editor</title>
+  <title>Chat3PT - Knowledge Base Editor (DEBUG)</title>
   <style>
     :root {
       --bg1: #e8f1f6; --bg2: #eef2ff; --card: #ffffff; --text: #0f172a;
@@ -18,12 +18,23 @@
       min-height: 100vh; padding: 20px; color: var(--text);
     }
 
-    .container { max-width: 1000px; margin: 0 auto; }
+    .container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 400px; gap: 20px; }
+
+    .main-panel { }
+    .debug-panel {
+      background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 12px;
+      font-family: 'Courier New', monospace; font-size: 11px;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .debug-panel h3 { color: #4ec9b0; margin-bottom: 10px; }
+    .debug-log { margin-bottom: 10px; }
+    .debug-log.error { color: #f48771; }
+    .debug-log.success { color: #89d185; }
+    .debug-log.info { color: #569cd6; }
 
     .header {
       background: rgba(255,255,255,.9); border-radius: 20px; padding: 24px;
       margin-bottom: 24px; box-shadow: var(--shadow);
-      display: flex; justify-content: space-between; align-items: center;
     }
     .card {
       background: white; border-radius: 20px; padding: 30px;
@@ -107,100 +118,106 @@
 
 <body>
   <div class="container">
-    <div class="header">
-      <h1>📝 Knowledge Base Manager</h1>
+    <div class="main-panel">
+      <div class="header">
+        <h1>📝 Knowledge Base Manager (DEBUG MODE)</h1>
+      </div>
+
+      <div class="card">
+        <div class="step-indicator">
+          <div class="step active" data-step="1">
+            <div class="step-circle">1</div>
+            <div class="step-label">Select Type</div>
+          </div>
+          <div class="step" data-step="2">
+            <div class="step-circle">2</div>
+            <div class="step-label">Basic Info</div>
+          </div>
+          <div class="step" data-step="3">
+            <div class="step-circle">3</div>
+            <div class="step-label">Details</div>
+          </div>
+          <div class="step" data-step="4">
+            <div class="step-circle">4</div>
+            <div class="step-label">Review</div>
+          </div>
+        </div>
+
+        <div class="form-section active" id="section1">
+          <h2 style="text-align:center; margin-bottom:20px;">What are you working on?</h2>
+
+          <div class="mode-toggle">
+            <button class="mode-btn active" onclick="setMode('add', event)">Add New Item</button>
+            <button class="mode-btn" onclick="setMode('edit', event)">Edit Existing</button>
+          </div>
+
+          <div class="type-selector">
+            <div class="type-card" onclick="selectType('product', this)">
+              <div class="type-icon">🏦</div>
+              <div>Product</div>
+            </div>
+            <div class="type-card" onclick="selectType('procedure', this)">
+              <div class="type-icon">📋</div>
+              <div>Procedure</div>
+            </div>
+            <div class="type-card" onclick="selectType('policy', this)">
+              <div class="type-icon">📜</div>
+              <div>Policy</div>
+            </div>
+          </div>
+
+          <div class="search-container" id="searchBox">
+            <label class="form-label">Search by ID to Edit</label>
+            <div style="display:flex; gap:10px;">
+              <input type="text" id="searchId" class="form-input" placeholder="e.g. PRD-0002" value="PRD-0002">
+              <button class="btn btn-primary" onclick="fetchData()">Search</button>
+            </div>
+            <p id="searchStatus" style="margin-top:10px; font-size:13px; color:var(--muted);"></p>
+          </div>
+
+          <div class="button-group">
+            <button class="btn btn-primary" id="btnStep1" onclick="nextStep()" disabled>Next Step →</button>
+          </div>
+        </div>
+
+        <div class="form-section" id="section2">
+          <h2>Basic Information</h2>
+          <div id="formBasic" class="form-grid"></div>
+          <div class="button-group">
+            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+            <button class="btn btn-primary" onclick="nextStep()">Next Step →</button>
+          </div>
+        </div>
+
+        <div class="form-section" id="section3">
+          <h2>Detailed Information</h2>
+          <div id="formDetails" class="form-grid"></div>
+          <div class="button-group">
+            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+            <button class="btn btn-primary" onclick="nextStep()">Review →</button>
+          </div>
+        </div>
+
+        <div class="form-section" id="section4">
+          <h2>Review & Submit</h2>
+          <div id="reviewContent" style="background:var(--bg1); padding:20px; border-radius:12px;"></div>
+          <div class="button-group">
+            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+            <button class="btn btn-primary" onclick="submitData()">Submit Data ✓</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="card">
-      <div class="step-indicator">
-        <div class="step active" data-step="1">
-          <div class="step-circle">1</div>
-          <div class="step-label">Select Type</div>
-        </div>
-        <div class="step" data-step="2">
-          <div class="step-circle">2</div>
-          <div class="step-label">Basic Info</div>
-        </div>
-        <div class="step" data-step="3">
-          <div class="step-circle">3</div>
-          <div class="step-label">Details</div>
-        </div>
-        <div class="step" data-step="4">
-          <div class="step-circle">4</div>
-          <div class="step-label">Review</div>
-        </div>
-      </div>
-
-      <div class="form-section active" id="section1">
-        <h2 style="text-align:center; margin-bottom:20px;">What are you working on?</h2>
-
-        <div class="mode-toggle">
-          <button class="mode-btn active" onclick="setMode('add', event)">Add New Item</button>
-          <button class="mode-btn" onclick="setMode('edit', event)">Edit Existing</button>
-        </div>
-
-        <div class="type-selector">
-          <div class="type-card" onclick="selectType('product', this)">
-            <div class="type-icon">🏦</div>
-            <div>Product</div>
-          </div>
-          <div class="type-card" onclick="selectType('procedure', this)">
-            <div class="type-icon">📋</div>
-            <div>Procedure</div>
-          </div>
-          <div class="type-card" onclick="selectType('policy', this)">
-            <div class="type-icon">📜</div>
-            <div>Policy</div>
-          </div>
-        </div>
-
-        <div class="search-container" id="searchBox">
-          <label class="form-label">Search by ID to Edit</label>
-          <div style="display:flex; gap:10px;">
-            <input type="text" id="searchId" class="form-input" placeholder="e.g. PRD-001">
-            <button class="btn btn-primary" onclick="fetchData()">Search</button>
-          </div>
-          <p id="searchStatus" style="margin-top:10px; font-size:13px; color:var(--muted);"></p>
-        </div>
-
-        <div class="button-group">
-          <button class="btn btn-primary" id="btnStep1" onclick="nextStep()" disabled>Next Step →</button>
-        </div>
-      </div>
-
-      <div class="form-section" id="section2">
-        <h2>Basic Information</h2>
-        <div id="formBasic" class="form-grid"></div>
-        <div class="button-group">
-          <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-          <button class="btn btn-primary" onclick="nextStep()">Next Step →</button>
-        </div>
-      </div>
-
-      <div class="form-section" id="section3">
-        <h2>Detailed Information</h2>
-        <div id="formDetails" class="form-grid"></div>
-        <div class="button-group">
-          <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-          <button class="btn btn-primary" onclick="nextStep()">Review →</button>
-        </div>
-      </div>
-
-      <div class="form-section" id="section4">
-        <h2>Review & Submit</h2>
-        <div id="reviewContent" style="background:var(--bg1); padding:20px; border-radius:12px;"></div>
-        <div class="button-group">
-          <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-          <button class="btn btn-primary" onclick="submitData()">Submit Data ✓</button>
-        </div>
-      </div>
+    <div class="debug-panel" id="debugPanel">
+      <h3>🐛 Debug Console</h3>
+      <div id="debugLogs"></div>
     </div>
   </div>
 
   <script>
     const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/webhook";
 
-    // Auto-metadata
     const DEFAULT_OWNER = "KB Editor";
     const ISO_DATE = () => new Date().toISOString().slice(0, 10);
 
@@ -209,6 +226,18 @@
     let selectedType = null;
     let currentId = null;
     let formData = {};
+
+    // Debug logging
+    function debugLog(message, type = 'info') {
+      const debugLogs = document.getElementById('debugLogs');
+      const timestamp = new Date().toLocaleTimeString();
+      const logEntry = document.createElement('div');
+      logEntry.className = `debug-log ${type}`;
+      logEntry.textContent = `[${timestamp}] ${message}`;
+      debugLogs.appendChild(logEntry);
+      debugLogs.scrollTop = debugLogs.scrollHeight;
+      console.log(`[${type.toUpperCase()}]`, message);
+    }
 
     const schemas = {
       product: {
@@ -224,10 +253,7 @@
           { key: 'eligibility', label: 'Eligibility', type: 'textarea', full: true },
           { key: 'fees', label: 'Fees', type: 'text' },
           { key: 'channels', label: 'Channels', type: 'text' },
-          { key: 'keywords', label: 'Keywords', type: 'text', full: true },
-          { key: 'sample_questions', type: 'hidden' },
-          { key: 'owner', type: 'hidden' },
-          { key: 'last_updated', type: 'hidden' }
+          { key: 'keywords', label: 'Keywords', type: 'text', full: true }
         ]
       },
       procedure: {
@@ -240,12 +266,7 @@
           { key: 'step_by_step', label: 'Steps', type: 'textarea', full: true },
           { key: 'when_to_use', label: 'When to Use', type: 'textarea', full: true },
           { key: 'systems_used', label: 'Systems', type: 'text', full: true },
-          { key: 'keywords', label: 'Keywords', type: 'text', full: true },
-          { key: 'sample_questions', type: 'hidden' },
-          { key: 'common_errors', type: 'hidden' },
-          { key: 'owner', type: 'hidden' },
-          { key: 'risk_level', type: 'hidden' },
-          { key: 'last_updated', type: 'hidden' }
+          { key: 'keywords', label: 'Keywords', type: 'text', full: true }
         ]
       },
       policy: {
@@ -258,19 +279,14 @@
           { key: 'summary', label: 'Summary', type: 'textarea', full: true },
           { key: 'do', label: 'Do', type: 'textarea', full: true },
           { key: 'dont', label: 'Don\'t', type: 'textarea', full: true },
-          { key: 'keywords', label: 'Keywords', type: 'text', full: true },
-          { key: 'applicable_to', type: 'hidden' },
-          { key: 'sample_questions', type: 'hidden' },
-          { key: 'escalation', type: 'hidden' },
-          { key: 'owner', type: 'hidden' },
-          { key: 'review_cycle', type: 'hidden' },
-          { key: 'last_reviewed', type: 'hidden' }
+          { key: 'keywords', label: 'Keywords', type: 'text', full: true }
         ]
       }
     };
 
     function setMode(m, ev) {
       mode = m;
+      debugLog(`Mode changed to: ${m}`);
       document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
       if (ev && ev.target) ev.target.classList.add('active');
 
@@ -280,13 +296,12 @@
       if (mode === 'edit') {
         searchBox.classList.add('show');
         nextBtn.disabled = true;
-        // Clear any previous edit data
         formData = {};
       } else {
         searchBox.classList.remove('show');
         formData = {};
         if (selectedType) {
-          renderForms(formData); // Render empty forms for add mode
+          renderForms(formData);
           nextBtn.disabled = false;
         }
       }
@@ -294,15 +309,15 @@
 
     function selectType(type, card) {
       selectedType = type;
+      debugLog(`Type selected: ${type}`);
       document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
 
       if (mode === 'add') {
         formData = {};
-        renderForms(formData); // Only render in add mode
+        renderForms(formData);
         document.getElementById('btnStep1').disabled = false;
       } else {
-        // In edit mode, don't render forms yet - wait for data to be fetched
         document.getElementById('btnStep1').disabled = true;
       }
     }
@@ -311,108 +326,99 @@
       const rawId = document.getElementById('searchId').value || '';
       const statusEl = document.getElementById('searchStatus');
 
-      if (!selectedType) return alert("Please select a Type first.");
+      if (!selectedType) {
+        alert("Please select a Type first.");
+        return;
+      }
 
       const id = rawId.trim();
-      if (!id) return alert("Please enter an ID.");
+      if (!id) {
+        alert("Please enter an ID.");
+        return;
+      }
+
+      debugLog(`=== FETCH STARTED ===`, 'info');
+      debugLog(`Type: ${selectedType}, ID: ${id}`, 'info');
 
       statusEl.innerText = "Searching...";
       statusEl.style.color = "var(--muted)";
 
       const url = `${WEBHOOK_URL}?action=fetch&type=${encodeURIComponent(selectedType)}&id=${encodeURIComponent(id)}`;
+      debugLog(`URL: ${url}`);
 
       try {
         const res = await fetch(url, { method: 'GET' });
+        debugLog(`Response status: ${res.status}`);
 
         if (!res.ok) {
           statusEl.innerText = `❌ Server error (${res.status}).`;
           statusEl.style.color = "red";
+          debugLog(`HTTP error: ${res.status}`, 'error');
           return;
         }
 
-        let payload;
-        try {
-          payload = await res.json();
-        } catch (e) {
-          statusEl.innerText = "❌ Invalid JSON response from server.";
-          statusEl.style.color = "red";
-          return;
-        }
+        const payload = await res.json();
+        debugLog(`=== RAW PAYLOAD ===`, 'info');
+        debugLog(`Type: ${Array.isArray(payload) ? 'Array' : typeof payload}`);
+        debugLog(`JSON: ${JSON.stringify(payload, null, 2).substring(0, 500)}...`);
 
-        console.log("FETCH RAW PAYLOAD:", payload);
+        if (Array.isArray(payload)) {
+          debugLog(`Array length: ${payload.length}`);
+          payload.forEach((item, idx) => {
+            debugLog(`--- Item [${idx}] ---`);
+            debugLog(`Type: ${Array.isArray(item) ? 'Array' : typeof item}`);
+            debugLog(`Keys: ${Object.keys(item || {}).join(', ')}`);
+            if (item && item.json) {
+              debugLog(`  Has .json property! Keys inside: ${Object.keys(item.json).join(', ')}`);
+            }
+          });
+        }
 
         let row = null;
+        const idKey = selectedType + "_id";
+        debugLog(`Looking for key: ${idKey}`);
 
-        // When n8n returns "allIncomingItems", it sends an array of all items' JSON content
-        // We need to find the item that contains our actual product/procedure/policy data
+        // Extract the actual data
         if (Array.isArray(payload)) {
-          const idKey = selectedType + "_id";
-          
-          // Find the item that has the ID field for this type
-          row = payload.find(item => item && item[idKey]) || null;
-          
-          // Fallback: try to find any item that looks like data (not webhook metadata)
-          if (!row) {
-            row = payload.find(item => 
-              item && 
-              typeof item === 'object' && 
-              !item.headers && 
-              !item.params && 
-              !item.webhookUrl &&
-              Object.keys(item).length > 3
-            ) || null;
-          }
-        } else if (payload && typeof payload === 'object') {
-          const arrLike = 
-            (Array.isArray(payload.data) && payload.data) || 
-            (Array.isArray(payload.items) && payload.items) ||
-            (Array.isArray(payload.rows) && payload.rows) ||
-            null;
-          
-          if (arrLike) {
-            const idKey = selectedType + "_id";
-            row = arrLike.find(item => item && item[idKey]) || arrLike[0] || null;
+          for (const item of payload) {
+            if (!item || typeof item !== 'object') continue;
+
+            // n8n Code nodes wrap output in {json: {...}}
+            const checkItem = (item.json && typeof item.json === 'object') ? item.json : item;
+
+            if (checkItem[idKey]) {
+              row = checkItem;
+              debugLog(`✅ FOUND! Item with ${idKey}`, 'success');
+              debugLog(`Data keys: ${Object.keys(row).join(', ')}`, 'success');
+              break;
+            }
           }
         }
 
-        if (!row && payload && typeof payload === 'object' && !payload.error) {
-           row = (payload.data && typeof payload.data === 'object' && !Array.isArray(payload.data) && payload.data) ||
-                 (payload.item && typeof payload.item === 'object' && payload.item) ||
-                 payload;
-        }
-
-        if (payload && payload.error) {
-          statusEl.innerText = `❌ ${payload.error}`;
-          statusEl.style.color = "red";
-          return;
-        }
-
-        if (!row || Object.keys(row).length === 0) {
+        if (!row) {
+          debugLog(`❌ Could not find item with ${idKey}`, 'error');
           statusEl.innerText = "❌ Item not found.";
           statusEl.style.color = "red";
           return;
         }
 
-        const idKey = selectedType + "_id";
-        const returnedId = (row[idKey] || '').toString().trim();
-        if (returnedId && returnedId.toLowerCase() !== id.toLowerCase()) {
-             console.warn(`Possible ID mismatch: requested ${id}, got ${returnedId}`);
-        }
+        debugLog(`=== EXTRACTED ROW ===`, 'success');
+        debugLog(`Type: ${Array.isArray(row) ? 'Array' : typeof row}`, 'success');
+        debugLog(`Keys: ${Object.keys(row).join(', ')}`, 'success');
+        debugLog(`Sample values: product_name=${row.product_name}, family=${row.family}`, 'success');
 
         statusEl.innerText = "✅ Data loaded! Click Next.";
         statusEl.style.color = "green";
 
         currentId = id;
         formData = row;
-        
-        console.log("✅ Loaded formData:", formData);
-        console.log("✅ Number of keys in formData:", Object.keys(formData).length);
-        
+
+        debugLog(`formData assigned. Keys: ${Object.keys(formData).join(', ')}`, 'success');
         document.getElementById('btnStep1').disabled = false;
 
       } catch (e) {
-        console.error(e);
-        statusEl.innerText = "❌ Network / connection error.";
+        debugLog(`❌ ERROR: ${e.message}`, 'error');
+        statusEl.innerText = "❌ Network error.";
         statusEl.style.color = "red";
       }
     }
@@ -421,18 +427,12 @@
       if (!selectedType) return;
       const schema = schemas[selectedType];
 
-      console.log("📝 Rendering forms for type:", selectedType);
-      console.log("📝 Data being used:", data);
-      console.log("📝 Keys in data:", Object.keys(data));
+      debugLog(`Rendering forms with ${Object.keys(data).length} keys`);
 
       const escAttr = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
       const buildFields = (fields) => fields.map(f => {
         const val = data[f.key] ?? '';
-
-        if (f.type === 'hidden') {
-          return `<input type="hidden" name="${f.key}" value="${escAttr(val)}">`;
-        }
 
         let inputHtml = '';
         if (f.type === 'textarea') {
@@ -457,39 +457,32 @@
 
       document.getElementById('formBasic').innerHTML = buildFields(schema.basic);
       document.getElementById('formDetails').innerHTML = buildFields(schema.details);
+      
+      debugLog(`Forms rendered`);
     }
 
     function harvestCurrentFormData() {
-      // Harvest data from currently visible form fields
       const currentSection = document.getElementById(`section${currentStep}`);
       const inputs = currentSection.querySelectorAll('input, select, textarea');
       
-      console.log("🌾 Harvesting from step", currentStep, "- found", inputs.length, "inputs");
+      debugLog(`Harvesting ${inputs.length} inputs from step ${currentStep}`);
       
       inputs.forEach(i => {
         if (i.name) {
             formData[i.name] = i.value;
         }
       });
-      
-      console.log("🌾 Harvested formData:", formData);
     }
 
     function nextStep() {
-      console.log("⏭️ Moving from step", currentStep, "to step", currentStep + 1);
-      
-      // Save current form values before moving
+      debugLog(`Moving from step ${currentStep} to ${currentStep + 1}`);
       harvestCurrentFormData();
 
       if (currentStep < 4) {
         currentStep++;
         updateUI();
         
-        console.log("⏭️ Now on step", currentStep);
-        
-        // Re-render forms with latest data when moving to steps 2 or 3
         if (currentStep === 2 || currentStep === 3) {
-          console.log("⏭️ Re-rendering forms with formData");
           renderForms(formData);
         }
       }
@@ -498,14 +491,12 @@
     }
 
     function prevStep() {
-      // Save current form values before going back
       harvestCurrentFormData();
       
       if (currentStep > 1) {
         currentStep--;
         updateUI();
         
-        // Re-render forms when going back to steps 2 or 3
         if (currentStep === 2 || currentStep === 3) {
           renderForms(formData);
         }
@@ -545,13 +536,8 @@
 
     async function submitData() {
       if (!formData.owner) formData.owner = DEFAULT_OWNER;
-
-      if (selectedType === 'product' || selectedType === 'procedure') {
-         formData.last_updated = ISO_DATE();
-      }
-      if (selectedType === 'policy') {
-         formData.last_reviewed = ISO_DATE();
-      }
+      if (selectedType === 'product' || selectedType === 'procedure') formData.last_updated = ISO_DATE();
+      if (selectedType === 'policy') formData.last_reviewed = ISO_DATE();
 
       const payload = {
         type: selectedType,
@@ -559,11 +545,9 @@
         data: formData
       };
 
-      if (mode === 'edit') {
-        payload.data[selectedType + '_id'] = currentId;
-      }
+      if (mode === 'edit') payload.data[selectedType + '_id'] = currentId;
 
-      console.log("Submitting payload:", payload);
+      debugLog(`Submitting: ${JSON.stringify(payload, null, 2)}`);
 
       try {
         const btn = document.querySelector('#section4 .btn-primary');
@@ -577,14 +561,17 @@
         });
 
         if (res.ok) {
+          debugLog('✅ Submit successful!', 'success');
           alert("Success! Database updated.");
           location.reload();
         } else {
+          debugLog(`❌ Submit failed: ${res.status}`, 'error');
           alert("Error submitting data.");
           btn.innerText = "Submit Data ✓";
           btn.disabled = false;
         }
       } catch (e) {
+        debugLog(`❌ Submit error: ${e.message}`, 'error');
         alert("Network error: " + e.message);
       }
     }
