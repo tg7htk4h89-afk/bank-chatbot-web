@@ -343,8 +343,25 @@
 
         let row = null;
 
+        // When n8n returns "allIncomingItems", it sends an array of all items' JSON content
+        // We need to find the item that contains our actual product/procedure/policy data
         if (Array.isArray(payload)) {
-          row = payload[0] || null;
+          const idKey = selectedType + "_id";
+          
+          // Find the item that has the ID field for this type
+          row = payload.find(item => item && item[idKey]) || null;
+          
+          // Fallback: try to find any item that looks like data (not webhook metadata)
+          if (!row) {
+            row = payload.find(item => 
+              item && 
+              typeof item === 'object' && 
+              !item.headers && 
+              !item.params && 
+              !item.webhookUrl &&
+              Object.keys(item).length > 3
+            ) || null;
+          }
         } else if (payload && typeof payload === 'object') {
           const arrLike = 
             (Array.isArray(payload.data) && payload.data) || 
@@ -352,7 +369,10 @@
             (Array.isArray(payload.rows) && payload.rows) ||
             null;
           
-          if (arrLike) row = arrLike[0] || null;
+          if (arrLike) {
+            const idKey = selectedType + "_id";
+            row = arrLike.find(item => item && item[idKey]) || arrLike[0] || null;
+          }
         }
 
         if (!row && payload && typeof payload === 'object' && !payload.error) {
