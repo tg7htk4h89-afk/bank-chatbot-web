@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat3PT - KPI Dashboard</title>
+    <title>Chat3PT Dashboard</title>
     
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
     <style>
         :root {
@@ -588,7 +589,7 @@
                 <div class="brand">
                     <div class="logo">📊</div>
                     <div class="brand-text">
-                        <h1>Knowledge Copilot KPI Dashboard</h1>
+                        <h1>Chat3PT Dashboard</h1>
                         <p id="subtitle">Key Performance Indicators</p>
                     </div>
                 </div>
@@ -617,7 +618,7 @@
 
         <!-- KPI Definition Info -->
         <div class="info-box">
-            <div class="info-title">📋 KPI Definitions (as per Initiative Charter)</div>
+            <div class="info-title">📋 Chat3PT KPI Definitions</div>
             <div class="info-content">
                 <strong>1. Employee Adoption:</strong> Total number of requests/queries submitted to the system<br>
                 <strong>2. Active Users:</strong> Percentage or count of employees actively using the system<br>
@@ -940,11 +941,13 @@
                         fill: true
                     }]
                 },
+                plugins: [ChartDataLabels],
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
+                        datalabels: { display: false },
                         tooltip: { 
                             enabled: true,
                             backgroundColor: 'rgba(15, 23, 42, 0.95)',
@@ -974,7 +977,7 @@
             performanceChart = new Chart(ctx, {
                 type: "bar",
                 data: {
-                    labels: ["Correct Answer", "Hallucination", "Escalation"],
+                    labels: ["Correct\nAnswers", "Low\nConfidence", "Needs\nEscalation"],
                     datasets: [{
                         label: "Rate (%)",
                         data: [correctRate, hallRate, escalRate],
@@ -988,9 +991,11 @@
                             "#ef4444",
                             "#f59e0b"
                         ],
-                        borderWidth: 2
+                        borderWidth: 2,
+                        borderRadius: 8
                     }]
                 },
+                plugins: [ChartDataLabels],
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -998,11 +1003,27 @@
                         legend: { display: false },
                         tooltip: { 
                             enabled: true,
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            padding: 12,
                             callbacks: {
                                 label: function(context) {
                                     return context.parsed.y.toFixed(1) + '%';
                                 }
                             }
+                        },
+                        datalabels: {
+                            display: true,
+                            color: '#0f172a',
+                            font: {
+                                weight: 'bold',
+                                size: 13
+                            },
+                            formatter: function(value) {
+                                return value.toFixed(1) + '%';
+                            },
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 4
                         }
                     },
                     scales: {
@@ -1011,6 +1032,7 @@
                             max: 100,
                             ticks: { 
                                 color: "#64748b",
+                                font: { size: 11 },
                                 callback: function(value) {
                                     return value + '%';
                                 }
@@ -1018,7 +1040,10 @@
                             grid: { color: "rgba(226, 232, 240, 0.5)" }
                         },
                         x: {
-                            ticks: { color: "#64748b" },
+                            ticks: { 
+                                color: "#64748b",
+                                font: { size: 11, weight: '600' }
+                            },
                             grid: { display: false }
                         }
                     }
@@ -1051,10 +1076,12 @@
                         borderWidth: 3
                     }]
                 },
+                plugins: [ChartDataLabels],
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
+                        datalabels: { display: false },
                         legend: {
                             position: 'bottom',
                             labels: {
@@ -1220,6 +1247,9 @@
 
             // Category breakdown
             const categories = data.categories?.breakdown || [];
+            console.log('Category data received:', categories);
+            console.log('Total categorized:', data.categories?.total_categorized);
+            
             if (categories.length > 0) {
                 createCategoryChart(categories);
                 
@@ -1235,7 +1265,9 @@
                     els.categoryTableBody.appendChild(tr);
                 }
             } else {
-                els.categoryTableBody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--muted);">No category data</td></tr>`;
+                // Show empty state
+                els.categoryTableBody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--muted);">No category data available</td></tr>`;
+                console.warn('No category data - check if category_filter column has values');
             }
         }
 
