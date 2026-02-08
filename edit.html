@@ -21,6 +21,7 @@
       background: rgba(255,255,255,.9); border-radius: 20px; padding: 24px;
       margin-bottom: 24px; box-shadow: var(--shadow);
     }
+    .header h1 { font-size: 24px; }
     .card {
       background: white; border-radius: 20px; padding: 30px;
       margin-bottom: 24px; box-shadow: var(--shadow); min-height: 400px;
@@ -43,7 +44,7 @@
     }
     .step.active .step-circle { background: var(--brand); color: white; box-shadow: 0 0 0 4px var(--brand-light); }
     .step.completed .step-circle { background: #22c55e; color: white; }
-    .step-label { font-size: 12px; font-weight: 600; color: var(--muted); }
+    .step-label { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; }
     .step.active .step-label { color: var(--brand); }
     .form-section { display: none; animation: fadeIn 0.3s; }
     .form-section.active { display: block; }
@@ -52,17 +53,20 @@
     .type-card {
       padding: 24px; border: 2px solid var(--border); border-radius: 16px;
       text-align: center; cursor: pointer; transition: all 0.3s;
+      min-height: 100px; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; gap: 10px;
     }
     .type-card:hover { transform: translateY(-4px); border-color: var(--brand); }
     .type-card.selected { border-color: var(--brand); background: var(--brand-light); }
-    .type-icon { font-size: 32px; margin-bottom: 10px; }
+    .type-icon { font-size: 32px; }
+    .type-card-label { font-size: 14px; font-weight: 600; }
     .mode-toggle {
       display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;
       background: var(--bg1); padding: 5px; border-radius: 10px; width: fit-content; margin-left: auto; margin-right: auto;
     }
     .mode-btn {
       padding: 8px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;
-      background: transparent; color: var(--muted);
+      background: transparent; color: var(--muted); white-space: nowrap;
     }
     .mode-btn.active { background: white; color: var(--brand); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     .search-container {
@@ -70,25 +74,174 @@
       margin-top: 20px; display: none;
     }
     .search-container.show { display: block; }
+    .search-input-group {
+      display: flex; gap: 10px; flex-wrap: wrap;
+    }
+    .search-input-group input {
+      flex: 1; min-width: 200px;
+    }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .form-group { display: flex; flex-direction: column; gap: 8px; }
     .form-group.full { grid-column: 1 / -1; }
     .form-label { font-size: 14px; font-weight: 600; }
     .form-input, .form-select, .form-textarea {
       padding: 12px; border: 1px solid var(--border); border-radius: 10px; width: 100%;
+      font-size: 16px; /* Prevents zoom on iOS */
     }
-    .form-textarea { min-height: 100px; resize: vertical; }
-    .button-group { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; }
+    .form-textarea { min-height: 100px; resize: vertical; font-family: inherit; }
+    .button-group { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; flex-wrap: wrap; }
     .btn {
       padding: 12px 24px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.2s; min-height: 44px; /* Touch-friendly */
     }
     .btn-primary { background: var(--brand); color: white; }
     .btn-secondary { background: var(--border); color: var(--text); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .review-item { margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
     .review-label { font-size: 12px; color: var(--muted); text-transform: uppercase; }
-    .review-value { font-weight: 500; }
+    .review-value { font-weight: 500; word-wrap: break-word; }
+
+    /* Mobile Styles */
+    @media (max-width: 768px) {
+      body { padding: 12px; }
+      
+      .header {
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+      }
+      
+      .header h1 { 
+        font-size: 20px; 
+        text-align: center;
+      }
+      
+      .card {
+        padding: 20px;
+        border-radius: 12px;
+      }
+      
+      /* Simplified step indicator for mobile */
+      .step-indicator {
+        margin-bottom: 20px;
+      }
+      
+      .step-circle {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+      }
+      
+      .step-indicator::before {
+        top: 16px;
+      }
+      
+      .step-label {
+        font-size: 10px;
+        max-width: 70px;
+      }
+      
+      /* Stack type selector vertically on mobile */
+      .type-selector {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      
+      .type-card {
+        padding: 20px;
+        flex-direction: row;
+        justify-content: flex-start;
+        text-align: left;
+        min-height: auto;
+      }
+      
+      .type-icon {
+        font-size: 28px;
+      }
+      
+      .type-card-label {
+        font-size: 16px;
+      }
+      
+      /* Stack mode toggle buttons */
+      .mode-toggle {
+        width: 100%;
+        flex-direction: column;
+        padding: 8px;
+      }
+      
+      .mode-btn {
+        width: 100%;
+        padding: 12px;
+      }
+      
+      /* Stack form grid on mobile */
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      
+      .form-group.full {
+        grid-column: 1;
+      }
+      
+      /* Adjust search input for mobile */
+      .search-input-group {
+        flex-direction: column;
+      }
+      
+      .search-input-group input {
+        min-width: 100%;
+      }
+      
+      .search-input-group .btn {
+        width: 100%;
+      }
+      
+      /* Stack buttons on mobile */
+      .button-group {
+        flex-direction: column-reverse;
+        gap: 8px;
+      }
+      
+      .button-group .btn {
+        width: 100%;
+      }
+      
+      .form-section h2 {
+        font-size: 20px;
+        margin-bottom: 16px;
+      }
+      
+      .search-container {
+        padding: 16px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 18px;
+      }
+      
+      .card {
+        padding: 16px;
+      }
+      
+      .step-circle {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+      }
+      
+      .step-indicator::before {
+        top: 14px;
+      }
+      
+      .step-label {
+        font-size: 9px;
+        max-width: 60px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -124,20 +277,20 @@
         <div class="type-selector">
           <div class="type-card" onclick="selectType('product', this)">
             <div class="type-icon">🏦</div>
-            <div>Product</div>
+            <div class="type-card-label">Product</div>
           </div>
           <div class="type-card" onclick="selectType('procedure', this)">
             <div class="type-icon">📋</div>
-            <div>Procedure</div>
+            <div class="type-card-label">Procedure</div>
           </div>
           <div class="type-card" onclick="selectType('policy', this)">
             <div class="type-icon">📜</div>
-            <div>Policy</div>
+            <div class="type-card-label">Policy</div>
           </div>
         </div>
         <div class="search-container" id="searchBox">
           <label class="form-label">Search by ID to Edit</label>
-          <div style="display:flex; gap:10px;">
+          <div class="search-input-group">
             <input type="text" id="searchId" class="form-input" placeholder="e.g. PRD-001">
             <button class="btn btn-primary" onclick="fetchData()">Search</button>
           </div>
