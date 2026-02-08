@@ -1,223 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KIB Knowledge Base Editor</title>
-  <style>
-    :root {
-      --bg1: #f8fafc; --bg2: #e2e8f0; --card: #ffffff; --text: #0f172a;
-      --muted: #64748b; --border: #cbd5e1; --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      --brand: #1f7a6b; --brand-light: rgba(31, 122, 107, 0.1); --brand-hover: #16594e;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: linear-gradient(135deg, var(--bg1), var(--bg2));
-      min-height: 100vh; padding: 20px; color: var(--text);
-    }
-    .container { max-width: 1000px; margin: 0 auto; }
-    .header {
-      background: rgba(255,255,255,0.95); border-radius: 16px; padding: 24px;
-      margin-bottom: 24px; box-shadow: var(--shadow); backdrop-filter: blur(8px);
-    }
-    .header h1 { font-size: 24px; color: var(--brand); display: flex; align-items: center; gap: 10px; }
-    .card {
-      background: white; border-radius: 16px; padding: 32px;
-      margin-bottom: 24px; box-shadow: var(--shadow);
-    }
-    /* Stepper */
-    .step-indicator {
-      display: flex; justify-content: space-between; margin-bottom: 40px; position: relative;
-    }
-    .step-indicator::before {
-      content: ''; position: absolute; top: 15px; left: 0; right: 0;
-      height: 2px; background: var(--border); z-index: 0;
-    }
-    .step {
-      position: relative; z-index: 1; flex: 1; display: flex;
-      flex-direction: column; align-items: center; gap: 8px; cursor: default;
-    }
-    .step-circle {
-      width: 32px; height: 32px; border-radius: 50%; background: white; border: 2px solid var(--border);
-      color: var(--muted); display: grid; place-items: center; font-weight: 700; font-size: 14px;
-      transition: all 0.3s ease;
-    }
-    .step.active .step-circle { 
-      background: var(--brand); border-color: var(--brand); color: white; 
-      box-shadow: 0 0 0 4px var(--brand-light); 
-    }
-    .step.completed .step-circle { 
-      background: #10b981; border-color: #10b981; color: white; 
-    }
-    .step-label { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; background: white; padding: 0 4px; }
-    .step.active .step-label { color: var(--brand); }
-    
-    /* Forms */
-    .form-section { display: none; animation: slideUp 0.4s ease-out; }
-    .form-section.active { display: block; }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
-    .type-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
-    .type-card {
-      padding: 20px; border: 2px solid var(--border); border-radius: 12px;
-      text-align: center; cursor: pointer; transition: all 0.2s;
-      display: flex; flex-direction: column; align-items: center; gap: 12px;
-    }
-    .type-card:hover { border-color: var(--brand); background: var(--brand-light); transform: translateY(-2px); }
-    .type-card.selected { border-color: var(--brand); background: var(--brand-light); }
-    .type-icon { font-size: 28px; }
-    .type-label { font-weight: 600; font-size: 14px; }
-
-    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group.full { grid-column: 1 / -1; }
-    .form-label { font-size: 13px; font-weight: 600; color: #334155; }
-    .form-input, .form-select, .form-textarea {
-      padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; width: 100%;
-      font-size: 14px; transition: border-color 0.2s; outline: none;
-    }
-    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-light); }
-    .form-textarea { min-height: 80px; resize: vertical; font-family: inherit; }
-    
-    .mode-toggle {
-      display: flex; gap: 4px; background: var(--bg2); padding: 4px; border-radius: 8px; 
-      width: fit-content; margin: 0 auto 24px;
-    }
-    .mode-btn {
-      padding: 6px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;
-      background: transparent; color: var(--muted); transition: all 0.2s;
-    }
-    .mode-btn.active { background: white; color: var(--brand); shadow: 0 1px 2px rgba(0,0,0,0.1); }
-
-    .search-container {
-      background: var(--brand-light); padding: 20px; border-radius: 12px; margin-top: 20px;
-      display: none; border: 1px solid rgba(31, 122, 107, 0.2);
-    }
-    .search-container.show { display: block; }
-    .search-row { display: flex; gap: 10px; }
-    
-    .btn {
-      padding: 10px 24px; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;
-      transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;
-    }
-    .btn-primary { background: var(--brand); color: white; }
-    .btn-primary:hover:not(:disabled) { background: var(--brand-hover); }
-    .btn-secondary { background: white; border: 1px solid var(--border); color: var(--text); }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    
-    .button-group { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--bg2); }
-
-    /* Review Area */
-    .review-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; font-size: 14px; }
-    .review-item { background: var(--bg1); padding: 12px; border-radius: 8px; }
-    .review-item.full { grid-column: 1 / -1; }
-    .review-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-    .review-val { font-weight: 500; word-break: break-word; }
-
-    @media (max-width: 640px) {
-      .form-grid, .review-grid, .type-selector { grid-template-columns: 1fr; }
-      .step-label { display: none; }
-      .header h1 { font-size: 20px; }
-      .card { padding: 20px; }
-    }
-  </style>
-</head>
-<body>
-
-<div class="container">
-  <div class="header">
-    <h1>📚 KIB Knowledge Base Editor</h1>
-  </div>
-
-  <div class="card">
-    <div class="step-indicator">
-      <div class="step active" data-step="1">
-        <div class="step-circle">1</div>
-        <div class="step-label">Type & Mode</div>
-      </div>
-      <div class="step" data-step="2">
-        <div class="step-circle">2</div>
-        <div class="step-label">Core Info</div>
-      </div>
-      <div class="step" data-step="3">
-        <div class="step-circle">3</div>
-        <div class="step-label">Details</div>
-      </div>
-      <div class="step" data-step="4">
-        <div class="step-circle">4</div>
-        <div class="step-label">Review</div>
-      </div>
-    </div>
-
-    <div class="form-section active" id="section1">
-      <div class="mode-toggle">
-        <button class="mode-btn active" onclick="setMode('add', event)">New Entry</button>
-        <button class="mode-btn" onclick="setMode('edit', event)">Edit Existing</button>
-      </div>
-
-      <div class="type-selector">
-        <div class="type-card" onclick="selectType('product', this)">
-          <div class="type-icon">💳</div>
-          <div class="type-label">Product</div>
-        </div>
-        <div class="type-card" onclick="selectType('procedure', this)">
-          <div class="type-icon">📋</div>
-          <div class="type-label">Procedure</div>
-        </div>
-        <div class="type-card" onclick="selectType('policy', this)">
-          <div class="type-icon">⚖️</div>
-          <div class="type-label">Policy</div>
-        </div>
-      </div>
-
-      <div class="search-container" id="searchBox">
-        <label class="form-label">Search by ID</label>
-        <div class="search-row">
-          <input type="text" id="searchId" class="form-input" placeholder="e.g., PRD-0001">
-          <button class="btn btn-primary" onclick="fetchData()">Search</button>
-        </div>
-        <p id="searchStatus" style="margin-top:8px; font-size:13px; color:var(--muted);"></p>
-      </div>
-
-      <div class="button-group">
-        <button class="btn btn-primary" id="btnStep1" onclick="nextStep()" disabled>Next Step &rarr;</button>
-      </div>
-    </div>
-
-    <div class="form-section" id="section2">
-      <h2>Core Information</h2>
-      <div id="formBasic" class="form-grid" style="margin-top:20px;"></div>
-      <div class="button-group">
-        <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
-        <button class="btn btn-primary" onclick="nextStep()">Next Step &rarr;</button>
-      </div>
-    </div>
-
-    <div class="form-section" id="section3">
-      <h2>Detailed Attributes</h2>
-      <div id="formDetails" class="form-grid" style="margin-top:20px;"></div>
-      <div class="button-group">
-        <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
-        <button class="btn btn-primary" onclick="nextStep()">Review &rarr;</button>
-      </div>
-    </div>
-
-    <div class="form-section" id="section4">
-      <h2 style="margin-bottom:20px;">Review Entry</h2>
-      <div id="reviewContent" class="review-grid"></div>
-      <div class="button-group">
-        <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
-        <button class="btn btn-primary" onclick="submitData()">Submit Data ✅</button>
-      </div>
-    </div>
-
-  </div>
-</div>
-
 <script>
-  // YOUR N8N URL
-  const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/webhook";
+  // Ensure this URL matches your new n8n workflow
+  const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/001b4e4f-5d0b-4a3a-a24c-2fb495b7af4f";
 
   // STATE
   let currentStep = 1;
@@ -226,7 +9,7 @@
   let currentId = null;
   let formData = {};
 
-  // SCHEMAS: Exact match to your CSV Columns
+  // SCHEMAS (Same as before)
   const schemas = {
     product: {
       basic: [
@@ -286,8 +69,6 @@
     }
   };
 
-  // --- LOGIC ---
-
   function setMode(m, e) {
     mode = m;
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -320,6 +101,7 @@
     renderForms();
   }
 
+  // --- IMPROVED FETCH LOGIC ---
   async function fetchData() {
     const id = document.getElementById('searchId').value.trim();
     const status = document.getElementById('searchStatus');
@@ -334,7 +116,11 @@
       const res = await fetch(url);
       const data = await res.json();
       
+      console.log("📦 Received Data:", data); // Check Console for this!
+
+      // 1. Unwrap the data (Handle array or n8n 'json' wrapper)
       let row = Array.isArray(data) ? data[0] : data;
+      if (row && row.json) row = row.json; // Unwrap n8n structure if present
       
       if (!row || Object.keys(row).length === 0 || row.error) {
         status.innerText = '❌ Not Found';
@@ -342,9 +128,21 @@
         return;
       }
 
+      // 2. NORMALIZE KEYS (Fixes Case Sensitivity)
+      // Converts "Product Name" -> "product_name" to match schema
+      const cleanRow = {};
+      Object.keys(row).forEach(key => {
+        // Remove spaces and make lowercase
+        const cleanKey = key.toLowerCase().trim().replace(/ /g, '_');
+        // Handle exact schema matches
+        cleanRow[cleanKey] = row[key];
+        // Also keep original just in case
+        cleanRow[key] = row[key];
+      });
+
       status.innerText = '✅ Found!';
       status.style.color = '#10b981';
-      formData = row;
+      formData = cleanRow; // Use the normalized data
       currentId = id;
       document.getElementById('btnStep1').disabled = false;
       renderForms();
@@ -361,7 +159,10 @@
     const schema = schemas[selectedType];
     
     const build = (fields) => fields.map(f => {
-      const val = formData[f.key] || '';
+      // Try to find the value using the key, or try "Product Name" style if needed
+      let val = formData[f.key];
+      if (val === undefined || val === null) val = '';
+      
       const isReadonly = mode === 'edit' && f.readonlyInEdit ? 'disabled style="background:var(--bg1);"' : '';
       
       let input = '';
@@ -370,7 +171,7 @@
       } else if(f.type === 'select') {
         input = `<select name="${f.key}" class="form-select" ${isReadonly}>
           <option value="">Select...</option>
-          ${f.options.map(o => `<option value="${o}" ${val===o?'selected':''}>${o}</option>`).join('')}
+          ${f.options.map(o => `<option value="${o}" ${String(val) === String(o) ? 'selected' : ''}>${o}</option>`).join('')}
         </select>`;
       } else {
         input = `<input type="text" name="${f.key}" value="${val}" class="form-input" placeholder="${f.placeholder||''}" ${isReadonly}>`;
@@ -446,7 +247,7 @@
     const payload = {
       action: mode === 'add' ? 'add_item' : 'update_item',
       type: selectedType,
-      id_column: selectedType + '_id', // e.g., product_id
+      id_column: selectedType + '_id',
       id_value: formData[selectedType + '_id'] || currentId,
       data: formData
     };
@@ -472,6 +273,3 @@
     }
   }
 </script>
-
-</body>
-</html>
