@@ -3,67 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KIB KB Editor (Debug Mode)</title>
+  <title>KIB KB Editor (Diagnosis Mode)</title>
   <style>
     :root {
       --bg1: #f8fafc; --bg2: #e2e8f0; --card: #ffffff; --text: #0f172a;
       --muted: #64748b; --border: #cbd5e1; --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
       --brand: #1f7a6b; --brand-light: rgba(31, 122, 107, 0.1); --brand-hover: #16594e;
+      --console-bg: #1e1e1e; --console-text: #00ff00;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', system-ui, sans-serif;
       background: linear-gradient(135deg, var(--bg1), var(--bg2));
       min-height: 100vh; padding: 20px; color: var(--text);
+      display: flex; gap: 20px; /* Layout for Side Panel */
     }
-    .container { max-width: 1000px; margin: 0 auto; }
+    
+    /* MAIN CONTAINER */
+    .main-content { flex: 1; max-width: 1000px; margin: 0 auto; transition: width 0.3s; }
+    
     .header {
       background: rgba(255,255,255,0.95); border-radius: 16px; padding: 24px;
       margin-bottom: 24px; box-shadow: var(--shadow); backdrop-filter: blur(8px);
     }
     .header h1 { font-size: 24px; color: var(--brand); display: flex; align-items: center; gap: 10px; }
+    
     .card {
       background: white; border-radius: 16px; padding: 32px;
       margin-bottom: 24px; box-shadow: var(--shadow);
     }
-    /* Stepper */
-    .step-indicator {
-      display: flex; justify-content: space-between; margin-bottom: 40px; position: relative;
+
+    /* DIAGNOSIS SIDE PANEL */
+    .diagnosis-panel {
+      width: 350px; background: var(--console-bg); color: var(--console-text);
+      border-radius: 16px; padding: 20px; font-family: 'Courier New', monospace;
+      display: none; flex-direction: column; height: calc(100vh - 40px);
+      position: sticky; top: 20px; box-shadow: var(--shadow);
+      overflow: hidden;
     }
-    .step-indicator::before {
-      content: ''; position: absolute; top: 15px; left: 0; right: 0;
-      height: 2px; background: var(--border); z-index: 0;
+    .diagnosis-panel.open { display: flex; }
+    .console-header { 
+      border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px; 
+      display: flex; justify-content: space-between; align-items: center;
     }
-    .step {
-      position: relative; z-index: 1; flex: 1; display: flex;
-      flex-direction: column; align-items: center; gap: 8px; cursor: default;
+    .console-title { font-weight: bold; font-size: 14px; color: #fff; }
+    .console-clear { 
+      cursor: pointer; font-size: 11px; color: #aaa; text-decoration: underline; 
     }
-    .step-circle {
-      width: 32px; height: 32px; border-radius: 50%; background: white; border: 2px solid var(--border);
-      color: var(--muted); display: grid; place-items: center; font-weight: 700; font-size: 14px;
-      transition: all 0.3s ease;
+    .console-log { 
+      flex: 1; overflow-y: auto; font-size: 12px; line-height: 1.4; 
+      word-wrap: break-word; 
     }
-    .step.active .step-circle { 
-      background: var(--brand); border-color: var(--brand); color: white; 
-      box-shadow: 0 0 0 4px var(--brand-light); 
-    }
-    .step.completed .step-circle { 
-      background: #10b981; border-color: #10b981; color: white; 
-    }
+    .log-entry { margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 8px; }
+    .log-time { color: #888; font-size: 10px; margin-bottom: 2px; }
+    .log-label { font-weight: bold; color: #fff; margin-bottom: 4px; }
+    .log-data { color: #a5d6a7; white-space: pre-wrap; }
+    .log-error { color: #ef5350; }
+
+    /* Stepper & Form Styles (Same as before) */
+    .step-indicator { display: flex; justify-content: space-between; margin-bottom: 40px; position: relative; }
+    .step-indicator::before { content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 2px; background: var(--border); z-index: 0; }
+    .step { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .step-circle { width: 32px; height: 32px; border-radius: 50%; background: white; border: 2px solid var(--border); color: var(--muted); display: grid; place-items: center; font-weight: 700; font-size: 14px; transition: all 0.3s; }
+    .step.active .step-circle { background: var(--brand); border-color: var(--brand); color: white; box-shadow: 0 0 0 4px var(--brand-light); }
+    .step.completed .step-circle { background: #10b981; border-color: #10b981; color: white; }
     .step-label { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; background: white; padding: 0 4px; }
     .step.active .step-label { color: var(--brand); }
     
-    /* Forms */
     .form-section { display: none; animation: slideUp 0.4s ease-out; }
     .form-section.active { display: block; }
     @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
     .type-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
-    .type-card {
-      padding: 20px; border: 2px solid var(--border); border-radius: 12px;
-      text-align: center; cursor: pointer; transition: all 0.2s;
-      display: flex; flex-direction: column; align-items: center; gap: 12px;
-    }
+    .type-card { padding: 20px; border: 2px solid var(--border); border-radius: 12px; text-align: center; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 12px; }
     .type-card:hover { border-color: var(--brand); background: var(--brand-light); transform: translateY(-2px); }
     .type-card.selected { border-color: var(--brand); background: var(--brand-light); }
     .type-icon { font-size: 28px; }
@@ -73,39 +85,22 @@
     .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-group.full { grid-column: 1 / -1; }
     .form-label { font-size: 13px; font-weight: 600; color: #334155; }
-    .form-input, .form-select, .form-textarea {
-      padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; width: 100%;
-      font-size: 14px; transition: border-color 0.2s; outline: none;
-    }
+    .form-input, .form-select, .form-textarea { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; width: 100%; font-size: 14px; outline: none; transition: border-color 0.2s; }
     .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-light); }
     .form-textarea { min-height: 80px; resize: vertical; font-family: inherit; }
     
-    .mode-toggle {
-      display: flex; gap: 4px; background: var(--bg2); padding: 4px; border-radius: 8px; 
-      width: fit-content; margin: 0 auto 24px;
-    }
-    .mode-btn {
-      padding: 6px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;
-      background: transparent; color: var(--muted); transition: all 0.2s;
-    }
+    .mode-toggle { display: flex; gap: 4px; background: var(--bg2); padding: 4px; border-radius: 8px; width: fit-content; margin: 0 auto 24px; }
+    .mode-btn { padding: 6px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; background: transparent; color: var(--muted); transition: all 0.2s; }
     .mode-btn.active { background: white; color: var(--brand); shadow: 0 1px 2px rgba(0,0,0,0.1); }
 
-    .search-container {
-      background: var(--brand-light); padding: 20px; border-radius: 12px; margin-top: 20px;
-      display: none; border: 1px solid rgba(31, 122, 107, 0.2);
-    }
+    .search-container { background: var(--brand-light); padding: 20px; border-radius: 12px; margin-top: 20px; display: none; border: 1px solid rgba(31, 122, 107, 0.2); }
     .search-container.show { display: block; }
     .search-row { display: flex; gap: 10px; }
-    
-    .btn {
-      padding: 10px 24px; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;
-      transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;
-    }
+    .btn { padding: 10px 24px; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; }
     .btn-primary { background: var(--brand); color: white; }
     .btn-primary:hover:not(:disabled) { background: var(--brand-hover); }
     .btn-secondary { background: white; border: 1px solid var(--border); color: var(--text); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    
     .button-group { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--bg2); }
 
     /* Review Area */
@@ -115,119 +110,117 @@
     .review-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
     .review-val { font-weight: 500; word-break: break-word; }
 
-    /* DEBUG CONSOLE */
-    #debugConsole {
-      background: #1e293b; color: #34d399; font-family: monospace; padding: 20px;
-      margin-top: 40px; border-radius: 12px; overflow-x: auto;
-      font-size: 12px; line-height: 1.5;
-    }
-
-    @media (max-width: 640px) {
-      .form-grid, .review-grid, .type-selector { grid-template-columns: 1fr; }
-      .step-label { display: none; }
-      .header h1 { font-size: 20px; }
-      .card { padding: 20px; }
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      .diagnosis-panel { width: 100%; height: 300px; display: flex !important; margin-bottom: 20px; order: 2; }
+      .main-content { order: 1; }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="header">
-    <h1>📚 KIB Knowledge Base Editor</h1>
+  <div class="main-content">
+    <div class="header">
+      <h1>📚 KIB Knowledge Base Editor</h1>
+    </div>
+
+    <div class="card">
+      <div class="step-indicator">
+        <div class="step active" data-step="1">
+          <div class="step-circle">1</div>
+          <div class="step-label">Type & Mode</div>
+        </div>
+        <div class="step" data-step="2">
+          <div class="step-circle">2</div>
+          <div class="step-label">Core Info</div>
+        </div>
+        <div class="step" data-step="3">
+          <div class="step-circle">3</div>
+          <div class="step-label">Details</div>
+        </div>
+        <div class="step" data-step="4">
+          <div class="step-circle">4</div>
+          <div class="step-label">Review</div>
+        </div>
+      </div>
+
+      <div class="form-section active" id="section1">
+        <div class="mode-toggle">
+          <button class="mode-btn active" onclick="setMode('add', event)">New Entry</button>
+          <button class="mode-btn" onclick="setMode('edit', event)">Edit Existing</button>
+        </div>
+
+        <div class="type-selector">
+          <div class="type-card" onclick="selectType('product', this)">
+            <div class="type-icon">💳</div>
+            <div class="type-label">Product</div>
+          </div>
+          <div class="type-card" onclick="selectType('procedure', this)">
+            <div class="type-icon">📋</div>
+            <div class="type-label">Procedure</div>
+          </div>
+          <div class="type-card" onclick="selectType('policy', this)">
+            <div class="type-icon">⚖️</div>
+            <div class="type-label">Policy</div>
+          </div>
+        </div>
+
+        <div class="search-container" id="searchBox">
+          <label class="form-label">Search by ID</label>
+          <div class="search-row">
+            <input type="text" id="searchId" class="form-input" placeholder="e.g., PRD-0001">
+            <button class="btn btn-primary" onclick="fetchData()">Search & Diagnose</button>
+          </div>
+          <p id="searchStatus" style="margin-top:8px; font-size:13px; color:var(--muted);"></p>
+        </div>
+
+        <div class="button-group">
+          <button class="btn btn-primary" id="btnStep1" onclick="nextStep()" disabled>Next Step &rarr;</button>
+        </div>
+      </div>
+
+      <div class="form-section" id="section2">
+        <h2>Core Information</h2>
+        <div id="formBasic" class="form-grid" style="margin-top:20px;"></div>
+        <div class="button-group">
+          <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
+          <button class="btn btn-primary" onclick="nextStep()">Next Step &rarr;</button>
+        </div>
+      </div>
+
+      <div class="form-section" id="section3">
+        <h2>Detailed Attributes</h2>
+        <div id="formDetails" class="form-grid" style="margin-top:20px;"></div>
+        <div class="button-group">
+          <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
+          <button class="btn btn-primary" onclick="nextStep()">Review &rarr;</button>
+        </div>
+      </div>
+
+      <div class="form-section" id="section4">
+        <h2 style="margin-bottom:20px;">Review Entry</h2>
+        <div id="reviewContent" class="review-grid"></div>
+        <div class="button-group">
+          <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
+          <button class="btn btn-primary" onclick="submitData()">Submit Data ✅</button>
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <div class="card">
-    <div class="step-indicator">
-      <div class="step active" data-step="1">
-        <div class="step-circle">1</div>
-        <div class="step-label">Type & Mode</div>
-      </div>
-      <div class="step" data-step="2">
-        <div class="step-circle">2</div>
-        <div class="step-label">Core Info</div>
-      </div>
-      <div class="step" data-step="3">
-        <div class="step-circle">3</div>
-        <div class="step-label">Details</div>
-      </div>
-      <div class="step" data-step="4">
-        <div class="step-circle">4</div>
-        <div class="step-label">Review</div>
+  <div class="diagnosis-panel" id="diagnosisPanel">
+    <div class="console-header">
+      <span class="console-title">🖥️ DIAGNOSIS PANEL</span>
+      <span class="console-clear" onclick="clearLog()">Clear</span>
+    </div>
+    <div class="console-log" id="consoleLog">
+      <div class="log-entry">
+        <div class="log-time">System</div>
+        <div class="log-data">Ready. Select 'Edit Existing' and search an ID to begin diagnosis.</div>
       </div>
     </div>
-
-    <div class="form-section active" id="section1">
-      <div class="mode-toggle">
-        <button class="mode-btn active" onclick="setMode('add', event)">New Entry</button>
-        <button class="mode-btn" onclick="setMode('edit', event)">Edit Existing</button>
-      </div>
-
-      <div class="type-selector">
-        <div class="type-card" onclick="selectType('product', this)">
-          <div class="type-icon">💳</div>
-          <div class="type-label">Product</div>
-        </div>
-        <div class="type-card" onclick="selectType('procedure', this)">
-          <div class="type-icon">📋</div>
-          <div class="type-label">Procedure</div>
-        </div>
-        <div class="type-card" onclick="selectType('policy', this)">
-          <div class="type-icon">⚖️</div>
-          <div class="type-label">Policy</div>
-        </div>
-      </div>
-
-      <div class="search-container" id="searchBox">
-        <label class="form-label">Search by ID</label>
-        <div class="search-row">
-          <input type="text" id="searchId" class="form-input" placeholder="e.g., PRD-0001">
-          <button class="btn btn-primary" onclick="fetchData()">Search</button>
-        </div>
-        <p id="searchStatus" style="margin-top:8px; font-size:13px; color:var(--muted);"></p>
-      </div>
-
-      <div class="button-group">
-        <button class="btn btn-primary" id="btnStep1" onclick="nextStep()" disabled>Next Step &rarr;</button>
-      </div>
-    </div>
-
-    <div class="form-section" id="section2">
-      <h2>Core Information</h2>
-      <div id="formBasic" class="form-grid" style="margin-top:20px;"></div>
-      <div class="button-group">
-        <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
-        <button class="btn btn-primary" onclick="nextStep()">Next Step &rarr;</button>
-      </div>
-    </div>
-
-    <div class="form-section" id="section3">
-      <h2>Detailed Attributes</h2>
-      <div id="formDetails" class="form-grid" style="margin-top:20px;"></div>
-      <div class="button-group">
-        <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
-        <button class="btn btn-primary" onclick="nextStep()">Review &rarr;</button>
-      </div>
-    </div>
-
-    <div class="form-section" id="section4">
-      <h2 style="margin-bottom:20px;">Review Entry</h2>
-      <div id="reviewContent" class="review-grid"></div>
-      <div class="button-group">
-        <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
-        <button class="btn btn-primary" onclick="submitData()">Submit Data ✅</button>
-      </div>
-    </div>
-
   </div>
-
-  <div id="debugConsole">
-    <h3>🐛 Debug Console</h3>
-    <p style="color:#94a3b8; margin-bottom:10px;">Check here if data is not loading. It shows exactly what Google Sheets sent.</p>
-    <div id="debugOutput">Waiting for action...</div>
-  </div>
-
-</div>
 
 <script>
   // YOUR N8N URL
@@ -240,11 +233,11 @@
   let currentId = null;
   let formData = {};
 
-  // SCHEMAS
+  // SCHEMAS (Must match Google Sheet Columns)
   const schemas = {
     product: {
       basic: [
-        { key: 'product_id', label: 'Product ID', type: 'text', placeholder: 'Auto (e.g. PRD-0001)', readonlyInEdit: true },
+        { key: 'product_id', label: 'Product ID', type: 'text', placeholder: 'Auto', readonlyInEdit: true },
         { key: 'product_name', label: 'Product Name', type: 'text' },
         { key: 'family', label: 'Family', type: 'select', options: ['Cards', 'Accounts', 'Deposits', 'Digital', 'Financing', 'Loans', 'Treasury'] },
         { key: 'tier', label: 'Tier', type: 'select', options: ['Basic', 'Standard', 'Plus', 'Premium', 'Gold', 'Platinum'] },
@@ -263,7 +256,7 @@
     },
     procedure: {
       basic: [
-        { key: 'procedure_id', label: 'Procedure ID', type: 'text', placeholder: 'Auto (e.g. PROC-0001)', readonlyInEdit: true },
+        { key: 'procedure_id', label: 'Procedure ID', type: 'text', placeholder: 'Auto', readonlyInEdit: true },
         { key: 'procedure_name', label: 'Procedure Name', type: 'text', full: true },
         { key: 'related_area', label: 'Related Area', type: 'text' },
         { key: 'sla', label: 'SLA', type: 'text' },
@@ -272,7 +265,7 @@
       ],
       details: [
         { key: 'when_to_use', label: 'When to Use', type: 'textarea', full: true },
-        { key: 'step_by_step', label: 'Steps (HTML/Text)', type: 'textarea', full: true },
+        { key: 'step_by_step', label: 'Steps', type: 'textarea', full: true },
         { key: 'systems_used', label: 'Systems Used', type: 'text' },
         { key: 'common_errors', label: 'Common Errors', type: 'text', full: true },
         { key: 'keywords', label: 'Keywords', type: 'text', full: true },
@@ -281,7 +274,7 @@
     },
     policy: {
       basic: [
-        { key: 'policy_id', label: 'Policy ID', type: 'text', placeholder: 'Auto (e.g. POL-0001)', readonlyInEdit: true },
+        { key: 'policy_id', label: 'Policy ID', type: 'text', placeholder: 'Auto', readonlyInEdit: true },
         { key: 'policy_name', label: 'Policy Name', type: 'text' },
         { key: 'scope', label: 'Scope', type: 'text' },
         { key: 'status', label: 'Status', type: 'select', options: ['draft', 'active', 'under_review'] },
@@ -300,22 +293,44 @@
     }
   };
 
-  function logDebug(msg, data) {
-    const el = document.getElementById('debugOutput');
+  // --- DIAGNOSIS LOGGER ---
+  function log(label, data, isError = false) {
+    const logEl = document.getElementById('consoleLog');
     const time = new Date().toLocaleTimeString();
-    let dataStr = '';
-    try {
-      if(typeof data === 'object') dataStr = JSON.stringify(data, null, 2);
-      else dataStr = String(data);
-    } catch(e) { dataStr = "Error parsing data"; }
+    let content = '';
     
-    el.innerHTML = `<div><span style="color:#94a3b8">[${time}]</span> ${msg}</div><pre>${dataStr}</pre>`;
+    if (typeof data === 'object') {
+      try { content = JSON.stringify(data, null, 2); } 
+      catch(e) { content = String(data); }
+    } else {
+      content = String(data);
+    }
+
+    const html = `
+      <div class="log-entry">
+        <div class="log-time">${time}</div>
+        <div class="log-label ${isError ? 'log-error' : ''}">${label}</div>
+        <div class="log-data ${isError ? 'log-error' : ''}">${content}</div>
+      </div>
+    `;
+    logEl.insertAdjacentHTML('beforeend', html);
+    logEl.scrollTop = logEl.scrollHeight;
+    
+    // Auto-open panel
+    document.getElementById('diagnosisPanel').classList.add('open');
   }
+
+  function clearLog() {
+    document.getElementById('consoleLog').innerHTML = '';
+  }
+
+  // --- UI LOGIC ---
 
   function setMode(m, e) {
     mode = m;
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
     if(e) e.target.classList.add('active');
+    
     const searchBox = document.getElementById('searchBox');
     if (mode === 'edit') {
       searchBox.classList.add('show');
@@ -332,6 +347,7 @@
     selectedType = t;
     document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
     el.classList.add('selected');
+    
     formData = {};
     if (mode === 'add') {
       document.getElementById('btnStep1').disabled = false;
@@ -342,41 +358,196 @@
     renderForms();
   }
 
+  // --- FETCH & SUBMIT LOGIC ---
+
   async function fetchData() {
+    clearLog();
     const id = document.getElementById('searchId').value.trim();
     const status = document.getElementById('searchStatus');
-    if(!selectedType) return alert('Select a type first');
-    if(!id) return alert('Enter an ID');
+    
+    if(!selectedType) { alert('Select a type first'); return; }
+    if(!id) { alert('Enter an ID'); return; }
 
     status.innerText = 'Searching...';
     status.style.color = 'var(--muted)';
-    logDebug("Sending Request to n8n...", { id, type: selectedType });
+    
+    log("🚀 Step 1: Sending Request", { url: WEBHOOK_URL, action: 'fetch', type: selectedType, id: id });
 
     try {
       const url = `${WEBHOOK_URL}?action=fetch&type=${selectedType}&id=${encodeURIComponent(id)}`;
       const res = await fetch(url);
-      const data = await res.json();
       
-      logDebug("Response Received:", data);
+      log("📡 Step 2: HTTP Status", res.status);
+      
+      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
 
+      const data = await res.json();
+      log("📦 Step 3: Raw Data Received", data);
+
+      // Unwrap logic
       let row = Array.isArray(data) ? data[0] : data;
       if (row && row.json) row = row.json;
-      
+
       if (!row || Object.keys(row).length === 0 || row.error) {
         status.innerText = '❌ Not Found';
         status.style.color = '#ef4444';
+        log("❌ Error: Data not found or empty", row, true);
         return;
       }
 
-      // Normalization Logic
+      // Normalization
       const cleanRow = {};
       Object.keys(row).forEach(key => {
         const cleanKey = key.toLowerCase().trim().replace(/ /g, '_');
         cleanRow[cleanKey] = row[key];
-        cleanRow[key] = row[key]; // Keep original too
+        cleanRow[key] = row[key]; // Keep original
       });
-      logDebug("Processed Data (Cleaned Keys):", cleanRow);
-
+      
+      log("✨ Step 4: Normalized Keys", Object.keys(cleanRow));
+      
       status.innerText = '✅ Found!';
       status.style.color = '#10b981';
-      formData
+      formData = cleanRow;
+      currentId = id;
+      document.getElementById('btnStep1').disabled = false;
+      renderForms();
+      
+    } catch(e) {
+      status.innerText = '❌ Network Error';
+      status.style.color = '#ef4444';
+      log("☠️ CRITICAL ERROR", e.message, true);
+      console.error(e);
+    }
+  }
+
+  function renderForms() {
+    if(!selectedType) return;
+    const schema = schemas[selectedType];
+    
+    const build = (fields) => fields.map(f => {
+      let val = formData[f.key];
+      if (val === undefined || val === null) val = '';
+      
+      const isReadonly = mode === 'edit' && f.readonlyInEdit ? 'disabled style="background:var(--bg1);"' : '';
+      
+      let input = '';
+      if(f.type === 'textarea') {
+        input = `<textarea name="${f.key}" class="form-textarea" ${isReadonly}>${val}</textarea>`;
+      } else if(f.type === 'select') {
+        input = `<select name="${f.key}" class="form-select" ${isReadonly}>
+          <option value="">Select...</option>
+          ${f.options.map(o => `<option value="${o}" ${String(val) === String(o) ? 'selected' : ''}>${o}</option>`).join('')}
+        </select>`;
+      } else {
+        input = `<input type="text" name="${f.key}" value="${val}" class="form-input" placeholder="${f.placeholder||''}" ${isReadonly}>`;
+      }
+      
+      return `<div class="form-group ${f.full?'full':''}">
+        <label class="form-label">${f.label}</label>
+        ${input}
+      </div>`;
+    }).join('');
+
+    document.getElementById('formBasic').innerHTML = build(schema.basic);
+    document.getElementById('formDetails').innerHTML = build(schema.details);
+  }
+
+  function harvest() {
+    const inputs = document.querySelectorAll(`#section${currentStep} input, #section${currentStep} select, #section${currentStep} textarea`);
+    inputs.forEach(i => formData[i.name] = i.value);
+  }
+
+  function nextStep() {
+    harvest();
+    if(currentStep < 4) {
+      currentStep++;
+      updateSteps();
+    }
+    if(currentStep === 4) renderReview();
+  }
+
+  function prevStep() {
+    harvest();
+    if(currentStep > 1) {
+      currentStep--;
+      updateSteps();
+    }
+  }
+
+  function updateSteps() {
+    document.querySelectorAll('.step').forEach((s, i) => {
+      s.classList.remove('active', 'completed');
+      if(i + 1 < currentStep) s.classList.add('completed');
+      if(i + 1 === currentStep) s.classList.add('active');
+    });
+    document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+    document.getElementById(`section${currentStep}`).classList.add('active');
+  }
+
+  function renderReview() {
+    let html = '';
+    const allFields = [...schemas[selectedType].basic, ...schemas[selectedType].details];
+    
+    allFields.forEach(f => {
+      if(formData[f.key]) {
+        html += `<div class="review-item ${f.full?'full':''}">
+          <div class="review-label">${f.label}</div>
+          <div class="review-val">${formData[f.key]}</div>
+        </div>`;
+      }
+    });
+    document.getElementById('reviewContent').innerHTML = html;
+  }
+
+  async function submitData() {
+    clearLog();
+    const btn = document.querySelector('#section4 .btn-primary');
+    const oldText = btn.innerText;
+    btn.innerText = 'Submitting...';
+    btn.disabled = true;
+
+    // Add Metadata
+    formData.last_updated = new Date().toISOString().split('T')[0];
+    if(selectedType === 'policy') formData.last_reviewed = formData.last_updated;
+
+    const payload = {
+      action: mode === 'add' ? 'add_item' : 'update_item',
+      type: selectedType,
+      id_column: selectedType + '_id',
+      id_value: formData[selectedType + '_id'] || currentId,
+      data: formData
+    };
+
+    log("🚀 Submitting Data to n8n...", payload);
+
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      
+      const responseText = await res.text();
+      let responseJson = {};
+      try { responseJson = JSON.parse(responseText); } catch(e) { responseJson = responseText; }
+
+      log("📡 Server Response", responseJson);
+
+      if(res.ok) {
+        alert('Success! Data saved.');
+        location.reload();
+      } else {
+        alert('Error saving data.');
+      }
+    } catch(e) {
+      alert('Network Error: ' + e.message);
+      log("☠️ Submit Error", e.message, true);
+    } finally {
+      btn.innerText = oldText;
+      btn.disabled = false;
+    }
+  }
+</script>
+
+</body>
+</html>
