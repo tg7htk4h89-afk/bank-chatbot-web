@@ -3,481 +3,475 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KIB Knowledge Base Manager</title>
+  <title>KIB Knowledge Base Editor</title>
   <style>
     :root {
-      --bg1: #e8f1f6; --bg2: #eef2ff; --card: #ffffff; --text: #0f172a;
-      --muted: #64748b; --border: #e2e8f0; --shadow: 0 14px 40px rgba(2, 6, 23, .10);
-      --brand: #1f7a6b; --brand-light: rgba(31, 122, 107, 0.1);
+      --bg1: #f8fafc; --bg2: #e2e8f0; --card: #ffffff; --text: #0f172a;
+      --muted: #64748b; --border: #cbd5e1; --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --brand: #1f7a6b; --brand-light: rgba(31, 122, 107, 0.1); --brand-hover: #16594e;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      background: linear-gradient(180deg, var(--bg1), var(--bg2));
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
       min-height: 100vh; padding: 20px; color: var(--text);
     }
     .container { max-width: 1000px; margin: 0 auto; }
     .header {
-      background: rgba(255,255,255,.9); border-radius: 20px; padding: 24px;
+      background: rgba(255,255,255,0.95); border-radius: 16px; padding: 24px;
+      margin-bottom: 24px; box-shadow: var(--shadow); backdrop-filter: blur(8px);
+    }
+    .header h1 { font-size: 24px; color: var(--brand); display: flex; align-items: center; gap: 10px; }
+    .card {
+      background: white; border-radius: 16px; padding: 32px;
       margin-bottom: 24px; box-shadow: var(--shadow);
     }
-    .header h1 { font-size: 24px; }
-    .card {
-      background: white; border-radius: 20px; padding: 30px;
-      margin-bottom: 24px; box-shadow: var(--shadow); min-height: 400px;
-    }
+    /* Stepper */
     .step-indicator {
-      display: flex; justify-content: space-between; margin-bottom: 30px; position: relative;
+      display: flex; justify-content: space-between; margin-bottom: 40px; position: relative;
     }
     .step-indicator::before {
-      content: ''; position: absolute; top: 20px; left: 0; right: 0;
+      content: ''; position: absolute; top: 15px; left: 0; right: 0;
       height: 2px; background: var(--border); z-index: 0;
     }
     .step {
       position: relative; z-index: 1; flex: 1; display: flex;
-      flex-direction: column; align-items: center; gap: 8px;
+      flex-direction: column; align-items: center; gap: 8px; cursor: default;
     }
     .step-circle {
-      width: 40px; height: 40px; border-radius: 50%; background: var(--border);
-      color: var(--muted); display: grid; place-items: center; font-weight: 700;
-      transition: all 0.3s;
+      width: 32px; height: 32px; border-radius: 50%; background: white; border: 2px solid var(--border);
+      color: var(--muted); display: grid; place-items: center; font-weight: 700; font-size: 14px;
+      transition: all 0.3s ease;
     }
-    .step.active .step-circle { background: var(--brand); color: white; box-shadow: 0 0 0 4px var(--brand-light); }
-    .step.completed .step-circle { background: #22c55e; color: white; }
-    .step-label { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; }
+    .step.active .step-circle { 
+      background: var(--brand); border-color: var(--brand); color: white; 
+      box-shadow: 0 0 0 4px var(--brand-light); 
+    }
+    .step.completed .step-circle { 
+      background: #10b981; border-color: #10b981; color: white; 
+    }
+    .step-label { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; background: white; padding: 0 4px; }
     .step.active .step-label { color: var(--brand); }
-    .form-section { display: none; animation: fadeIn 0.3s; }
+    
+    /* Forms */
+    .form-section { display: none; animation: slideUp 0.4s ease-out; }
     .form-section.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
     .type-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
     .type-card {
-      padding: 24px; border: 2px solid var(--border); border-radius: 16px;
-      text-align: center; cursor: pointer; transition: all 0.3s;
-      min-height: 100px; display: flex; flex-direction: column;
-      justify-content: center; align-items: center; gap: 10px;
+      padding: 20px; border: 2px solid var(--border); border-radius: 12px;
+      text-align: center; cursor: pointer; transition: all 0.2s;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
     }
-    .type-card:hover { transform: translateY(-4px); border-color: var(--brand); }
+    .type-card:hover { border-color: var(--brand); background: var(--brand-light); transform: translateY(-2px); }
     .type-card.selected { border-color: var(--brand); background: var(--brand-light); }
-    .type-icon { font-size: 32px; }
-    .type-card-label { font-size: 14px; font-weight: 600; }
+    .type-icon { font-size: 28px; }
+    .type-label { font-weight: 600; font-size: 14px; }
+
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-label { font-size: 13px; font-weight: 600; color: #334155; }
+    .form-input, .form-select, .form-textarea {
+      padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; width: 100%;
+      font-size: 14px; transition: border-color 0.2s; outline: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-light); }
+    .form-textarea { min-height: 80px; resize: vertical; font-family: inherit; }
+    
     .mode-toggle {
-      display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;
-      background: var(--bg1); padding: 5px; border-radius: 10px; width: fit-content; margin-left: auto; margin-right: auto;
+      display: flex; gap: 4px; background: var(--bg2); padding: 4px; border-radius: 8px; 
+      width: fit-content; margin: 0 auto 24px;
     }
     .mode-btn {
-      padding: 8px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;
-      background: transparent; color: var(--muted); white-space: nowrap;
+      padding: 6px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;
+      background: transparent; color: var(--muted); transition: all 0.2s;
     }
-    .mode-btn.active { background: white; color: var(--brand); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .mode-btn.active { background: white; color: var(--brand); shadow: 0 1px 2px rgba(0,0,0,0.1); }
+
     .search-container {
-      background: var(--brand-light); padding: 20px; border-radius: 12px;
-      margin-top: 20px; display: none;
+      background: var(--brand-light); padding: 20px; border-radius: 12px; margin-top: 20px;
+      display: none; border: 1px solid rgba(31, 122, 107, 0.2);
     }
     .search-container.show { display: block; }
-    .search-input-group {
-      display: flex; gap: 10px; flex-wrap: wrap;
-    }
-    .search-input-group input {
-      flex: 1; min-width: 200px;
-    }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-group.full { grid-column: 1 / -1; }
-    .form-label { font-size: 14px; font-weight: 600; }
-    .form-input, .form-select, .form-textarea {
-      padding: 12px; border: 1px solid var(--border); border-radius: 10px; width: 100%;
-      font-size: 16px; /* Prevents zoom on iOS */
-    }
-    .form-textarea { min-height: 100px; resize: vertical; font-family: inherit; }
-    .button-group { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; flex-wrap: wrap; }
+    .search-row { display: flex; gap: 10px; }
+    
     .btn {
-      padding: 12px 24px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;
-      transition: all 0.2s; min-height: 44px; /* Touch-friendly */
+      padding: 10px 24px; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;
+      transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;
     }
     .btn-primary { background: var(--brand); color: white; }
-    .btn-secondary { background: var(--border); color: var(--text); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .review-item { margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-    .review-label { font-size: 12px; color: var(--muted); text-transform: uppercase; }
-    .review-value { font-weight: 500; word-wrap: break-word; }
+    .btn-primary:hover:not(:disabled) { background: var(--brand-hover); }
+    .btn-secondary { background: white; border: 1px solid var(--border); color: var(--text); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    
+    .button-group { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--bg2); }
 
-    /* Mobile Styles */
-    @media (max-width: 768px) {
-      body { padding: 12px; }
-      .header { padding: 16px; border-radius: 12px; margin-bottom: 16px; }
-      .header h1 { font-size: 20px; text-align: center; }
-      .card { padding: 20px; border-radius: 12px; }
-      .step-indicator { margin-bottom: 20px; }
-      .step-circle { width: 32px; height: 32px; font-size: 14px; }
-      .step-indicator::before { top: 16px; }
-      .step-label { font-size: 10px; max-width: 70px; }
-      .type-selector { grid-template-columns: 1fr; gap: 12px; }
-      .type-card { padding: 20px; flex-direction: row; justify-content: flex-start; text-align: left; min-height: auto; }
-      .type-icon { font-size: 28px; }
-      .type-card-label { font-size: 16px; }
-      .mode-toggle { width: 100%; flex-direction: column; padding: 8px; }
-      .mode-btn { width: 100%; padding: 12px; }
-      .form-grid { grid-template-columns: 1fr; gap: 12px; }
-      .form-group.full { grid-column: 1; }
-      .search-input-group { flex-direction: column; }
-      .search-input-group input { min-width: 100%; }
-      .search-input-group .btn { width: 100%; }
-      .button-group { flex-direction: column-reverse; gap: 8px; }
-      .button-group .btn { width: 100%; }
-      .form-section h2 { font-size: 20px; margin-bottom: 16px; }
-      .search-container { padding: 16px; }
+    /* Review Area */
+    .review-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; font-size: 14px; }
+    .review-item { background: var(--bg1); padding: 12px; border-radius: 8px; }
+    .review-item.full { grid-column: 1 / -1; }
+    .review-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .review-val { font-weight: 500; word-break: break-word; }
+
+    @media (max-width: 640px) {
+      .form-grid, .review-grid, .type-selector { grid-template-columns: 1fr; }
+      .step-label { display: none; }
+      .header h1 { font-size: 20px; }
+      .card { padding: 20px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>📝 KIB Knowledge Base Manager</h1>
-    </div>
-    <div class="card">
-      <div class="step-indicator">
-        <div class="step active" data-step="1">
-          <div class="step-circle">1</div>
-          <div class="step-label">Select Type</div>
-        </div>
-        <div class="step" data-step="2">
-          <div class="step-circle">2</div>
-          <div class="step-label">Basic Info</div>
-        </div>
-        <div class="step" data-step="3">
-          <div class="step-circle">3</div>
-          <div class="step-label">Details</div>
-        </div>
-        <div class="step" data-step="4">
-          <div class="step-circle">4</div>
-          <div class="step-label">Review</div>
-        </div>
-      </div>
 
-      <div class="form-section active" id="section1">
-        <h2 style="text-align:center; margin-bottom:20px;">What are you working on?</h2>
-        <div class="mode-toggle">
-          <button class="mode-btn active" onclick="setMode('add', event)">Add New Item</button>
-          <button class="mode-btn" onclick="setMode('edit', event)">Edit Existing</button>
-        </div>
-        <div class="type-selector">
-          <div class="type-card" onclick="selectType('product', this)">
-            <div class="type-icon">🏦</div>
-            <div class="type-card-label">Product</div>
-          </div>
-          <div class="type-card" onclick="selectType('procedure', this)">
-            <div class="type-icon">📋</div>
-            <div class="type-card-label">Procedure</div>
-          </div>
-          <div class="type-card" onclick="selectType('policy', this)">
-            <div class="type-icon">📜</div>
-            <div class="type-card-label">Policy</div>
-          </div>
-        </div>
-
-        <div class="search-container" id="searchBox">
-          <label class="form-label">Search by ID to Edit</label>
-          <div class="search-input-group">
-            <input type="text" id="searchId" class="form-input" placeholder="e.g. PRD-001 or POL-102">
-            <button class="btn btn-primary" onclick="fetchData()">Search</button>
-          </div>
-          <p id="searchStatus" style="margin-top:10px; font-size:13px; color:var(--muted);"></p>
-        </div>
-
-        <div class="button-group">
-          <button class="btn btn-primary" id="btnStep1" onclick="nextStep()" disabled>Next Step →</button>
-        </div>
-      </div>
-
-      <div class="form-section" id="section2">
-        <h2>Basic Information</h2>
-        <div id="formBasic" class="form-grid"></div>
-        <div class="button-group">
-          <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-          <button class="btn btn-primary" onclick="nextStep()">Next Step →</button>
-        </div>
-      </div>
-
-      <div class="form-section" id="section3">
-        <h2>Detailed Information</h2>
-        <div id="formDetails" class="form-grid"></div>
-        <div class="button-group">
-          <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-          <button class="btn btn-primary" onclick="nextStep()">Review →</button>
-        </div>
-      </div>
-
-      <div class="form-section" id="section4">
-        <h2>Review & Submit</h2>
-        <div id="reviewContent" style="background:var(--bg1); padding:20px; border-radius:12px;"></div>
-        <div class="button-group">
-          <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
-          <button class="btn btn-primary" onclick="submitData()">Submit Data ✓</button>
-        </div>
-      </div>
-    </div>
+<div class="container">
+  <div class="header">
+    <h1>📚 KIB Knowledge Base Editor</h1>
   </div>
 
-  <script>
-    // CORRECTED WEBHOOK URL
-    const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/001b4e4f-5d0b-4a3a-a24c-2fb495b7af4f";
+  <div class="card">
+    <div class="step-indicator">
+      <div class="step active" data-step="1">
+        <div class="step-circle">1</div>
+        <div class="step-label">Type & Mode</div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-circle">2</div>
+        <div class="step-label">Core Info</div>
+      </div>
+      <div class="step" data-step="3">
+        <div class="step-circle">3</div>
+        <div class="step-label">Details</div>
+      </div>
+      <div class="step" data-step="4">
+        <div class="step-circle">4</div>
+        <div class="step-label">Review</div>
+      </div>
+    </div>
 
-    let currentStep = 1, mode = 'add', selectedType = null, currentId = null, formData = {};
+    <div class="form-section active" id="section1">
+      <div class="mode-toggle">
+        <button class="mode-btn active" onclick="setMode('add', event)">New Entry</button>
+        <button class="mode-btn" onclick="setMode('edit', event)">Edit Existing</button>
+      </div>
 
-    // SCHEMA MUST MATCH GOOGLE SHEET HEADERS EXACTLY
-    const schemas = {
-      product: {
-        basic: [
-          { key: 'product_id', label: 'Product ID (Unique)', type: 'text', placeholder: 'Auto-generated if empty' },
-          { key: 'product_name', label: 'Product Name', type: 'text' },
-          { key: 'family', label: 'Family', type: 'select', options: ['Cards', 'Accounts', 'Deposits', 'Digital', 'Financing', 'Loans'] },
-          { key: 'tier', label: 'Tier', type: 'select', options: ['Basic', 'Standard', 'Plus', 'Premium', 'Gold', 'Platinum'] },
-          { key: 'status', label: 'Status', type: 'select', options: ['draft', 'active', 'archived'] }
-        ],
-        details: [
-          { key: 'description', label: 'Description', type: 'textarea', full: true },
-          { key: 'features', label: 'Features (Bulleted)', type: 'textarea', full: true },
-          { key: 'eligibility', label: 'Eligibility Criteria', type: 'textarea', full: true },
-          { key: 'fees', label: 'Fees / Charges', type: 'text' },
-          { key: 'channels', label: 'Available Channels', type: 'text' },
-          { key: 'keywords', label: 'Search Keywords', type: 'text', full: true }
-        ]
-      },
-      procedure: {
-        basic: [
-          { key: 'procedure_id', label: 'Procedure ID', type: 'text' },
-          { key: 'procedure_name', label: 'Procedure Name', type: 'text', full: true },
-          { key: 'related_area', label: 'Related Area / Dept', type: 'text' },
-          { key: 'sla', label: 'Service Level Agreement (SLA)', type: 'text' }
-        ],
-        details: [
-          { key: 'step_by_step', label: 'Steps (HTML or Text)', type: 'textarea', full: true },
-          { key: 'when_to_use', label: 'When to Use', type: 'textarea', full: true },
-          { key: 'systems_used', label: 'Systems Involved', type: 'text', full: true },
-          { key: 'keywords', label: 'Keywords', type: 'text', full: true }
-        ]
-      },
-      policy: {
-        basic: [
-          { key: 'policy_id', label: 'Policy ID', type: 'text' },
-          { key: 'policy_name', label: 'Policy Name', type: 'text', full: true },
-          { key: 'scope', label: 'Scope (Who/What)', type: 'text' },
-          { key: 'status', label: 'Status', type: 'select', options: ['draft', 'active', 'under_review'] }
-        ],
-        details: [
-          { key: 'summary', label: 'Executive Summary', type: 'textarea', full: true },
-          { key: 'do', label: 'Do (Allowed)', type: 'textarea', full: true },
-          { key: 'dont', label: "Don't (Prohibited)", type: 'textarea', full: true },
-          { key: 'keywords', label: 'Keywords', type: 'text', full: true }
-        ]
+      <div class="type-selector">
+        <div class="type-card" onclick="selectType('product', this)">
+          <div class="type-icon">💳</div>
+          <div class="type-label">Product</div>
+        </div>
+        <div class="type-card" onclick="selectType('procedure', this)">
+          <div class="type-icon">📋</div>
+          <div class="type-label">Procedure</div>
+        </div>
+        <div class="type-card" onclick="selectType('policy', this)">
+          <div class="type-icon">⚖️</div>
+          <div class="type-label">Policy</div>
+        </div>
+      </div>
+
+      <div class="search-container" id="searchBox">
+        <label class="form-label">Search by ID</label>
+        <div class="search-row">
+          <input type="text" id="searchId" class="form-input" placeholder="e.g., PRD-0001">
+          <button class="btn btn-primary" onclick="fetchData()">Search</button>
+        </div>
+        <p id="searchStatus" style="margin-top:8px; font-size:13px; color:var(--muted);"></p>
+      </div>
+
+      <div class="button-group">
+        <button class="btn btn-primary" id="btnStep1" onclick="nextStep()" disabled>Next Step &rarr;</button>
+      </div>
+    </div>
+
+    <div class="form-section" id="section2">
+      <h2>Core Information</h2>
+      <div id="formBasic" class="form-grid" style="margin-top:20px;"></div>
+      <div class="button-group">
+        <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
+        <button class="btn btn-primary" onclick="nextStep()">Next Step &rarr;</button>
+      </div>
+    </div>
+
+    <div class="form-section" id="section3">
+      <h2>Detailed Attributes</h2>
+      <div id="formDetails" class="form-grid" style="margin-top:20px;"></div>
+      <div class="button-group">
+        <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
+        <button class="btn btn-primary" onclick="nextStep()">Review &rarr;</button>
+      </div>
+    </div>
+
+    <div class="form-section" id="section4">
+      <h2 style="margin-bottom:20px;">Review Entry</h2>
+      <div id="reviewContent" class="review-grid"></div>
+      <div class="button-group">
+        <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
+        <button class="btn btn-primary" onclick="submitData()">Submit Data ✅</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // YOUR N8N URL
+  const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/001b4e4f-5d0b-4a3a-a24c-2fb495b7af4f";
+
+  // STATE
+  let currentStep = 1;
+  let mode = 'add';
+  let selectedType = null;
+  let currentId = null;
+  let formData = {};
+
+  // SCHEMAS: Exact match to your CSV Columns
+  const schemas = {
+    product: {
+      basic: [
+        { key: 'product_id', label: 'Product ID', type: 'text', placeholder: 'Auto (e.g. PRD-0001)', readonlyInEdit: true },
+        { key: 'product_name', label: 'Product Name', type: 'text' },
+        { key: 'family', label: 'Family', type: 'select', options: ['Cards', 'Accounts', 'Deposits', 'Digital', 'Financing', 'Loans', 'Treasury'] },
+        { key: 'tier', label: 'Tier', type: 'select', options: ['Basic', 'Standard', 'Plus', 'Premium', 'Gold', 'Platinum'] },
+        { key: 'status', label: 'Status', type: 'select', options: ['draft', 'active', 'archived'] },
+        { key: 'owner', label: 'Owner (Dept)', type: 'text' }
+      ],
+      details: [
+        { key: 'description', label: 'Description', type: 'textarea', full: true },
+        { key: 'features', label: 'Features', type: 'textarea', full: true },
+        { key: 'eligibility', label: 'Eligibility', type: 'textarea', full: true },
+        { key: 'fees', label: 'Fees', type: 'text' },
+        { key: 'channels', label: 'Channels', type: 'text' },
+        { key: 'keywords', label: 'Keywords', type: 'text', full: true },
+        { key: 'sample_questions', label: 'Sample Questions', type: 'textarea', full: true }
+      ]
+    },
+    procedure: {
+      basic: [
+        { key: 'procedure_id', label: 'Procedure ID', type: 'text', placeholder: 'Auto (e.g. PROC-0001)', readonlyInEdit: true },
+        { key: 'procedure_name', label: 'Procedure Name', type: 'text', full: true },
+        { key: 'related_area', label: 'Related Area', type: 'text' },
+        { key: 'sla', label: 'SLA', type: 'text' },
+        { key: 'risk_level', label: 'Risk Level', type: 'select', options: ['low', 'medium', 'high'] },
+        { key: 'owner', label: 'Owner', type: 'text' }
+      ],
+      details: [
+        { key: 'when_to_use', label: 'When to Use', type: 'textarea', full: true },
+        { key: 'step_by_step', label: 'Steps (HTML/Text)', type: 'textarea', full: true },
+        { key: 'systems_used', label: 'Systems Used', type: 'text' },
+        { key: 'common_errors', label: 'Common Errors', type: 'text', full: true },
+        { key: 'keywords', label: 'Keywords', type: 'text', full: true },
+        { key: 'sample_questions', label: 'Sample Questions', type: 'textarea', full: true }
+      ]
+    },
+    policy: {
+      basic: [
+        { key: 'policy_id', label: 'Policy ID', type: 'text', placeholder: 'Auto (e.g. POL-0001)', readonlyInEdit: true },
+        { key: 'policy_name', label: 'Policy Name', type: 'text' },
+        { key: 'scope', label: 'Scope', type: 'text' },
+        { key: 'status', label: 'Status', type: 'select', options: ['draft', 'active', 'under_review'] },
+        { key: 'review_cycle', label: 'Review Cycle', type: 'select', options: ['annual', 'semi-annual', 'quarterly'] },
+        { key: 'owner', label: 'Owner', type: 'text' }
+      ],
+      details: [
+        { key: 'summary', label: 'Summary', type: 'textarea', full: true },
+        { key: 'do', label: 'Do (Allowed)', type: 'textarea', full: true },
+        { key: 'dont', label: 'Don\'t (Prohibited)', type: 'textarea', full: true },
+        { key: 'applicable_to', label: 'Applicable To', type: 'text' },
+        { key: 'escalation', label: 'Escalation Point', type: 'text' },
+        { key: 'keywords', label: 'Keywords', type: 'text', full: true },
+        { key: 'sample_questions', label: 'Sample Questions', type: 'textarea', full: true }
+      ]
+    }
+  };
+
+  // --- LOGIC ---
+
+  function setMode(m, e) {
+    mode = m;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    if(e) e.target.classList.add('active');
+    
+    const searchBox = document.getElementById('searchBox');
+    if (mode === 'edit') {
+      searchBox.classList.add('show');
+      document.getElementById('btnStep1').disabled = true;
+    } else {
+      searchBox.classList.remove('show');
+      formData = {};
+      if(selectedType) document.getElementById('btnStep1').disabled = false;
+    }
+    renderForms();
+  }
+
+  function selectType(t, el) {
+    selectedType = t;
+    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    
+    formData = {};
+    if (mode === 'add') {
+      document.getElementById('btnStep1').disabled = false;
+    } else {
+      document.getElementById('btnStep1').disabled = true;
+      document.getElementById('searchStatus').innerText = '';
+    }
+    renderForms();
+  }
+
+  async function fetchData() {
+    const id = document.getElementById('searchId').value.trim();
+    const status = document.getElementById('searchStatus');
+    if(!selectedType) return alert('Select a type first');
+    if(!id) return alert('Enter an ID');
+
+    status.innerText = 'Searching...';
+    status.style.color = 'var(--muted)';
+
+    try {
+      const url = `${WEBHOOK_URL}?action=fetch&type=${selectedType}&id=${encodeURIComponent(id)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      
+      let row = Array.isArray(data) ? data[0] : data;
+      
+      if (!row || Object.keys(row).length === 0 || row.error) {
+        status.innerText = '❌ Not Found';
+        status.style.color = '#ef4444';
+        return;
       }
+
+      status.innerText = '✅ Found!';
+      status.style.color = '#10b981';
+      formData = row;
+      currentId = id;
+      document.getElementById('btnStep1').disabled = false;
+      renderForms();
+      
+    } catch(e) {
+      status.innerText = '❌ Network Error';
+      status.style.color = '#ef4444';
+      console.error(e);
+    }
+  }
+
+  function renderForms() {
+    if(!selectedType) return;
+    const schema = schemas[selectedType];
+    
+    const build = (fields) => fields.map(f => {
+      const val = formData[f.key] || '';
+      const isReadonly = mode === 'edit' && f.readonlyInEdit ? 'disabled style="background:var(--bg1);"' : '';
+      
+      let input = '';
+      if(f.type === 'textarea') {
+        input = `<textarea name="${f.key}" class="form-textarea" ${isReadonly}>${val}</textarea>`;
+      } else if(f.type === 'select') {
+        input = `<select name="${f.key}" class="form-select" ${isReadonly}>
+          <option value="">Select...</option>
+          ${f.options.map(o => `<option value="${o}" ${val===o?'selected':''}>${o}</option>`).join('')}
+        </select>`;
+      } else {
+        input = `<input type="text" name="${f.key}" value="${val}" class="form-input" placeholder="${f.placeholder||''}" ${isReadonly}>`;
+      }
+      
+      return `<div class="form-group ${f.full?'full':''}">
+        <label class="form-label">${f.label}</label>
+        ${input}
+      </div>`;
+    }).join('');
+
+    document.getElementById('formBasic').innerHTML = build(schema.basic);
+    document.getElementById('formDetails').innerHTML = build(schema.details);
+  }
+
+  function harvest() {
+    const inputs = document.querySelectorAll(`#section${currentStep} input, #section${currentStep} select, #section${currentStep} textarea`);
+    inputs.forEach(i => formData[i.name] = i.value);
+  }
+
+  function nextStep() {
+    harvest();
+    if(currentStep < 4) {
+      currentStep++;
+      updateSteps();
+    }
+    if(currentStep === 4) renderReview();
+  }
+
+  function prevStep() {
+    harvest();
+    if(currentStep > 1) {
+      currentStep--;
+      updateSteps();
+    }
+  }
+
+  function updateSteps() {
+    document.querySelectorAll('.step').forEach((s, i) => {
+      s.classList.remove('active', 'completed');
+      if(i + 1 < currentStep) s.classList.add('completed');
+      if(i + 1 === currentStep) s.classList.add('active');
+    });
+    document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+    document.getElementById(`section${currentStep}`).classList.add('active');
+  }
+
+  function renderReview() {
+    let html = '';
+    const allFields = [...schemas[selectedType].basic, ...schemas[selectedType].details];
+    
+    allFields.forEach(f => {
+      if(formData[f.key]) {
+        html += `<div class="review-item ${f.full?'full':''}">
+          <div class="review-label">${f.label}</div>
+          <div class="review-val">${formData[f.key]}</div>
+        </div>`;
+      }
+    });
+    document.getElementById('reviewContent').innerHTML = html;
+  }
+
+  async function submitData() {
+    const btn = document.querySelector('#section4 .btn-primary');
+    const oldText = btn.innerText;
+    btn.innerText = 'Submitting...';
+    btn.disabled = true;
+
+    // Add Metadata
+    formData.last_updated = new Date().toISOString().split('T')[0];
+    if(selectedType === 'policy') formData.last_reviewed = formData.last_updated;
+
+    const payload = {
+      action: mode === 'add' ? 'add_item' : 'update_item',
+      type: selectedType,
+      id_column: selectedType + '_id', // e.g., product_id
+      id_value: formData[selectedType + '_id'] || currentId,
+      data: formData
     };
 
-    function setMode(m, ev) {
-      mode = m;
-      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-      if (ev && ev.target) ev.target.classList.add('active');
-      const searchBox = document.getElementById('searchBox');
-      const nextBtn = document.getElementById('btnStep1');
-      if (mode === 'edit') {
-        searchBox.classList.add('show');
-        nextBtn.disabled = true;
-        formData = {};
-      } else {
-        searchBox.classList.remove('show');
-        formData = {};
-        if (selectedType) {
-          renderForms(formData);
-          document.getElementById('btnStep1').disabled = false;
-        }
-      }
-    }
-
-    function selectType(type, card) {
-      selectedType = type;
-      document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      if (mode === 'add') {
-        formData = {};
-        renderForms(formData);
-        document.getElementById('btnStep1').disabled = false;
-      } else {
-        document.getElementById('btnStep1').disabled = true;
-      }
-    }
-
-    async function fetchData() {
-      const rawId = document.getElementById('searchId').value || '';
-      const statusEl = document.getElementById('searchStatus');
-      if (!selectedType) return alert("Please select a Type first.");
-      const id = rawId.trim();
-      if (!id) return alert("Please enter an ID.");
-      
-      statusEl.innerText = "Searching Sheet...";
-      statusEl.style.color = "var(--muted)";
-      
-      // Call n8n to search Google Sheet
-      const url = `${WEBHOOK_URL}?action=fetch&type=${encodeURIComponent(selectedType)}&id=${encodeURIComponent(id)}`;
-      
-      try {
-        const res = await fetch(url, { method: 'GET' });
-        if (!res.ok) throw new Error(`Server error (${res.status})`);
-        
-        const payload = await res.json();
-        console.log("📦 Fetch Result:", payload);
-
-        // Logic to handle n8n response (Array or Object)
-        let row = null;
-        if (Array.isArray(payload) && payload.length > 0) {
-           row = payload[0]; // Assume first match
-        } else if (payload && typeof payload === 'object' && !payload.error) {
-           row = payload;
-        }
-
-        if (!row || Object.keys(row).length === 0) {
-          statusEl.innerText = "❌ Item not found in Sheet.";
-          statusEl.style.color = "red";
-          return;
-        }
-
-        statusEl.innerText = "✅ Data loaded from Sheet!";
-        statusEl.style.color = "green";
-        currentId = id;
-        formData = row; // Map existing data to form
-        renderForms(formData);
-        document.getElementById('btnStep1').disabled = false;
-
-      } catch (e) {
-        console.error(e);
-        statusEl.innerText = "❌ Connection failed.";
-        statusEl.style.color = "red";
-      }
-    }
-
-    function renderForms(data = {}) {
-      if (!selectedType) return;
-      const schema = schemas[selectedType];
-      const escAttr = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
-      
-      const buildFields = (fields) => fields.map(f => {
-        const val = data[f.key] ?? '';
-        let inputHtml = '';
-        if (f.type === 'textarea') {
-          inputHtml = `<textarea name="${f.key}" class="form-textarea">${String(val)}</textarea>`;
-        } else if (f.type === 'select') {
-          inputHtml = `<select name="${f.key}" class="form-select">
-            <option value="">Select...</option>
-            ${f.options.map(o => {
-               const isSelected = String(val) === String(o) ? 'selected' : '';
-               return `<option value="${escAttr(o)}" ${isSelected}>${o}</option>`;
-            }).join('')}
-          </select>`;
-        } else {
-          // If in Edit Mode, disable ID editing to prevent duplicates
-          const isIdField = f.key.endsWith('_id');
-          const disabledAttr = (mode === 'edit' && isIdField) ? 'disabled style="background:#f1f5f9; color:#64748b;"' : '';
-          inputHtml = `<input type="text" name="${f.key}" value="${escAttr(val)}" class="form-input" placeholder="${f.placeholder || ''}" ${disabledAttr}>`;
-        }
-        return `<div class="form-group ${f.full ? 'full' : ''}">
-          <label class="form-label">${f.label}</label>
-          ${inputHtml}
-        </div>`;
-      }).join('');
-      
-      document.getElementById('formBasic').innerHTML = buildFields(schema.basic);
-      document.getElementById('formDetails').innerHTML = buildFields(schema.details);
-    }
-
-    function harvestCurrentFormData() {
-      const currentSection = document.getElementById(`section${currentStep}`);
-      const inputs = currentSection.querySelectorAll('input, select, textarea');
-      inputs.forEach(i => {
-        if (i.name) formData[i.name] = i.value;
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
       });
-    }
-
-    function nextStep() {
-      harvestCurrentFormData();
-      if (currentStep < 4) {
-        currentStep++;
-        updateUI();
-        if (currentStep === 2 || currentStep === 3) renderForms(formData);
+      
+      if(res.ok) {
+        alert('Success! Data saved.');
+        location.reload();
+      } else {
+        alert('Error saving data.');
       }
-      if (currentStep === 4) renderReview();
+    } catch(e) {
+      alert('Network Error: ' + e.message);
+    } finally {
+      btn.innerText = oldText;
+      btn.disabled = false;
     }
+  }
+</script>
 
-    function prevStep() {
-      harvestCurrentFormData();
-      if (currentStep > 1) {
-        currentStep--;
-        updateUI();
-        if (currentStep === 2 || currentStep === 3) renderForms(formData);
-      }
-    }
-
-    function updateUI() {
-      document.querySelectorAll('.step').forEach((el, idx) => {
-        const num = idx + 1;
-        el.classList.remove('active', 'completed');
-        if (num < currentStep) el.classList.add('completed');
-        if (num === currentStep) el.classList.add('active');
-      });
-      document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
-      document.getElementById(`section${currentStep}`).classList.add('active');
-    }
-
-    function renderReview() {
-      let html = `<h3>${selectedType.toUpperCase()} - ${mode.toUpperCase()}</h3>`;
-      html += `<p style="margin-bottom:15px; font-size:12px; color:#666;">Action: ${mode === 'add' ? 'Create New Row' : 'Update Existing Row'}</p>`;
-      for (const [key, val] of Object.entries(formData)) {
-        if (!val) continue;
-        html += `<div class="review-item">
-          <div class="review-label">${key}</div>
-          <div class="review-value">${String(val).replace(/</g,'&lt;')}</div>
-        </div>`;
-      }
-      document.getElementById('reviewContent').innerHTML = html;
-    }
-
-    async function submitData() {
-      if (!formData.owner) formData.owner = 'KB Editor User';
-      const today = new Date().toISOString().slice(0,10);
-      formData.last_updated = today;
-      if (selectedType === 'policy') formData.last_reviewed = today;
-
-      // Prepare payload for n8n
-      const payload = {
-        type: selectedType, // 'product', 'procedure', or 'policy'
-        action: mode === 'add' ? 'add_item' : 'update_item',
-        id_key: selectedType + '_id', // Tells n8n which column is the ID
-        id_value: mode === 'edit' ? currentId : formData[selectedType + '_id'],
-        data: formData
-      };
-
-      try {
-        const btn = document.querySelector('#section4 .btn-primary');
-        btn.innerText = "Syncing with Sheet...";
-        btn.disabled = true;
-
-        // Send to n8n Webhook
-        const res = await fetch(WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (res.ok) {
-          alert("✅ Success! Google Sheet updated.");
-          location.reload();
-        } else {
-          alert("❌ Error syncing with Sheet.");
-          btn.innerText = "Submit Data ✓";
-          btn.disabled = false;
-        }
-      } catch (e) {
-        alert("Network error: " + e.message);
-      }
-    }
-  </script>
 </body>
 </html>
