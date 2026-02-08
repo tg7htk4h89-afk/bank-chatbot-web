@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat3PT KB Editor</title>
+  <title>KIB Knowledge Base Manager</title>
   <style>
     :root {
       --bg1: #e8f1f6; --bg2: #eef2ff; --card: #ffffff; --text: #0f172a;
@@ -104,150 +104,35 @@
     /* Mobile Styles */
     @media (max-width: 768px) {
       body { padding: 12px; }
-      
-      .header {
-        padding: 16px;
-        border-radius: 12px;
-        margin-bottom: 16px;
-      }
-      
-      .header h1 { 
-        font-size: 20px; 
-        text-align: center;
-      }
-      
-      .card {
-        padding: 20px;
-        border-radius: 12px;
-      }
-      
-      /* Simplified step indicator for mobile */
-      .step-indicator {
-        margin-bottom: 20px;
-      }
-      
-      .step-circle {
-        width: 32px;
-        height: 32px;
-        font-size: 14px;
-      }
-      
-      .step-indicator::before {
-        top: 16px;
-      }
-      
-      .step-label {
-        font-size: 10px;
-        max-width: 70px;
-      }
-      
-      /* Stack type selector vertically on mobile */
-      .type-selector {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-      
-      .type-card {
-        padding: 20px;
-        flex-direction: row;
-        justify-content: flex-start;
-        text-align: left;
-        min-height: auto;
-      }
-      
-      .type-icon {
-        font-size: 28px;
-      }
-      
-      .type-card-label {
-        font-size: 16px;
-      }
-      
-      /* Stack mode toggle buttons */
-      .mode-toggle {
-        width: 100%;
-        flex-direction: column;
-        padding: 8px;
-      }
-      
-      .mode-btn {
-        width: 100%;
-        padding: 12px;
-      }
-      
-      /* Stack form grid on mobile */
-      .form-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-      
-      .form-group.full {
-        grid-column: 1;
-      }
-      
-      /* Adjust search input for mobile */
-      .search-input-group {
-        flex-direction: column;
-      }
-      
-      .search-input-group input {
-        min-width: 100%;
-      }
-      
-      .search-input-group .btn {
-        width: 100%;
-      }
-      
-      /* Stack buttons on mobile */
-      .button-group {
-        flex-direction: column-reverse;
-        gap: 8px;
-      }
-      
-      .button-group .btn {
-        width: 100%;
-      }
-      
-      .form-section h2 {
-        font-size: 20px;
-        margin-bottom: 16px;
-      }
-      
-      .search-container {
-        padding: 16px;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .header h1 {
-        font-size: 18px;
-      }
-      
-      .card {
-        padding: 16px;
-      }
-      
-      .step-circle {
-        width: 28px;
-        height: 28px;
-        font-size: 12px;
-      }
-      
-      .step-indicator::before {
-        top: 14px;
-      }
-      
-      .step-label {
-        font-size: 9px;
-        max-width: 60px;
-      }
+      .header { padding: 16px; border-radius: 12px; margin-bottom: 16px; }
+      .header h1 { font-size: 20px; text-align: center; }
+      .card { padding: 20px; border-radius: 12px; }
+      .step-indicator { margin-bottom: 20px; }
+      .step-circle { width: 32px; height: 32px; font-size: 14px; }
+      .step-indicator::before { top: 16px; }
+      .step-label { font-size: 10px; max-width: 70px; }
+      .type-selector { grid-template-columns: 1fr; gap: 12px; }
+      .type-card { padding: 20px; flex-direction: row; justify-content: flex-start; text-align: left; min-height: auto; }
+      .type-icon { font-size: 28px; }
+      .type-card-label { font-size: 16px; }
+      .mode-toggle { width: 100%; flex-direction: column; padding: 8px; }
+      .mode-btn { width: 100%; padding: 12px; }
+      .form-grid { grid-template-columns: 1fr; gap: 12px; }
+      .form-group.full { grid-column: 1; }
+      .search-input-group { flex-direction: column; }
+      .search-input-group input { min-width: 100%; }
+      .search-input-group .btn { width: 100%; }
+      .button-group { flex-direction: column-reverse; gap: 8px; }
+      .button-group .btn { width: 100%; }
+      .form-section h2 { font-size: 20px; margin-bottom: 16px; }
+      .search-container { padding: 16px; }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>📝 Knowledge Base Manager</h1>
+      <h1>📝 KIB Knowledge Base Manager</h1>
     </div>
     <div class="card">
       <div class="step-indicator">
@@ -268,6 +153,7 @@
           <div class="step-label">Review</div>
         </div>
       </div>
+
       <div class="form-section active" id="section1">
         <h2 style="text-align:center; margin-bottom:20px;">What are you working on?</h2>
         <div class="mode-toggle">
@@ -288,18 +174,21 @@
             <div class="type-card-label">Policy</div>
           </div>
         </div>
+
         <div class="search-container" id="searchBox">
           <label class="form-label">Search by ID to Edit</label>
           <div class="search-input-group">
-            <input type="text" id="searchId" class="form-input" placeholder="e.g. PRD-001">
+            <input type="text" id="searchId" class="form-input" placeholder="e.g. PRD-001 or POL-102">
             <button class="btn btn-primary" onclick="fetchData()">Search</button>
           </div>
           <p id="searchStatus" style="margin-top:10px; font-size:13px; color:var(--muted);"></p>
         </div>
+
         <div class="button-group">
           <button class="btn btn-primary" id="btnStep1" onclick="nextStep()" disabled>Next Step →</button>
         </div>
       </div>
+
       <div class="form-section" id="section2">
         <h2>Basic Information</h2>
         <div id="formBasic" class="form-grid"></div>
@@ -308,6 +197,7 @@
           <button class="btn btn-primary" onclick="nextStep()">Next Step →</button>
         </div>
       </div>
+
       <div class="form-section" id="section3">
         <h2>Detailed Information</h2>
         <div id="formDetails" class="form-grid"></div>
@@ -316,6 +206,7 @@
           <button class="btn btn-primary" onclick="nextStep()">Review →</button>
         </div>
       </div>
+
       <div class="form-section" id="section4">
         <h2>Review & Submit</h2>
         <div id="reviewContent" style="background:var(--bg1); padding:20px; border-radius:12px;"></div>
@@ -326,49 +217,57 @@
       </div>
     </div>
   </div>
+
   <script>
-    const WEBHOOK_URL = "hhttps://taherkib.app.n8n.cloud/webhook/001b4e4f-5d0b-4a3a-a24c-2fb495b7af4f";
+    // CORRECTED WEBHOOK URL
+    const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/001b4e4f-5d0b-4a3a-a24c-2fb495b7af4f";
+
     let currentStep = 1, mode = 'add', selectedType = null, currentId = null, formData = {};
+
+    // SCHEMA MUST MATCH GOOGLE SHEET HEADERS EXACTLY
     const schemas = {
       product: {
         basic: [
+          { key: 'product_id', label: 'Product ID (Unique)', type: 'text', placeholder: 'Auto-generated if empty' },
           { key: 'product_name', label: 'Product Name', type: 'text' },
           { key: 'family', label: 'Family', type: 'select', options: ['Cards', 'Accounts', 'Deposits', 'Digital', 'Financing', 'Loans'] },
           { key: 'tier', label: 'Tier', type: 'select', options: ['Basic', 'Standard', 'Plus', 'Premium', 'Gold', 'Platinum'] },
-          { key: 'status', label: 'Status', type: 'select', options: ['draft', 'active'] }
+          { key: 'status', label: 'Status', type: 'select', options: ['draft', 'active', 'archived'] }
         ],
         details: [
           { key: 'description', label: 'Description', type: 'textarea', full: true },
-          { key: 'features', label: 'Features', type: 'textarea', full: true },
-          { key: 'eligibility', label: 'Eligibility', type: 'textarea', full: true },
-          { key: 'fees', label: 'Fees', type: 'text' },
-          { key: 'channels', label: 'Channels', type: 'text' },
-          { key: 'keywords', label: 'Keywords', type: 'text', full: true }
+          { key: 'features', label: 'Features (Bulleted)', type: 'textarea', full: true },
+          { key: 'eligibility', label: 'Eligibility Criteria', type: 'textarea', full: true },
+          { key: 'fees', label: 'Fees / Charges', type: 'text' },
+          { key: 'channels', label: 'Available Channels', type: 'text' },
+          { key: 'keywords', label: 'Search Keywords', type: 'text', full: true }
         ]
       },
       procedure: {
         basic: [
+          { key: 'procedure_id', label: 'Procedure ID', type: 'text' },
           { key: 'procedure_name', label: 'Procedure Name', type: 'text', full: true },
-          { key: 'related_area', label: 'Related Area', type: 'text' },
-          { key: 'sla', label: 'SLA', type: 'text' }
+          { key: 'related_area', label: 'Related Area / Dept', type: 'text' },
+          { key: 'sla', label: 'Service Level Agreement (SLA)', type: 'text' }
         ],
         details: [
-          { key: 'step_by_step', label: 'Steps', type: 'textarea', full: true },
+          { key: 'step_by_step', label: 'Steps (HTML or Text)', type: 'textarea', full: true },
           { key: 'when_to_use', label: 'When to Use', type: 'textarea', full: true },
-          { key: 'systems_used', label: 'Systems', type: 'text', full: true },
+          { key: 'systems_used', label: 'Systems Involved', type: 'text', full: true },
           { key: 'keywords', label: 'Keywords', type: 'text', full: true }
         ]
       },
       policy: {
         basic: [
+          { key: 'policy_id', label: 'Policy ID', type: 'text' },
           { key: 'policy_name', label: 'Policy Name', type: 'text', full: true },
-          { key: 'scope', label: 'Scope', type: 'text' },
-          { key: 'status', label: 'Status', type: 'select', options: ['draft', 'active'] }
+          { key: 'scope', label: 'Scope (Who/What)', type: 'text' },
+          { key: 'status', label: 'Status', type: 'select', options: ['draft', 'active', 'under_review'] }
         ],
         details: [
-          { key: 'summary', label: 'Summary', type: 'textarea', full: true },
-          { key: 'do', label: 'Do', type: 'textarea', full: true },
-          { key: 'dont', label: "Don't", type: 'textarea', full: true },
+          { key: 'summary', label: 'Executive Summary', type: 'textarea', full: true },
+          { key: 'do', label: 'Do (Allowed)', type: 'textarea', full: true },
+          { key: 'dont', label: "Don't (Prohibited)", type: 'textarea', full: true },
           { key: 'keywords', label: 'Keywords', type: 'text', full: true }
         ]
       }
@@ -389,7 +288,7 @@
         formData = {};
         if (selectedType) {
           renderForms(formData);
-          nextBtn.disabled = false;
+          document.getElementById('btnStep1').disabled = false;
         }
       }
     }
@@ -413,58 +312,44 @@
       if (!selectedType) return alert("Please select a Type first.");
       const id = rawId.trim();
       if (!id) return alert("Please enter an ID.");
-      statusEl.innerText = "Searching...";
+      
+      statusEl.innerText = "Searching Sheet...";
       statusEl.style.color = "var(--muted)";
+      
+      // Call n8n to search Google Sheet
       const url = `${WEBHOOK_URL}?action=fetch&type=${encodeURIComponent(selectedType)}&id=${encodeURIComponent(id)}`;
+      
       try {
         const res = await fetch(url, { method: 'GET' });
-        if (!res.ok) {
-          statusEl.innerText = `❌ Server error (${res.status}).`;
-          statusEl.style.color = "red";
-          return;
-        }
+        if (!res.ok) throw new Error(`Server error (${res.status})`);
+        
         const payload = await res.json();
-        console.log("📦 Fetch:", payload);
+        console.log("📦 Fetch Result:", payload);
+
+        // Logic to handle n8n response (Array or Object)
         let row = null;
-        if (Array.isArray(payload)) {
-          const idKey = selectedType + "_id";
-          row = payload.find(item => {
-            if (!item || typeof item !== 'object') return false;
-            const checkItem = (item.json && typeof item.json === 'object') ? item.json : item;
-            return checkItem[idKey] && checkItem[idKey].toString().toLowerCase() === id.toLowerCase();
-          });
-          if (row && row.json) row = row.json;
-          if (!row) {
-            row = payload.find(item => {
-              const checkItem = (item?.json && typeof item.json === 'object') ? item.json : item;
-              return checkItem && !checkItem.headers && !checkItem.webhookUrl && Object.keys(checkItem).length > 3;
-            });
-            if (row && row.json) row = row.json;
-          }
-        } else if (payload && typeof payload === 'object') {
-          const idKey = selectedType + "_id";
-          if (payload[idKey]) {
-            row = payload;
-          } else if (payload.ok === false) {
-            statusEl.innerText = `❌ ${payload.error || 'Not found'}`;
-            statusEl.style.color = "red";
-            return;
-          }
+        if (Array.isArray(payload) && payload.length > 0) {
+           row = payload[0]; // Assume first match
+        } else if (payload && typeof payload === 'object' && !payload.error) {
+           row = payload;
         }
+
         if (!row || Object.keys(row).length === 0) {
-          statusEl.innerText = "❌ Item not found.";
+          statusEl.innerText = "❌ Item not found in Sheet.";
           statusEl.style.color = "red";
           return;
         }
-        statusEl.innerText = "✅ Data loaded!";
+
+        statusEl.innerText = "✅ Data loaded from Sheet!";
         statusEl.style.color = "green";
         currentId = id;
-        formData = row;
-        console.log("✅ Loaded:", formData);
+        formData = row; // Map existing data to form
+        renderForms(formData);
         document.getElementById('btnStep1').disabled = false;
+
       } catch (e) {
         console.error(e);
-        statusEl.innerText = "❌ Network error.";
+        statusEl.innerText = "❌ Connection failed.";
         statusEl.style.color = "red";
       }
     }
@@ -472,12 +357,13 @@
     function renderForms(data = {}) {
       if (!selectedType) return;
       const schema = schemas[selectedType];
-      const escAttr = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const escAttr = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+      
       const buildFields = (fields) => fields.map(f => {
         const val = data[f.key] ?? '';
         let inputHtml = '';
         if (f.type === 'textarea') {
-          inputHtml = `<textarea name="${f.key}" class="form-textarea">${String(val ?? '')}</textarea>`;
+          inputHtml = `<textarea name="${f.key}" class="form-textarea">${String(val)}</textarea>`;
         } else if (f.type === 'select') {
           inputHtml = `<select name="${f.key}" class="form-select">
             <option value="">Select...</option>
@@ -487,13 +373,17 @@
             }).join('')}
           </select>`;
         } else {
-          inputHtml = `<input type="text" name="${f.key}" value="${escAttr(val)}" class="form-input">`;
+          // If in Edit Mode, disable ID editing to prevent duplicates
+          const isIdField = f.key.endsWith('_id');
+          const disabledAttr = (mode === 'edit' && isIdField) ? 'disabled style="background:#f1f5f9; color:#64748b;"' : '';
+          inputHtml = `<input type="text" name="${f.key}" value="${escAttr(val)}" class="form-input" placeholder="${f.placeholder || ''}" ${disabledAttr}>`;
         }
         return `<div class="form-group ${f.full ? 'full' : ''}">
           <label class="form-label">${f.label}</label>
           ${inputHtml}
         </div>`;
       }).join('');
+      
       document.getElementById('formBasic').innerHTML = buildFields(schema.basic);
       document.getElementById('formDetails').innerHTML = buildFields(schema.details);
     }
@@ -511,9 +401,7 @@
       if (currentStep < 4) {
         currentStep++;
         updateUI();
-        if (currentStep === 2 || currentStep === 3) {
-          renderForms(formData);
-        }
+        if (currentStep === 2 || currentStep === 3) renderForms(formData);
       }
       if (currentStep === 4) renderReview();
     }
@@ -523,9 +411,7 @@
       if (currentStep > 1) {
         currentStep--;
         updateUI();
-        if (currentStep === 2 || currentStep === 3) {
-          renderForms(formData);
-        }
+        if (currentStep === 2 || currentStep === 3) renderForms(formData);
       }
     }
 
@@ -542,49 +428,49 @@
 
     function renderReview() {
       let html = `<h3>${selectedType.toUpperCase()} - ${mode.toUpperCase()}</h3>`;
-      html += `<p style="margin-bottom:15px; font-size:12px; color:#666;">ID: ${mode==='edit' ? currentId : 'Auto-Generated'}</p>`;
+      html += `<p style="margin-bottom:15px; font-size:12px; color:#666;">Action: ${mode === 'add' ? 'Create New Row' : 'Update Existing Row'}</p>`;
       for (const [key, val] of Object.entries(formData)) {
-        if (!val || key === selectedType + '_id') continue;
-        const safeVal = String(val).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        if (!val) continue;
         html += `<div class="review-item">
-          <div class="review-label">${key.replace(/_/g,' ')}</div>
-          <div class="review-value">${safeVal}</div>
+          <div class="review-label">${key}</div>
+          <div class="review-value">${String(val).replace(/</g,'&lt;')}</div>
         </div>`;
       }
       document.getElementById('reviewContent').innerHTML = html;
     }
 
     async function submitData() {
-      if (!formData.owner) formData.owner = 'KB Editor';
+      if (!formData.owner) formData.owner = 'KB Editor User';
       const today = new Date().toISOString().slice(0,10);
-      if (selectedType === 'product' || selectedType === 'procedure') {
-         formData.last_updated = today;
-      }
-      if (selectedType === 'policy') {
-         formData.last_reviewed = today;
-      }
+      formData.last_updated = today;
+      if (selectedType === 'policy') formData.last_reviewed = today;
+
+      // Prepare payload for n8n
       const payload = {
-        type: selectedType,
+        type: selectedType, // 'product', 'procedure', or 'policy'
         action: mode === 'add' ? 'add_item' : 'update_item',
+        id_key: selectedType + '_id', // Tells n8n which column is the ID
+        id_value: mode === 'edit' ? currentId : formData[selectedType + '_id'],
         data: formData
       };
-      if (mode === 'edit') {
-        payload.data[selectedType + '_id'] = currentId;
-      }
+
       try {
         const btn = document.querySelector('#section4 .btn-primary');
-        btn.innerText = "Sending...";
+        btn.innerText = "Syncing with Sheet...";
         btn.disabled = true;
+
+        // Send to n8n Webhook
         const res = await fetch(WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
+
         if (res.ok) {
-          alert("Success!");
+          alert("✅ Success! Google Sheet updated.");
           location.reload();
         } else {
-          alert("Error");
+          alert("❌ Error syncing with Sheet.");
           btn.innerText = "Submit Data ✓";
           btn.disabled = false;
         }
