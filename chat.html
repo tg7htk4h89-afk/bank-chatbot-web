@@ -170,47 +170,6 @@
       border-bottom-right-radius: 8px;
     }
 
-    /* ===== CHAT ACTION ICONS STYLES ===== */
-    .chat-actions {
-        display: flex;
-        gap: 8px;
-        margin-top: 4px;
-        margin-bottom: 2px;
-        opacity: 0.8;
-    }
-    .action-btn {
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        color: #94a3b8;
-        padding: 4px;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-    }
-    .action-btn:hover {
-        color: var(--brand);
-        background-color: rgba(31,122,107,0.05);
-    }
-    
-    .action-btn.active-like {
-        color: #22c55e;
-        background-color: rgba(34,197,94,0.1);
-    }
-    
-    .action-btn.active-dislike {
-        color: #ef4444;
-        background-color: rgba(239,68,68,0.1);
-    }
-
-    .action-btn svg {
-        width: 16px;
-        height: 16px;
-        stroke-width: 1.8;
-    }
-
     .meta{
       font-size: 11.5px;
       color: var(--muted);
@@ -550,6 +509,7 @@
     </div>
   </div>
 
+  <!-- Feedback Modal -->
   <div class="modal-overlay" id="feedbackModal" onclick="closeFeedbackModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -641,47 +601,6 @@
       return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(text);
     }
 
-    function copyResponse(btn) {
-        const wrapper = btn.closest('.bubbleWrap');
-        const text = wrapper.querySelector('.bubble').innerText;
-        
-        navigator.clipboard.writeText(text).then(() => {
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-            }, 1500);
-        });
-    }
-
-    function rateResponse(btn, type) {
-        const container = btn.closest('.chat-actions');
-        const likeBtn = container.querySelector('button[title="Helpful"]');
-        const dislikeBtn = container.querySelector('button[title="Not Helpful"]');
-
-        if (type === 'like') {
-            if (likeBtn.classList.contains('active-like')) {
-                likeBtn.classList.remove('active-like');
-            } else {
-                likeBtn.classList.add('active-like');
-                dislikeBtn.classList.remove('active-dislike');
-                recordFeedback('like');
-            }
-        } else if (type === 'dislike') {
-            if (dislikeBtn.classList.contains('active-dislike')) {
-                dislikeBtn.classList.remove('active-dislike');
-            } else {
-                dislikeBtn.classList.add('active-dislike');
-                likeBtn.classList.remove('active-like');
-                recordFeedback('dislike');
-            }
-        }
-    }
-
-    function regenerateResponse(btn) {
-       alert("Regenerate requested (logic can be added here)");
-    }
-
     function add(role, text){
       const row = document.createElement("div");
       row.className = "msg " + (role === "me" ? "me" : "bot");
@@ -700,42 +619,11 @@
       bubble.dir = isArabic(text) ? "rtl" : "ltr";
       bubble.style.textAlign = isArabic(text) ? "right" : "left";
 
-      wrap.appendChild(bubble);
-
-      if (role === "bot") {
-          const actionsDiv = document.createElement("div");
-          actionsDiv.className = "chat-actions";
-          actionsDiv.innerHTML = `
-            <button class="action-btn" title="Copy" onclick="copyResponse(this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-            </button>
-            <button class="action-btn" title="Helpful" onclick="rateResponse(this, 'like')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
-                </svg>
-            </button>
-            <button class="action-btn" title="Not Helpful" onclick="rateResponse(this, 'dislike')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path>
-                </svg>
-            </button>
-            <button class="action-btn" title="Regenerate" onclick="regenerateResponse(this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M23 4v6h-6"></path>
-                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                </svg>
-            </button>
-          `;
-          wrap.appendChild(actionsDiv);
-      }
-
       const meta = document.createElement("div");
       meta.className = "meta";
       meta.textContent = timeNow();
 
+      wrap.appendChild(bubble);
       wrap.appendChild(meta);
 
       if (role === "me"){
@@ -748,54 +636,6 @@
 
       chat.appendChild(row);
       chat.scrollTop = chat.scrollHeight;
-    }
-
-    // ===== IMPROVED RESPONSE PARSING =====
-    function parseResponse(data) {
-      // If data is a string, try to parse it as JSON (handles double-stringification)
-      if (typeof data === 'string') {
-        try {
-          data = JSON.parse(data);
-        } catch (e) {
-          // If parsing fails, return the string as-is
-          return data;
-        }
-      }
-
-      let answer = "";
-
-      // Try different response structures
-      // 1. Check for output array structure
-      if (data && Array.isArray(data.output) && data.output.length > 0) {
-        const firstOutput = data.output[0];
-        if (firstOutput.content && Array.isArray(firstOutput.content) && firstOutput.content[0]) {
-          answer = firstOutput.content[0].text || "";
-        }
-      } 
-      // 2. Check for array with output property
-      else if (data && Array.isArray(data) && data[0] && data[0].output) {
-        const firstItem = data[0];
-        if (Array.isArray(firstItem.output) && firstItem.output[0]) {
-          const firstOutput = firstItem.output[0];
-          if (firstOutput.content && Array.isArray(firstOutput.content) && firstOutput.content[0]) {
-            answer = firstOutput.content[0].text || "";
-          }
-        }
-      } 
-      // 3. Check for simple answer/output/text properties
-      else if (data && (data.answer || data.output || data.text)) {
-        answer = data.answer || data.output || data.text;
-        // If answer is still an object or array, stringify it
-        if (typeof answer === 'object') {
-          answer = JSON.stringify(answer, null, 2);
-        }
-      } 
-      // 4. Fallback: stringify the entire response
-      else {
-        answer = JSON.stringify(data, null, 2);
-      }
-
-      return answer.trim();
     }
 
     async function send(){
@@ -826,40 +666,44 @@
           body: JSON.stringify(payload)
         });
 
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-
         const contentType = res.headers.get("content-type") || "";
         let data;
 
         if (contentType.includes("application/json")){
           data = await res.json();
         } else {
-          const text = await res.text();
-          // Try to parse as JSON even if content-type is wrong
-          try {
-            data = JSON.parse(text);
-          } catch (e) {
-            throw new Error("Non-JSON response: " + text.slice(0, 120));
+          const t = await res.text();
+          throw new Error("Non-JSON response: " + t.slice(0,120));
+        }
+
+        let answer = "";
+
+        if (data && Array.isArray(data.output) && data.output.length > 0) {
+          const firstOutput = data.output[0];
+          if (firstOutput.content && Array.isArray(firstOutput.content) && firstOutput.content[0]) {
+            answer = firstOutput.content[0].text || "";
           }
+        } else if (data && Array.isArray(data) && data[0] && data[0].output) {
+          const firstItem = data[0];
+          if (Array.isArray(firstItem.output) && firstItem.output[0]) {
+            const firstOutput = firstItem.output[0];
+            if (firstOutput.content && Array.isArray(firstOutput.content) && firstOutput.content[0]) {
+              answer = firstOutput.content[0].text || "";
+            }
+          }
+        } else if (data && (data.answer || data.output || data.text)) {
+          answer = data.answer || data.output || data.text;
+        } else {
+          answer = JSON.stringify(data, null, 2);
         }
 
-        console.log("Raw response:", data);
-
-        const answer = parseResponse(data);
-
-        if (!answer) {
-          throw new Error("Empty response from server");
-        }
-
+        answer = answer.trim();
         hideTyping();
         add("bot", answer);
         setStatus("Ready", true);
 
       } catch(e){
         hideTyping();
-        console.error("Error details:", e);
         add("bot", "Connection error: " + (e?.message || e));
         setStatus("Disconnected", false);
       } finally {
@@ -885,6 +729,7 @@
       }
     }
 
+    // Close modal on ESC key
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
         closeFeedbackModal();
@@ -939,30 +784,6 @@
         submitBtn.textContent = 'Submit Feedback';
       }
     }
-
-    // Feedback Counter
-    const FEEDBACK_KEY = "chat3pt_feedback_counts_v1";
-
-    function getFeedbackCounts() {
-      try {
-        return JSON.parse(localStorage.getItem(FEEDBACK_KEY)) || { like: 0, dislike: 0 };
-      } catch {
-        return { like: 0, dislike: 0 };
-      }
-    }
-
-    function saveFeedbackCounts(counts) {
-      localStorage.setItem(FEEDBACK_KEY, JSON.stringify(counts));
-    }
-
-    function recordFeedback(type) {
-      const counts = getFeedbackCounts();
-      if (type === "like") counts.like += 1;
-      if (type === "dislike") counts.dislike += 1;
-      saveFeedbackCounts(counts);
-      console.log("Feedback recorded:", counts);
-    }
-
   </script>
 </body>
 </html>
