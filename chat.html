@@ -1,3 +1,8 @@
+I have updated the code to make the buttons interactive. Now, when you click the **Thumbs Up**, it turns **Green**, and if you click **Thumbs Down**, it turns **Red**. They act like a toggle (selecting one deselects the other).
+
+Here is the **complete, updated file**:
+
+```html
 <!doctype html>
 <html lang="en">
 <head>
@@ -170,7 +175,7 @@
       border-bottom-right-radius: 8px;
     }
 
-    /* ===== NEW STYLES FOR CHAT ACTION ICONS ===== */
+    /* ===== CHAT ACTION ICONS STYLES ===== */
     .chat-actions {
         display: flex;
         gap: 8px;
@@ -194,6 +199,19 @@
         color: var(--brand);
         background-color: rgba(31,122,107,0.05);
     }
+    
+    /* Active State for Like (Green) */
+    .action-btn.active-like {
+        color: #22c55e;
+        background-color: rgba(34,197,94,0.1);
+    }
+    
+    /* Active State for Dislike (Red) */
+    .action-btn.active-dislike {
+        color: #ef4444;
+        background-color: rgba(239,68,68,0.1);
+    }
+
     .action-btn svg {
         width: 16px;
         height: 16px;
@@ -631,14 +649,14 @@
       return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(text);
     }
 
-    // Helper to Copy Text
+    // --- BUTTON ACTIONS ---
+
+    // 1. Copy Function
     function copyResponse(btn) {
-        // Find the text content of the bubble in the same wrapper
         const wrapper = btn.closest('.bubbleWrap');
         const text = wrapper.querySelector('.bubble').innerText;
         
         navigator.clipboard.writeText(text).then(() => {
-            // Visual feedback
             const originalHTML = btn.innerHTML;
             btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
             setTimeout(() => {
@@ -647,6 +665,40 @@
         });
     }
 
+    // 2. Rate Function (Like/Dislike Color Toggle)
+    function rateResponse(btn, type) {
+        const container = btn.closest('.chat-actions');
+        const likeBtn = container.querySelector('button[title="Helpful"]');
+        const dislikeBtn = container.querySelector('button[title="Not Helpful"]');
+
+        if (type === 'like') {
+            if (likeBtn.classList.contains('active-like')) {
+                // If already active, turn it off
+                likeBtn.classList.remove('active-like');
+            } else {
+                // Activate like, deactivate dislike
+                likeBtn.classList.add('active-like');
+                dislikeBtn.classList.remove('active-dislike');
+            }
+        } else if (type === 'dislike') {
+            if (dislikeBtn.classList.contains('active-dislike')) {
+                // If already active, turn it off
+                dislikeBtn.classList.remove('active-dislike');
+            } else {
+                // Activate dislike, deactivate like
+                dislikeBtn.classList.add('active-dislike');
+                likeBtn.classList.remove('active-like');
+            }
+        }
+    }
+
+    // 3. Regenerate Function (Placeholder logic)
+    function regenerateResponse(btn) {
+       // You can add logic here to re-send the last message if needed
+       alert("Regenerate requested (logic can be added here)");
+    }
+
+    // --- ADD MESSAGE FUNCTION ---
     function add(role, text){
       const row = document.createElement("div");
       row.className = "msg " + (role === "me" ? "me" : "bot");
@@ -678,17 +730,17 @@
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                 </svg>
             </button>
-            <button class="action-btn" title="Helpful">
+            <button class="action-btn" title="Helpful" onclick="rateResponse(this, 'like')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
                 </svg>
             </button>
-            <button class="action-btn" title="Not Helpful">
+            <button class="action-btn" title="Not Helpful" onclick="rateResponse(this, 'dislike')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path>
                 </svg>
             </button>
-            <button class="action-btn" title="Regenerate">
+            <button class="action-btn" title="Regenerate" onclick="regenerateResponse(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M23 4v6h-6"></path>
                     <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
@@ -866,3 +918,5 @@
   </script>
 </body>
 </html>
+
+```
