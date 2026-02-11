@@ -750,7 +750,7 @@
       chat.scrollTop = chat.scrollHeight;
     }
 
-    // ===== IMPROVED RESPONSE PARSING =====
+    // ===== IMPROVED RESPONSE PARSING WITH BETTER ERROR HANDLING =====
     function parseResponse(data) {
       // If data is a string, try to parse it as JSON (handles double-stringification)
       if (typeof data === 'string') {
@@ -820,37 +820,44 @@
           category: category
         };
 
+        console.log("Sending payload:", payload);
+
         const res = await fetch(WEBHOOK_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
 
+        console.log("Response status:", res.status);
+        console.log("Response headers:", Object.fromEntries(res.headers.entries()));
+
         if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
+          throw new Error(`Server error: ${res.status} ${res.statusText}`);
         }
 
-        const contentType = res.headers.get("content-type") || "";
+        // Get the response text first
+        const responseText = await res.text();
+        console.log("Raw response text:", responseText);
+
+        // Check if response is empty
+        if (!responseText || responseText.trim() === '') {
+          throw new Error("Empty response from server. The workflow may not be returning data.");
+        }
+
+        // Try to parse as JSON
         let data;
-
-        if (contentType.includes("application/json")){
-          data = await res.json();
-        } else {
-          const text = await res.text();
-          // Try to parse as JSON even if content-type is wrong
-          try {
-            data = JSON.parse(text);
-          } catch (e) {
-            throw new Error("Non-JSON response: " + text.slice(0, 120));
-          }
+        try {
+          data = JSON.parse(responseText);
+          console.log("Parsed JSON response:", data);
+        } catch (parseError) {
+          console.error("JSON parse error:", parseError);
+          throw new Error(`Invalid JSON response: ${responseText.slice(0, 200)}`);
         }
-
-        console.log("Raw response:", data);
 
         const answer = parseResponse(data);
 
         if (!answer) {
-          throw new Error("Empty response from server");
+          throw new Error("No answer found in response. Check n8n workflow output.");
         }
 
         hideTyping();
@@ -859,9 +866,22 @@
 
       } catch(e){
         hideTyping();
-        console.error("Error details:", e);
-        add("bot", "Connection error: " + (e?.message || e));
-        setStatus("Disconnected", false);
+        console.error("Full error details:", e);
+        
+        // More detailed error message
+        let errorMsg = "Error: ";
+        if (e.message.includes("Empty response")) {
+          errorMsg += "Server returned empty response. Check that your n8n workflow is active and the 'Respond to Webhook' node is properly configured.";
+        } else if (e.message.includes("Invalid JSON")) {
+          errorMsg += "Server returned invalid JSON. Check your n8n workflow's 'Respond to Webhook' node configuration.";
+        } else if (e.message.includes("Server error")) {
+          errorMsg += e.message + ". Check n8n workflow execution logs.";
+        } else {
+          errorMsg += e.message || "Unknown error occurred";
+        }
+        
+        add("bot", errorMsg);
+        setStatus("Error", false);
       } finally {
         btn.disabled = false;
         inp.focus();
