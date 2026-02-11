@@ -1,886 +1,1117 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KIB KB Editor</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chat3PT</title>
+
   <style>
-    :root {
-      --bg-primary: #f0f4f8;
-      --bg-secondary: #e8f1f6;
-      --card-bg: #ffffff;
-      --text-primary: #1a202c;
-      --text-secondary: #718096;
-      --text-muted: #a0aec0;
-      --brand-primary: #0d7a6f;
-      --brand-secondary: #0ea5e9;
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
-      --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
-    }
-    
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #e8f1f6 0%, #f0f4f8 100%);
-      min-height: 100vh; 
-      padding: 30px 20px; 
-      color: var(--text-primary);
-      position: relative;
+    :root{
+      --bg1:#e8f1f6;
+      --bg2:#eef2ff;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#e2e8f0;
+      --shadow: 0 14px 40px rgba(2, 6, 23, .10);
+      --brand:#1f7a6b;
+      --brand2:#0ea5e9;
+      --bot:#f1f5f9;
     }
 
-    /* Subtle background decoration */
-    body::before {
-      content: '';
-      position: fixed;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(14, 165, 233, 0.08), transparent 70%);
-      top: -200px;
-      right: -200px;
-      border-radius: 50%;
-      animation: float 15s ease-in-out infinite;
-      z-index: 0;
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      min-height:100vh;
+      background: radial-gradient(900px 500px at 20% 10%, rgba(14,165,233,.12), transparent 60%),
+                  radial-gradient(900px 500px at 80% 15%, rgba(31,122,107,.14), transparent 55%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      padding: 22px 14px 40px;
     }
 
-    body::after {
-      content: '';
-      position: fixed;
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(circle, rgba(13, 122, 111, 0.06), transparent 70%);
-      bottom: -150px;
-      left: -150px;
-      border-radius: 50%;
-      animation: float 20s ease-in-out infinite reverse;
-      z-index: 0;
+    .wrap{ max-width: 980px; margin: 0 auto; }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding: 14px 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.65);
+      border: 1px solid rgba(226,232,240,.9);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 26px rgba(2,6,23,.06);
+    }
+    .brand{ display:flex; align-items:center; gap:12px; min-width: 0; }
+    .logo{
+      width:42px; height:42px;
+      border-radius: 12px;
+      background:#fff;
+      border:1px solid var(--border);
+      display:grid; place-items:center;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .logo img{ width:100%; height:100%; object-fit:contain; padding:6px; }
+    .brand h1{ font-size: 18px; margin:0; line-height:1.1; letter-spacing:.2px; }
+    .brand p{
+      margin:4px 0 0;
+      font-size: 12.5px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      max-width: 520px;
     }
 
-    @keyframes float {
-      0%, 100% { 
-        transform: translate(0, 0) scale(1);
-      }
-      50% { 
-        transform: translate(20px, -20px) scale(1.05);
-      }
-    }
-    
-    /* MAIN CONTAINER */
-    .main-content { 
-      max-width: 1100px; 
-      margin: 0 auto;
-      position: relative;
-      z-index: 1;
-    }
-    
-    .header {
-      background: var(--card-bg);
-      border: 1px solid rgba(226, 232, 240, 0.8);
-      border-radius: 20px; 
-      padding: 32px;
-      margin-bottom: 28px; 
-      box-shadow: var(--shadow-sm);
-      position: relative;
-      overflow: hidden;
+    .topbar-right{
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .header::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, rgba(13, 122, 111, 0.03), rgba(14, 165, 233, 0.03));
-      opacity: 0;
-      transition: opacity 0.3s ease;
+    .feedback-btn, .edit-btn{
+      padding: 8px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.9);
+      color: var(--brand);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    
-    .header h1 { 
-      font-size: 32px; 
-      color: var(--brand-primary); 
-      display: flex; 
-      align-items: center; 
-      gap: 14px;
-      position: relative;
-      z-index: 1;
-      font-weight: 700;
-    }
-    
-    .card {
-      background: var(--card-bg); 
-      border: 1px solid rgba(226, 232, 240, 0.8);
-      border-radius: 20px; 
-      padding: 40px;
-      margin-bottom: 28px; 
-      box-shadow: var(--shadow-sm);
-      position: relative;
+    .feedback-btn:hover, .edit-btn:hover{
+      background: var(--brand);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(31,122,107,.2);
     }
 
-    /* Stepper */
-    .step-indicator { 
-      display: flex; 
-      justify-content: space-between; 
-      margin-bottom: 50px; 
-      position: relative; 
+    .status{
+      display:flex; align-items:center; gap:10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.8);
+      flex:0 0 auto;
+      font-size: 12.5px;
+      color: var(--muted);
     }
-    
-    .step-indicator::before { 
-      content: ''; 
-      position: absolute; 
-      top: 20px; 
-      left: 0; 
-      right: 0; 
-      height: 3px; 
-      background: rgba(226, 232, 240, 0.8);
-      z-index: 0; 
-    }
-    
-    .step { 
-      position: relative; 
-      z-index: 1; 
-      flex: 1; 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      gap: 12px; 
-    }
-    
-    .step-circle { 
-      width: 40px; 
-      height: 40px; 
-      border-radius: 50%; 
-      background: white; 
-      border: 3px solid rgba(226, 232, 240, 0.8);
-      color: var(--text-muted); 
-      display: grid; 
-      place-items: center; 
-      font-weight: 700; 
-      font-size: 16px; 
-      transition: all 0.3s; 
-    }
-    
-    .step.active .step-circle { 
-      background: var(--brand-primary); 
-      border-color: var(--brand-primary); 
-      color: white; 
-      box-shadow: 0 0 0 5px rgba(13, 122, 111, 0.15);
-    }
-    
-    .step.completed .step-circle { 
-      background: #10b981; 
-      border-color: #10b981; 
-      color: white; 
-    }
-    
-    .step-label { 
-      font-size: 14px; 
-      font-weight: 600; 
-      color: var(--text-muted); 
-      text-align: center; 
-      background: white; 
-      padding: 0 6px; 
-    }
-    
-    .step.active .step-label { 
-      color: var(--brand-primary);
-      font-weight: 700;
-    }
-    
-    .form-section { 
-      display: none; 
-      animation: slideUp 0.4s ease-out; 
-    }
-    
-    .form-section.active { 
-      display: block; 
-    }
-    
-    @keyframes slideUp { 
-      from { 
-        opacity: 0; 
-        transform: translateY(10px); 
-      } 
-      to { 
-        opacity: 1; 
-        transform: translateY(0); 
-      } 
+    .dot{
+      width:10px; height:10px; border-radius:50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34,197,94,.14);
     }
 
-    .form-section h2 {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 8px;
-    }
-    
-    .type-selector { 
-      display: grid; 
-      grid-template-columns: repeat(3, 1fr); 
-      gap: 24px; 
-      margin: 30px 0; 
-    }
-    
-    .type-card { 
-      padding: 40px 30px; 
-      border: 2px solid rgba(226, 232, 240, 0.8);
-      border-radius: 16px; 
-      text-align: center; 
-      cursor: pointer; 
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      gap: 18px;
-      background: var(--card-bg);
-      position: relative;
-      overflow: hidden;
+    .card{
+      margin-top: 14px;
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(226,232,240,.95);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
     }
 
-    .type-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, rgba(13, 122, 111, 0.03), rgba(14, 165, 233, 0.03));
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    
-    .type-card:hover { 
-      border-color: var(--brand-primary); 
-      transform: translateY(-6px); 
-      box-shadow: var(--shadow-md);
+    .chat{
+      height: 540px;
+      overflow:auto;
+      padding: 18px 18px 10px;
+      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.78));
     }
 
-    .type-card:hover::before {
-      opacity: 1;
+    .msg{ display:flex; margin: 12px 0; gap:10px; align-items:flex-end; }
+    .msg.me{ justify-content:flex-end; }
+    .msg.bot{ justify-content:flex-start; }
+
+    .avatar{
+      width:34px; height:34px;
+      border-radius: 12px;
+      border:1px solid var(--border);
+      background:#fff;
+      display:grid; place-items:center;
+      color: var(--muted);
+      font-size: 12px;
+      flex:0 0 auto;
+      user-select:none;
     }
-    
-    .type-card.selected { 
-      border-color: var(--brand-primary); 
-      background: linear-gradient(135deg, rgba(13, 122, 111, 0.03), rgba(14, 165, 233, 0.03));
-      box-shadow: 0 0 0 3px rgba(13, 122, 111, 0.1);
-    }
-    
-    .type-icon { 
-      font-size: 56px;
-      transition: all 0.3s;
-      position: relative;
-      z-index: 1;
+    .msg.me .avatar{
+      background: rgba(31,122,107,.10);
+      color: var(--brand);
+      border-color: rgba(31,122,107,.25);
     }
 
-    .type-card:hover .type-icon,
-    .type-card.selected .type-icon {
-      transform: scale(1.1);
-    }
-    
-    .type-label { 
-      font-weight: 700; 
-      font-size: 18px;
-      color: var(--text-primary);
-      position: relative;
-      z-index: 1;
-    }
-
-    .form-grid { 
-      display: grid; 
-      grid-template-columns: repeat(2, 1fr); 
-      gap: 24px; 
-    }
-    
-    .form-group { 
-      display: flex; 
-      flex-direction: column; 
-      gap: 8px; 
-    }
-    
-    .form-group.full { 
-      grid-column: 1 / -1; 
-    }
-    
-    .form-label { 
-      font-size: 14px; 
-      font-weight: 600; 
-      color: #334155; 
-    }
-    
-    .form-input, .form-select, .form-textarea { 
-      padding: 12px 16px; 
-      border: 2px solid rgba(226, 232, 240, 0.8);
-      border-radius: 10px; 
-      width: 100%; 
-      font-size: 15px; 
-      outline: none; 
-      transition: all 0.2s; 
-    }
-    
-    .form-input:focus, .form-select:focus, .form-textarea:focus { 
-      border-color: var(--brand-primary); 
-      box-shadow: 0 0 0 4px rgba(13, 122, 111, 0.1);
-    }
-    
-    .form-textarea { 
-      min-height: 100px; 
-      resize: vertical; 
-      font-family: inherit;
+    .bubbleWrap{ max-width: 75%; display:flex; flex-direction:column; gap:6px; }
+    .bubble{
+      padding: 12px 14px;
+      border-radius: 16px;
       line-height: 1.6;
-    }
-    
-    .mode-toggle { 
-      display: flex; 
-      gap: 6px; 
-      background: var(--bg-secondary);
-      padding: 6px; 
-      border-radius: 12px; 
-      width: fit-content; 
-      margin: 0 auto 32px; 
-    }
-    
-    .mode-btn { 
-      padding: 10px 24px; 
-      border: none; 
-      border-radius: 8px; 
-      cursor: pointer; 
-      font-weight: 600; 
-      font-size: 15px; 
-      background: transparent; 
-      color: var(--text-muted); 
-      transition: all 0.2s; 
-    }
-    
-    .mode-btn.active { 
-      background: white; 
-      color: var(--brand-primary); 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.08); 
-    }
-
-    .search-container { 
-      background: linear-gradient(135deg, rgba(13, 122, 111, 0.03), rgba(14, 165, 233, 0.03));
-      padding: 24px; 
-      border-radius: 14px; 
-      margin-top: 24px; 
-      display: none; 
-      border: 2px solid rgba(13, 122, 111, 0.2);
-    }
-    
-    .search-container.show { 
-      display: block; 
-    }
-    
-    .search-row { 
-      display: flex; 
-      gap: 12px;
-      margin-top: 8px;
-    }
-    
-    .btn { 
-      padding: 13px 28px; 
-      border: none; 
-      border-radius: 10px; 
-      font-weight: 600; 
-      font-size: 15px; 
-      cursor: pointer; 
-      transition: all 0.2s; 
-      display: inline-flex; 
-      align-items: center; 
-      justify-content: center; 
-    }
-    
-    .btn-primary { 
-      background: var(--brand-primary); 
-      color: white; 
-      box-shadow: 0 2px 8px rgba(13, 122, 111, 0.2);
-    }
-    
-    .btn-primary:hover:not(:disabled) { 
-      background: #0a5d54;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(13, 122, 111, 0.3);
-    }
-    
-    .btn-secondary { 
-      background: white; 
-      border: 2px solid rgba(226, 232, 240, 0.8);
-      color: var(--text-primary); 
-    }
-
-    .btn-secondary:hover:not(:disabled) {
-      border-color: var(--brand-primary);
-      color: var(--brand-primary);
-      transform: translateY(-2px);
-    }
-    
-    .btn:disabled { 
-      opacity: 0.6; 
-      cursor: not-allowed; 
-    }
-    
-    .button-group { 
-      display: flex; 
-      justify-content: flex-end; 
-      gap: 14px; 
-      margin-top: 40px; 
-      padding-top: 24px; 
-      border-top: 2px solid var(--bg-secondary);
-    }
-
-    /* Review Area */
-    .review-grid { 
-      display: grid; 
-      grid-template-columns: repeat(2, 1fr); 
-      gap: 20px; 
-      font-size: 15px; 
-    }
-    
-    .review-item { 
-      background: var(--bg-primary);
-      padding: 16px; 
-      border-radius: 10px;
-      border: 1px solid rgba(226, 232, 240, 0.5);
-    }
-    
-    .review-item.full { 
-      grid-column: 1 / -1; 
-    }
-    
-    .review-label { 
-      font-size: 12px; 
-      color: var(--text-muted); 
-      text-transform: uppercase; 
-      letter-spacing: 0.8px; 
-      margin-bottom: 6px;
-      font-weight: 700;
-    }
-    
-    .review-val { 
-      font-weight: 500; 
       word-break: break-word;
-      line-height: 1.6;
-      color: var(--text-primary);
+      box-shadow: 0 10px 26px rgba(2,6,23,.06);
+      border: 1px solid rgba(226,232,240,.8);
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+    .msg.bot .bubble{
+      background: var(--bot);
+      color: var(--text);
+      border-bottom-left-radius: 8px;
+    }
+    .msg.me .bubble{
+      background: var(--brand);
+      color: #fff;
+      border-color: rgba(31,122,107,.35);
+      border-bottom-right-radius: 8px;
     }
 
-    @media (max-width: 768px) {
-      body {
-        padding: 20px 15px;
-      }
+    .meta{
+      font-size: 11.5px;
+      color: var(--muted);
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .msg.me .meta{ justify-content:flex-end; }
+    .msg.bot .meta{ justify-content:flex-start; }
 
-      .header h1 {
-        font-size: 24px;
-      }
+    .divider{ height:1px; background: rgba(226,232,240,.9); }
 
-      .card {
-        padding: 24px;
-      }
+    .composer{
+      display:flex;
+      flex-direction: column;
+      gap:12px;
+      padding: 14px;
+      background: rgba(255,255,255,.92);
+    }
+    .category-row{ display:flex; gap:10px; align-items:center; }
+    .category-label{ font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
 
-      .type-selector {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
+    .composer-row{ display:flex; gap:10px; align-items:stretch; }
+    .select{
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 12px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      flex: 1;
+    }
+    .select:focus{
+      border-color: rgba(14,165,233,.55);
+      box-shadow: 0 0 0 4px rgba(14,165,233,.12);
+    }
 
-      .type-icon {
-        font-size: 48px;
-      }
+    .input{
+      flex:1;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 12px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+    }
+    .input:focus{
+      border-color: rgba(14,165,233,.55);
+      box-shadow: 0 0 0 4px rgba(14,165,233,.12);
+    }
 
-      .type-label {
-        font-size: 16px;
-      }
-      
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .review-grid {
-        grid-template-columns: 1fr;
-      }
+    .btn{
+      border:none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 600;
+      cursor:pointer;
+      background: linear-gradient(180deg, rgba(31,122,107,1), rgba(22,120,105,.95));
+      color:#fff;
+      min-width: 92px;
+      box-shadow: 0 10px 18px rgba(31,122,107,.18);
+    }
+    .btn:disabled{ opacity:.6; cursor:not-allowed; box-shadow:none; }
 
-      .step-circle {
-        width: 36px;
-        height: 36px;
-        font-size: 14px;
-      }
+    .foot{
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      gap:10px;
+      padding: 10px 14px 14px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,.92);
+    }
+    .foot .small{ opacity:.9; }
 
-      .step-label {
-        font-size: 12px;
-      }
+    /* ===== TYPING INDICATOR STYLES ===== */
+    .typing-indicator{
+      display:none;
+      align-items:flex-end;
+      gap:10px;
+      padding: 12px 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.78));
+    }
+    .typing-indicator.show{ display:flex; }
+    .typing-indicator .avatar{
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 12px;
+      flex: 0 0 auto;
+    }
+    .typing-bubble{
+      background: var(--bot);
+      border: 1px solid rgba(226,232,240,.8);
+      border-radius: 16px;
+      border-bottom-left-radius: 8px;
+      padding: 12px 14px;
+      box-shadow: 0 10px 26px rgba(2,6,23,.06);
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .typing-dot{
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      animation: typingBounce 1.4s infinite;
+    }
+    .typing-dot:nth-child(2){ animation-delay: 0.2s; }
+    .typing-dot:nth-child(3){ animation-delay: 0.4s; }
+    @keyframes typingBounce{
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
+      30% { transform: translateY(-10px); opacity: 1; }
+    }
+
+    /* ===== MODAL STYLES ===== */
+    .modal-overlay{
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.3s;
+    }
+    .modal-overlay.show{ display: flex; }
+
+    .modal-content{
+      background: white;
+      border-radius: 22px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease-out;
+    }
+    .modal-content.wide{ max-width: 800px; }
+
+    .modal-header{
+      background: linear-gradient(135deg, rgba(31,122,107,0.08), rgba(14,165,233,0.08));
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 22px 22px 0 0;
+    }
+
+    .modal-header h2{
+      margin: 0;
+      font-size: 20px;
+      color: var(--brand);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-close{
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(0, 0, 0, 0.05);
+      color: var(--muted);
+      font-size: 20px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all 0.2s;
+    }
+    .modal-close:hover{
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+
+    .modal-body{ padding: 24px; }
+
+    .form-row{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .form-group{ display: flex; flex-direction: column; gap: 8px; }
+    .form-group.full{ grid-column: 1 / -1; }
+
+    .form-label{ font-size: 14px; font-weight: 600; color: var(--text); }
+    .form-input, .form-select, .form-textarea{
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus{
+      border-color: var(--brand);
+      box-shadow: 0 0 0 4px rgba(31,122,107,0.1);
+    }
+    .form-select{
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+    }
+    .form-textarea{ resize: vertical; min-height: 120px; line-height: 1.6; }
+
+    .submit-btn{
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--brand), #16756a);
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(31,122,107,.25);
+      transition: all 0.3s;
+    }
+    .submit-btn:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px rgba(31,122,107,.35);
+    }
+    .submit-btn:disabled{ opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* === NEW: Search section styles === */
+    .search-section{
+      background: rgba(31,122,107,0.05);
+      border: 2px dashed var(--brand);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .search-row{
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+    .search-btn{
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--brand), #16756a);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(31,122,107,.2);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .search-btn:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(31,122,107,.3);
+    }
+    .search-btn:disabled{
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .info-badge{
+      display: inline-block;
+      background: rgba(14,165,233,0.1);
+      color: var(--brand2);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .success-message{
+      display: none;
+      padding: 24px;
+      text-align: center;
+      color: var(--brand);
+      font-size: 16px;
+      font-weight: 600;
+      animation: fadeIn 0.5s;
+    }
+    .success-message.show{ display: block; }
+
+    @keyframes fadeIn{
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp{
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 720px){
+      .chat{ height: 68vh; }
+      .brand p{ max-width: 240px; }
+      .bubbleWrap{ max-width: 86%; }
+      .form-row { grid-template-columns: 1fr; }
+      .topbar { flex-direction: column; align-items: stretch; gap: 10px; }
+      .topbar-right { justify-content: space-between; flex-wrap: wrap; }
+      .modal-content { max-height: 85vh; }
+      .search-row { flex-direction: column; align-items: stretch; }
+      .search-btn { width: 100%; }
     }
   </style>
 </head>
-<body>
 
-  <div class="main-content">
-    <div class="header">
-      <h1>📚 KIB Knowledge Base Editor</h1>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" title="KIB">
+          <img src="https://tg7htk4h89-afk.github.io/bank-chatbot-web/logo3gpt.jpg" alt="Chat3PT logo" onerror="this.style.display='none'; this.parentElement.textContent='KIB'; this.parentElement.style.fontWeight='700';" />
+        </div>
+        <div style="min-width:0">
+          <h1>Chat3PT</h1>
+          <p>KIB Knowledge Assistant (Products • Policies • Procedures)</p>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <!-- === NEW: Edit Existing button === -->
+        <button class="edit-btn" onclick="openEditModal()">
+          <span style="font-size: 16px;">✏️</span>
+          Edit Existing
+        </button>
+        <button class="feedback-btn" onclick="openFeedbackModal()">
+          <span style="font-size: 16px;">💬</span>
+          Feedback
+        </button>
+        <div class="status">
+          <span class="dot" id="statusDot"></span>
+          <span id="statusText">Ready</span>
+        </div>
+      </div>
     </div>
 
     <div class="card">
-      <div class="step-indicator">
-        <div class="step active" data-step="1">
-          <div class="step-circle">1</div>
-          <div class="step-label">Type & Mode</div>
-        </div>
-        <div class="step" data-step="2">
-          <div class="step-circle">2</div>
-          <div class="step-label">Core Info</div>
-        </div>
-        <div class="step" data-step="3">
-          <div class="step-circle">3</div>
-          <div class="step-label">Details</div>
-        </div>
-        <div class="step" data-step="4">
-          <div class="step-circle">4</div>
-          <div class="step-label">Review</div>
+      <div class="chat" id="chat"></div>
+
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="avatar">3PT</div>
+        <div class="typing-bubble">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
         </div>
       </div>
 
-      <div class="form-section active" id="section1">
-        <div class="mode-toggle">
-          <button class="mode-btn active" onclick="setMode('add', event)">New Entry</button>
-          <button class="mode-btn" onclick="setMode('edit', event)">Edit Existing</button>
+      <div class="divider"></div>
+
+      <div class="composer">
+        <div class="category-row">
+          <span class="category-label">Please choose category or use Auto-detect</span>
         </div>
 
-        <div class="type-selector">
-          <div class="type-card" onclick="selectType('product', this)">
-            <div class="type-icon">💳</div>
-            <div class="type-label">Product</div>
-          </div>
-          <div class="type-card" onclick="selectType('procedure', this)">
-            <div class="type-icon">📋</div>
-            <div class="type-label">Procedure</div>
-          </div>
-          <div class="type-card" onclick="selectType('policy', this)">
-            <div class="type-icon">⚖️</div>
-            <div class="type-label">Policy</div>
-          </div>
-        </div>
+        <input id="inp" class="input" placeholder="Type your question..." autocomplete="off" style="width: 100%;" />
 
-        <div class="search-container" id="searchBox">
-          <label class="form-label">Search by ID</label>
-          <div class="search-row">
-            <input type="text" id="searchId" class="form-input" placeholder="e.g., PRD-0001">
-            <button class="btn btn-primary" onclick="fetchData()">Search</button>
-          </div>
-          <p id="searchStatus" style="margin-top:10px; font-size:14px; color:var(--text-muted);"></p>
-        </div>
-
-        <div class="button-group">
-          <button class="btn btn-primary" id="btnStep1" onclick="nextStep()" disabled>Next Step &rarr;</button>
+        <div class="composer-row">
+          <select id="categorySelect" class="select">
+            <option value="">Auto-detect</option>
+            <option value="policy">Policy</option>
+            <option value="procedure">Procedure</option>
+            <option value="product">Product</option>
+          </select>
+          <button id="sendBtn" class="btn">Send</button>
         </div>
       </div>
 
-      <div class="form-section" id="section2">
-        <h2>Core Information</h2>
-        <div id="formBasic" class="form-grid" style="margin-top:24px;"></div>
-        <div class="button-group">
-          <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
-          <button class="btn btn-primary" onclick="nextStep()">Next Step &rarr;</button>
-        </div>
+      <div class="foot">
+        <div class="small">Chat3PT • Web UI</div>
       </div>
-
-      <div class="form-section" id="section3">
-        <h2>Detailed Attributes</h2>
-        <div id="formDetails" class="form-grid" style="margin-top:24px;"></div>
-        <div class="button-group">
-          <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
-          <button class="btn btn-primary" onclick="nextStep()">Review &rarr;</button>
-        </div>
-      </div>
-
-      <div class="form-section" id="section4">
-        <h2 style="margin-bottom:24px;">Review Entry</h2>
-        <div id="reviewContent" class="review-grid"></div>
-        <div class="button-group">
-          <button class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
-          <button class="btn btn-primary" onclick="submitData()">Submit Data ✅</button>
-        </div>
-      </div>
-
     </div>
   </div>
 
-<script>
-  // YOUR N8N URL
-  const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/webhook";
+  <!-- Feedback Modal -->
+  <div class="modal-overlay" id="feedbackModal" onclick="closeFeedbackModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>
+          <span style="font-size: 24px;">💬</span>
+          Feedback
+        </h2>
+        <button class="modal-close" onclick="closeFeedbackModal()">&times;</button>
+      </div>
 
-  // STATE
-  let currentStep = 1;
-  let mode = 'add';
-  let selectedType = null;
-  let currentId = null;
-  let formData = {};
+      <div class="modal-body" id="feedbackFormContainer">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input" id="feedbackName" placeholder="Your Name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Department</label>
+            <input type="text" class="form-input" id="feedbackDept" placeholder="Department" />
+          </div>
+        </div>
 
-  // SCHEMAS (Must match Google Sheet Columns)
-  const schemas = {
-    product: {
-      basic: [
-        { key: 'product_id', label: 'Product ID', type: 'text', placeholder: 'Auto', readonlyInEdit: true },
-        { key: 'product_name', label: 'Product Name', type: 'text' },
-        { key: 'family', label: 'Family', type: 'select', options: ['Cards', 'Accounts', 'Deposits', 'Digital', 'Financing', 'Loans', 'Treasury'] },
-        { key: 'tier', label: 'Tier', type: 'select', options: ['Basic', 'Standard', 'Plus', 'Premium', 'Gold', 'Platinum'] },
-        { key: 'status', label: 'Status', type: 'select', options: ['draft', 'active', 'archived'] },
-        { key: 'owner', label: 'Owner (Dept)', type: 'text' }
-      ],
-      details: [
-        { key: 'description', label: 'Description', type: 'textarea', full: true },
-        { key: 'features', label: 'Features', type: 'textarea', full: true },
-        { key: 'eligibility', label: 'Eligibility', type: 'textarea', full: true },
-        { key: 'fees', label: 'Fees', type: 'text' },
-        { key: 'channels', label: 'Channels', type: 'text' },
-        { key: 'keywords', label: 'Keywords', type: 'text', full: true },
-        { key: 'sample_questions', label: 'Sample Questions', type: 'textarea', full: true }
-      ]
-    },
-    procedure: {
-      basic: [
-        { key: 'procedure_id', label: 'Procedure ID', type: 'text', placeholder: 'Auto', readonlyInEdit: true },
-        { key: 'procedure_name', label: 'Procedure Name', type: 'text', full: true },
-        { key: 'related_area', label: 'Related Area', type: 'text' },
-        { key: 'sla', label: 'SLA', type: 'text' },
-        { key: 'risk_level', label: 'Risk Level', type: 'select', options: ['low', 'medium', 'high'] },
-        { key: 'owner', label: 'Owner', type: 'text' }
-      ],
-      details: [
-        { key: 'when_to_use', label: 'When to Use', type: 'textarea', full: true },
-        { key: 'step_by_step', label: 'Steps', type: 'textarea', full: true },
-        { key: 'systems_used', label: 'Systems Used', type: 'text' },
-        { key: 'common_errors', label: 'Common Errors', type: 'text', full: true },
-        { key: 'keywords', label: 'Keywords', type: 'text', full: true },
-        { key: 'sample_questions', label: 'Sample Questions', type: 'textarea', full: true }
-      ]
-    },
-    policy: {
-      basic: [
-        { key: 'policy_id', label: 'Policy ID', type: 'text', placeholder: 'Auto', readonlyInEdit: true },
-        { key: 'policy_name', label: 'Policy Name', type: 'text' },
-        { key: 'scope', label: 'Scope', type: 'text' },
-        { key: 'status', label: 'Status', type: 'select', options: ['draft', 'active', 'under_review'] },
-        { key: 'review_cycle', label: 'Review Cycle', type: 'select', options: ['annual', 'semi-annual', 'quarterly'] },
-        { key: 'owner', label: 'Owner', type: 'text' }
-      ],
-      details: [
-        { key: 'summary', label: 'Summary', type: 'textarea', full: true },
-        { key: 'do', label: 'Do (Allowed)', type: 'textarea', full: true },
-        { key: 'dont', label: 'Don\'t (Prohibited)', type: 'textarea', full: true },
-        { key: 'applicable_to', label: 'Applicable To', type: 'text' },
-        { key: 'escalation', label: 'Escalation Point', type: 'text' },
-        { key: 'keywords', label: 'Keywords', type: 'text', full: true },
-        { key: 'sample_questions', label: 'Sample Questions', type: 'textarea', full: true }
-      ]
+        <div class="form-group full">
+          <label class="form-label">Feedback Category</label>
+          <select class="form-select" id="feedbackCategory">
+            <option value="">Select Category</option>
+            <option value="policy">Policy</option>
+            <option value="procedure">Procedure</option>
+            <option value="product">Product</option>
+            <option value="general">General Improvement</option>
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Your Feedback</label>
+          <textarea class="form-textarea" id="feedbackText" placeholder="Share your feedback with us..."></textarea>
+        </div>
+
+        <button class="submit-btn" onclick="submitFeedback()">Submit Feedback</button>
+      </div>
+
+      <div class="success-message" id="successMessage">
+        ✅ Thank you! Your feedback has been sent.
+      </div>
+    </div>
+  </div>
+
+  <!-- === NEW: Edit Existing Modal === -->
+  <div class="modal-overlay" id="editModal" onclick="closeEditModal(event)">
+    <div class="modal-content wide" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>
+          <span style="font-size: 24px;">✏️</span>
+          Edit Existing Procedure
+        </h2>
+        <button class="modal-close" onclick="closeEditModal()">&times;</button>
+      </div>
+
+      <div class="modal-body" id="editFormContainer">
+        <!-- Search Section -->
+        <div class="search-section">
+          <div class="form-group">
+            <label class="form-label">🔍 Search by Procedure ID</label>
+            <div class="search-row">
+              <div class="form-group" style="flex: 1; margin: 0;">
+                <input 
+                  type="text" 
+                  class="form-input" 
+                  id="searchProcId" 
+                  placeholder="Enter Procedure ID (e.g., PROC-0001)" 
+                  style="text-transform: uppercase;"
+                />
+                <span class="info-badge">Enter ID to auto-fill all fields below</span>
+              </div>
+              <button class="search-btn" onclick="searchProcedure()">
+                Search & Load
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Form -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Procedure ID</label>
+            <input type="text" class="form-input" id="editProcId" placeholder="PROC-0001" readonly style="background: #f8fafc;" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Procedure Name</label>
+            <input type="text" class="form-input" id="editProcName" placeholder="Procedure Name" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Related Area</label>
+            <input type="text" class="form-input" id="editRelatedArea" placeholder="e.g., Debit Card" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">SLA</label>
+            <input type="text" class="form-input" id="editSla" placeholder="e.g., Same day" />
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">When to Use</label>
+          <textarea class="form-textarea" id="editWhenToUse" placeholder="Describe when this procedure should be used..." style="min-height: 80px;"></textarea>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Step-by-Step</label>
+          <textarea class="form-textarea" id="editStepByStep" placeholder="Enter step-by-step instructions..." style="min-height: 140px;"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Systems Used</label>
+            <input type="text" class="form-input" id="editSystemsUsed" placeholder="e.g., Core Banking, CRM" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Owner</label>
+            <input type="text" class="form-input" id="editOwner" placeholder="e.g., Digital Banking" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Risk Level</label>
+            <select class="form-select" id="editRiskLevel">
+              <option value="">Select Risk Level</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Updated</label>
+            <input type="date" class="form-input" id="editLastUpdated" />
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Keywords</label>
+          <input type="text" class="form-input" id="editKeywords" placeholder="Comma-separated keywords..." />
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Sample Questions</label>
+          <textarea class="form-textarea" id="editSampleQuestions" placeholder="Example questions users might ask..." style="min-height: 80px;"></textarea>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Common Errors</label>
+          <textarea class="form-textarea" id="editCommonErrors" placeholder="Common mistakes to avoid..." style="min-height: 80px;"></textarea>
+        </div>
+
+        <button class="submit-btn" onclick="submitEdit()" id="submitEditBtn">Update Procedure</button>
+      </div>
+
+      <div class="success-message" id="editSuccessMessage">
+        ✅ Procedure updated successfully!
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const WEBHOOK_URL = "https://taherkib.app.n8n.cloud/webhook/bf161d07-e9be-48fe-bdfa-0ea9e3e1abb5";
+
+    function getSessionId() {
+      const key = "kc_session_id";
+      let sid = localStorage.getItem(key);
+      if (!sid) {
+        sid = "SID-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+        localStorage.setItem(key, sid);
+      }
+      return sid;
     }
-  };
 
-  // --- UI LOGIC ---
+    const chat = document.getElementById("chat");
+    const inp  = document.getElementById("inp");
+    const btn  = document.getElementById("sendBtn");
+    const categorySelect = document.getElementById("categorySelect");
+    const statusText = document.getElementById("statusText");
+    const statusDot  = document.getElementById("statusDot");
+    const typingIndicator = document.getElementById("typingIndicator");
 
-  function setMode(m, e) {
-    mode = m;
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-    if(e) e.target.classList.add('active');
-    
-    const searchBox = document.getElementById('searchBox');
-    if (mode === 'edit') {
-      searchBox.classList.add('show');
-      document.getElementById('btnStep1').disabled = true;
-    } else {
-      searchBox.classList.remove('show');
-      formData = {};
-      if(selectedType) document.getElementById('btnStep1').disabled = false;
+    function setStatus(text, ok=true){
+      statusText.textContent = text;
+      statusDot.style.background = ok ? "#22c55e" : "#ef4444";
+      statusDot.style.boxShadow = ok ? "0 0 0 4px rgba(34,197,94,.14)" : "0 0 0 4px rgba(239,68,68,.14)";
     }
-    renderForms();
-  }
 
-  function selectType(t, el) {
-    selectedType = t;
-    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-    
-    formData = {};
-    if (mode === 'add') {
-      document.getElementById('btnStep1').disabled = false;
-    } else {
-      document.getElementById('btnStep1').disabled = true;
-      document.getElementById('searchStatus').innerText = '';
+    function showTyping() {
+      typingIndicator.classList.add('show');
+      chat.scrollTop = chat.scrollHeight;
     }
-    renderForms();
-  }
 
-  // --- FETCH & SUBMIT LOGIC ---
+    function hideTyping() {
+      typingIndicator.classList.remove('show');
+    }
 
-  async function fetchData() {
-    const id = document.getElementById('searchId').value.trim();
-    const status = document.getElementById('searchStatus');
-    
-    if(!selectedType) { alert('Select a type first'); return; }
-    if(!id) { alert('Enter an ID'); return; }
+    function timeNow(){
+      return new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+    }
 
-    status.innerText = 'Searching...';
-    status.style.color = 'var(--text-muted)';
+    function isArabic(text){
+      return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(text);
+    }
 
-    try {
-      const url = `${WEBHOOK_URL}?action=fetch&type=${selectedType}&id=${encodeURIComponent(id)}`;
-      const res = await fetch(url);
-      
-      if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+    function add(role, text){
+      const row = document.createElement("div");
+      row.className = "msg " + (role === "me" ? "me" : "bot");
 
-      const data = await res.json();
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = (role === "me") ? "Me" : "3PT";
 
-      // Unwrap logic
-      let row = Array.isArray(data) ? data[0] : data;
-      if (row && row.json) row = row.json;
+      const wrap = document.createElement("div");
+      wrap.className = "bubbleWrap";
 
-      if (!row || Object.keys(row).length === 0 || row.error) {
-        status.innerText = '❌ Not Found';
-        status.style.color = '#ef4444';
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.innerHTML = text;
+
+      bubble.dir = isArabic(text) ? "rtl" : "ltr";
+      bubble.style.textAlign = isArabic(text) ? "right" : "left";
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.textContent = timeNow();
+
+      wrap.appendChild(bubble);
+      wrap.appendChild(meta);
+
+      if (role === "me"){
+        row.appendChild(wrap);
+        row.appendChild(avatar);
+      } else {
+        row.appendChild(avatar);
+        row.appendChild(wrap);
+      }
+
+      chat.appendChild(row);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    async function send(){
+      const msg = (inp.value || "").trim();
+      if (!msg) return;
+
+      const category = categorySelect.value;
+
+      add("me", msg);
+      inp.value = "";
+      btn.disabled = true;
+      setStatus("Sending...", true);
+      showTyping();
+
+      try{
+        const sid = getSessionId();
+        console.log("SESSION_ID:", sid);
+
+        const payload = {
+          message: msg,
+          session_id: sid,
+          category: category
+        };
+
+        const res = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const contentType = res.headers.get("content-type") || "";
+        let data;
+
+        if (contentType.includes("application/json")){
+          data = await res.json();
+        } else {
+          const t = await res.text();
+          throw new Error("Non-JSON response: " + t.slice(0,120));
+        }
+
+        let answer = "";
+
+        if (data && Array.isArray(data.output) && data.output.length > 0) {
+          const firstOutput = data.output[0];
+          if (firstOutput.content && Array.isArray(firstOutput.content) && firstOutput.content[0]) {
+            answer = firstOutput.content[0].text || "";
+          }
+        } else if (data && Array.isArray(data) && data[0] && data[0].output) {
+          const firstItem = data[0];
+          if (Array.isArray(firstItem.output) && firstItem.output[0]) {
+            const firstOutput = firstItem.output[0];
+            if (firstOutput.content && Array.isArray(firstOutput.content) && firstOutput.content[0]) {
+              answer = firstOutput.content[0].text || "";
+            }
+          }
+        } else if (data && (data.answer || data.output || data.text)) {
+          answer = data.answer || data.output || data.text;
+        } else {
+          answer = JSON.stringify(data, null, 2);
+        }
+
+        answer = answer.trim();
+        hideTyping();
+        add("bot", answer);
+        setStatus("Ready", true);
+
+      } catch(e){
+        hideTyping();
+        add("bot", "Connection error: " + (e?.message || e));
+        setStatus("Disconnected", false);
+      } finally {
+        btn.disabled = false;
+        inp.focus();
+      }
+    }
+
+    add("bot", "Hi — I'm Chat3PT. Ask me about KIB products, policies, or procedures.");
+    btn.addEventListener("click", send);
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+
+    // Feedback Modal Functions
+    function openFeedbackModal() {
+      document.getElementById('feedbackModal').classList.add('show');
+      document.getElementById('successMessage').classList.remove('show');
+      document.getElementById('feedbackFormContainer').style.display = 'block';
+    }
+
+    function closeFeedbackModal(event) {
+      if (!event || event.target.id === 'feedbackModal' || event.target.classList.contains('modal-close')) {
+        document.getElementById('feedbackModal').classList.remove('show');
+      }
+    }
+
+    async function submitFeedback() {
+      const name = document.getElementById('feedbackName').value.trim();
+      const dept = document.getElementById('feedbackDept').value.trim();
+      const category = document.getElementById('feedbackCategory').value;
+      const text = document.getElementById('feedbackText').value.trim();
+
+      if (!name || !dept || !category || !text) {
+        alert('Please fill in all fields');
         return;
       }
 
-      // Normalization
-      const cleanRow = {};
-      Object.keys(row).forEach(key => {
-        const cleanKey = key.toLowerCase().trim().replace(/ /g, '_');
-        cleanRow[cleanKey] = row[key];
-        cleanRow[key] = row[key]; // Keep original
-      });
-      
-      status.innerText = '✅ Found!';
-      status.style.color = '#10b981';
-      formData = cleanRow;
-      currentId = id;
-      document.getElementById('btnStep1').disabled = false;
-      renderForms();
-      
-    } catch(e) {
-      status.innerText = '❌ Network Error';
-      status.style.color = '#ef4444';
-      console.error(e);
-    }
-  }
+      const submitBtn = event.target;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
 
-  function renderForms() {
-    if(!selectedType) return;
-    const schema = schemas[selectedType];
-    
-    const build = (fields) => fields.map(f => {
-      let val = formData[f.key];
-      if (val === undefined || val === null) val = '';
-      
-      const isReadonly = mode === 'edit' && f.readonlyInEdit ? 'disabled style="background:var(--bg-primary);"' : '';
-      
-      let input = '';
-      if(f.type === 'textarea') {
-        input = `<textarea name="${f.key}" class="form-textarea" ${isReadonly}>${val}</textarea>`;
-      } else if(f.type === 'select') {
-        input = `<select name="${f.key}" class="form-select" ${isReadonly}>
-          <option value="">Select...</option>
-          ${f.options.map(o => `<option value="${o}" ${String(val) === String(o) ? 'selected' : ''}>${o}</option>`).join('')}
-        </select>`;
-      } else {
-        input = `<input type="text" name="${f.key}" value="${val}" class="form-input" placeholder="${f.placeholder||''}" ${isReadonly}>`;
+      try {
+        await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'suggestion',
+            name: name,
+            department: dept,
+            category: category,
+            suggestion: text,
+            timestamp: new Date().toISOString()
+          })
+        });
+
+        document.getElementById('feedbackFormContainer').style.display = 'none';
+        document.getElementById('successMessage').classList.add('show');
+
+        document.getElementById('feedbackName').value = '';
+        document.getElementById('feedbackDept').value = '';
+        document.getElementById('feedbackCategory').value = '';
+        document.getElementById('feedbackText').value = '';
+
+        setTimeout(() => {
+          closeFeedbackModal();
+        }, 2500);
+
+      } catch (error) {
+        alert('Error submitting feedback. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Feedback';
       }
+    }
+
+    // === NEW: Edit Modal Functions ===
+    function openEditModal() {
+      document.getElementById('editModal').classList.add('show');
+      document.getElementById('editSuccessMessage').classList.remove('show');
+      document.getElementById('editFormContainer').style.display = 'block';
+      clearEditForm();
+    }
+
+    function closeEditModal(event) {
+      if (!event || event.target.id === 'editModal' || event.target.classList.contains('modal-close')) {
+        document.getElementById('editModal').classList.remove('show');
+      }
+    }
+
+    function clearEditForm() {
+      document.getElementById('searchProcId').value = '';
+      document.getElementById('editProcId').value = '';
+      document.getElementById('editProcName').value = '';
+      document.getElementById('editRelatedArea').value = '';
+      document.getElementById('editSla').value = '';
+      document.getElementById('editWhenToUse').value = '';
+      document.getElementById('editStepByStep').value = '';
+      document.getElementById('editSystemsUsed').value = '';
+      document.getElementById('editOwner').value = '';
+      document.getElementById('editRiskLevel').value = '';
+      document.getElementById('editLastUpdated').value = '';
+      document.getElementById('editKeywords').value = '';
+      document.getElementById('editSampleQuestions').value = '';
+      document.getElementById('editCommonErrors').value = '';
+    }
+
+    // === NEW: Search and Auto-fill Procedure ===
+    async function searchProcedure() {
+      const procId = document.getElementById('searchProcId').value.trim().toUpperCase();
       
-      return `<div class="form-group ${f.full?'full':''}">
-        <label class="form-label">${f.label}</label>
-        ${input}
-      </div>`;
-    }).join('');
+      if (!procId) {
+        alert('Please enter a Procedure ID');
+        return;
+      }
 
-    document.getElementById('formBasic').innerHTML = build(schema.basic);
-    document.getElementById('formDetails').innerHTML = build(schema.details);
-  }
+      const searchBtn = document.querySelector('.search-btn');
+      searchBtn.disabled = true;
+      searchBtn.textContent = 'Searching...';
 
-  function harvest() {
-    const inputs = document.querySelectorAll(`#section${currentStep} input, #section${currentStep} select, #section${currentStep} textarea`);
-    inputs.forEach(i => formData[i.name] = i.value);
-  }
+      try {
+        // Send request to n8n to fetch procedure data
+        const res = await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'get_procedure',
+            procedure_id: procId
+          })
+        });
 
-  function nextStep() {
-    harvest();
-    if(currentStep < 4) {
-      currentStep++;
-      updateSteps();
+        const data = await res.json();
+
+        // Check if we got procedure data back
+        if (data && data.procedure) {
+          const proc = data.procedure;
+          
+          // Auto-fill all fields
+          document.getElementById('editProcId').value = proc.procedure_id || '';
+          document.getElementById('editProcName').value = proc.procedure_name || '';
+          document.getElementById('editRelatedArea').value = proc.related_area || '';
+          document.getElementById('editSla').value = proc.sla || '';
+          document.getElementById('editWhenToUse').value = proc.when_to_use || '';
+          document.getElementById('editStepByStep').value = proc.step_by_step || '';
+          document.getElementById('editSystemsUsed').value = proc.systems_used || '';
+          document.getElementById('editOwner').value = proc.owner || '';
+          document.getElementById('editRiskLevel').value = proc.risk_level || '';
+          document.getElementById('editLastUpdated').value = proc.last_updated || '';
+          document.getElementById('editKeywords').value = proc.keywords || '';
+          document.getElementById('editSampleQuestions').value = proc.sample_questions || '';
+          document.getElementById('editCommonErrors').value = proc.common_errors || '';
+
+          alert('✅ Procedure loaded successfully! You can now edit the fields.');
+        } else {
+          alert('❌ Procedure ID not found. Please check and try again.');
+        }
+
+      } catch (error) {
+        console.error('Search error:', error);
+        alert('Error loading procedure. Please try again.');
+      } finally {
+        searchBtn.disabled = false;
+        searchBtn.textContent = 'Search & Load';
+      }
     }
-    if(currentStep === 4) renderReview();
-  }
 
-  function prevStep() {
-    harvest();
-    if(currentStep > 1) {
-      currentStep--;
-      updateSteps();
+    async function submitEdit() {
+      const procId = document.getElementById('editProcId').value.trim();
+      
+      if (!procId) {
+        alert('Please search for a procedure first');
+        return;
+      }
+
+      const submitBtn = document.getElementById('submitEditBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Updating...';
+
+      try {
+        const payload = {
+          type: 'update_procedure',
+          procedure_id: procId,
+          procedure_name: document.getElementById('editProcName').value.trim(),
+          related_area: document.getElementById('editRelatedArea').value.trim(),
+          sla: document.getElementById('editSla').value.trim(),
+          when_to_use: document.getElementById('editWhenToUse').value.trim(),
+          step_by_step: document.getElementById('editStepByStep').value.trim(),
+          systems_used: document.getElementById('editSystemsUsed').value.trim(),
+          owner: document.getElementById('editOwner').value.trim(),
+          risk_level: document.getElementById('editRiskLevel').value,
+          last_updated: document.getElementById('editLastUpdated').value,
+          keywords: document.getElementById('editKeywords').value.trim(),
+          sample_questions: document.getElementById('editSampleQuestions').value.trim(),
+          common_errors: document.getElementById('editCommonErrors').value.trim(),
+          timestamp: new Date().toISOString()
+        };
+
+        await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        document.getElementById('editFormContainer').style.display = 'none';
+        document.getElementById('editSuccessMessage').classList.add('show');
+
+        setTimeout(() => {
+          closeEditModal();
+        }, 2500);
+
+      } catch (error) {
+        console.error('Update error:', error);
+        alert('Error updating procedure. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Update Procedure';
+      }
     }
-  }
 
-  function updateSteps() {
-    document.querySelectorAll('.step').forEach((s, i) => {
-      s.classList.remove('active', 'completed');
-      if(i + 1 < currentStep) s.classList.add('completed');
-      if(i + 1 === currentStep) s.classList.add('active');
+    // Auto-uppercase procedure ID as user types
+    document.getElementById('searchProcId').addEventListener('input', function(e) {
+      e.target.value = e.target.value.toUpperCase();
     });
-    document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
-    document.getElementById(`section${currentStep}`).classList.add('active');
-  }
 
-  function renderReview() {
-    let html = '';
-    const allFields = [...schemas[selectedType].basic, ...schemas[selectedType].details];
-    
-    allFields.forEach(f => {
-      if(formData[f.key]) {
-        html += `<div class="review-item ${f.full?'full':''}">
-          <div class="review-label">${f.label}</div>
-          <div class="review-val">${formData[f.key]}</div>
-        </div>`;
+    // Allow Enter key to search
+    document.getElementById('searchProcId').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        searchProcedure();
       }
     });
-    document.getElementById('reviewContent').innerHTML = html;
-  }
 
-  async function submitData() {
-    const btn = document.querySelector('#section4 .btn-primary');
-    const oldText = btn.innerText;
-    btn.innerText = 'Submitting...';
-    btn.disabled = true;
-
-    // Add Metadata
-    formData.last_updated = new Date().toISOString().split('T')[0];
-    if(selectedType === 'policy') formData.last_reviewed = formData.last_updated;
-
-    const payload = {
-      action: mode === 'add' ? 'add_item' : 'update_item',
-      type: selectedType,
-      id_column: selectedType + '_id',
-      id_value: formData[selectedType + '_id'] || currentId,
-      data: formData
-    };
-
-    try {
-      const res = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload)
-      });
-      
-      const responseText = await res.text();
-      let responseJson = {};
-      try { responseJson = JSON.parse(responseText); } catch(e) { responseJson = responseText; }
-
-      if(res.ok) {
-        alert('Success! Data saved.');
-        location.reload();
-      } else {
-        alert('Error saving data.');
+    // Close modals on ESC key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeFeedbackModal();
+        closeEditModal();
       }
-    } catch(e) {
-      alert('Network Error: ' + e.message);
-      console.error(e);
-    } finally {
-      btn.innerText = oldText;
-      btn.disabled = false;
-    }
-  }
-</script>
-
+    });
+  </script>
 </body>
 </html>
