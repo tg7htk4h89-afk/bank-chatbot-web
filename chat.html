@@ -910,6 +910,29 @@
         submitBtn.textContent = 'Submit Feedback';
       }
     }
+    // --- Feedback Counter (stored locally) ---
+const FEEDBACK_KEY = "chat3pt_feedback_counts_v1";
+
+function getFeedbackCounts() {
+  try {
+    return JSON.parse(localStorage.getItem(FEEDBACK_KEY)) || { like: 0, dislike: 0 };
+  } catch {
+    return { like: 0, dislike: 0 };
+  }
+}
+
+function saveFeedbackCounts(counts) {
+  localStorage.setItem(FEEDBACK_KEY, JSON.stringify(counts));
+}
+
+// Call this when user presses 👍 or 👎 for a bot answer
+function recordFeedback(type) {
+  const counts = getFeedbackCounts();
+  if (type === "like") counts.like += 1;
+  if (type === "dislike") counts.dislike += 1;
+  saveFeedbackCounts(counts);
+}
+
   </script>
 </body>
 </html>
